@@ -1,0 +1,561 @@
+{
+  "modules": [
+    {
+      "id": "greetings",
+      "title": "Greetings",
+      "icon": "👋",
+      "phrases": [
+        {
+          "id": 1,
+          "en": "Hello",
+          "kn": "Namaskara",
+          "translit": "nah-mus-kaa-rah"
+        },
+        {
+          "id": 2,
+          "en": "How are you?",
+          "kn": "Hegiddeera?",
+          "translit": "hey-gee-dee-rah"
+        },
+        {
+          "id": 3,
+          "en": "What is your name?",
+          "kn": "Ninna hesarenu?",
+          "translit": "nin-nah heh-sah-rey-nu"
+        },
+        {
+          "id": 4,
+          "en": "My name is...",
+          "kn": "Nanna hesaru...",
+          "translit": "nun-nah heh-sah-ru"
+        },
+        {
+          "id": 5,
+          "en": "Thank you",
+          "kn": "Dhanyavadagalu",
+          "translit": "dhan-ya-va-da-ga-lu"
+        },
+        {
+          "id": 6,
+          "en": "Yes",
+          "kn": "Houdu",
+          "translit": "how-du"
+        },
+        {
+          "id": 7,
+          "en": "No",
+          "kn": "Illa",
+          "translit": "il-la"
+        },
+        {
+          "id": 8,
+          "en": "Goodbye",
+          "kn": "Hogi bartini",
+          "translit": "ho-gi bar-tee-ni"
+        }
+      ]
+    },
+    {
+      "id": "numbers",
+      "title": "Numbers",
+      "icon": "🔢",
+      "phrases": [
+        {
+          "id": 9,
+          "en": "One",
+          "kn": "Ondu",
+          "translit": "on-du"
+        },
+        {
+          "id": 10,
+          "en": "Two",
+          "kn": "Eradu",
+          "translit": "er-a-du"
+        },
+        {
+          "id": 11,
+          "en": "Three",
+          "kn": "Mooru",
+          "translit": "moo-ru"
+        },
+        {
+          "id": 23,
+          "en": "Four",
+          "kn": "Naalku",
+          "translit": "naa-lku"
+        },
+        {
+          "id": 24,
+          "en": "Five",
+          "kn": "Aidu",
+          "translit": "ai-du"
+        },
+        {
+          "id": 25,
+          "en": "Six",
+          "kn": "Aaru",
+          "translit": "aa-ru"
+        },
+        {
+          "id": 26,
+          "en": "Seven",
+          "kn": "Yelu",
+          "translit": "ye-lu"
+        },
+        {
+          "id": 27,
+          "en": "Eight",
+          "kn": "Entu",
+          "translit": "en-tu"
+        },
+        {
+          "id": 28,
+          "en": "Nine",
+          "kn": "Ombattu",
+          "translit": "om-bat-tu"
+        },
+        {
+          "id": 29,
+          "en": "Ten",
+          "kn": "Hattu",
+          "translit": "hat-tu"
+        },
+        {
+          "id": 30,
+          "en": "Hundred",
+          "kn": "Nooru",
+          "translit": "noo-ru"
+        },
+        {
+          "id": 31,
+          "en": "Thousand",
+          "kn": "Saavira",
+          "translit": "saa-vi-ra"
+        },
+        {
+          "id": 12,
+          "en": "How much?",
+          "kn": "Eshtu?",
+          "translit": "esh-tu"
+        }
+      ]
+    },
+    {
+      "id": "directions",
+      "title": "Directions & Transport",
+      "icon": "🛺",
+      "phrases": [
+        {
+          "id": 72,
+          "en": "Where is the bus stand?",
+          "kn": "Bus stand ellide?",
+          "translit": "bus stand el-li-de"
+        },
+        {
+          "id": 73,
+          "en": "Where is the railway station?",
+          "kn": "Railway station ellide?",
+          "translit": "rail-way sta-tion el-li-de"
+        },
+        {
+          "id": 74,
+          "en": "Where is the auto stand?",
+          "kn": "Auto stand ellide?",
+          "translit": "au-to stand el-li-de"
+        },
+        {
+          "id": 75,
+          "en": "Go straight",
+          "kn": "Nere hogi",
+          "translit": "ne-re ho-gi"
+        },
+        {
+          "id": 76,
+          "en": "Turn left",
+          "kn": "Edagae tirugi",
+          "translit": "e-da-gae ti-ru-gi"
+        },
+        {
+          "id": 77,
+          "en": "Turn right",
+          "kn": "Balagae tirugi",
+          "translit": "ba-la-gae ti-ru-gi"
+        },
+        {
+          "id": 78,
+          "en": "Stop here",
+          "kn": "Illi nilisi",
+          "translit": "il-li ni-li-si"
+        },
+        {
+          "id": 79,
+          "en": "How far?",
+          "kn": "Eshtu doora?",
+          "translit": "esh-tu doo-ra"
+        },
+        {
+          "id": 80,
+          "en": "Ticket please",
+          "kn": "Ticket kodi",
+          "translit": "ticket ko-di"
+        },
+        {
+          "id": 81,
+          "en": "I want to go to...",
+          "kn": "Naanu ... ge hogabeku",
+          "translit": "naa-nu ... ge ho-ga-be-ku"
+        }
+      ]
+    },
+    {
+      "id": "eating",
+      "title": "Eating Out",
+      "icon": "🍲",
+      "phrases": [
+        {
+          "id": 13,
+          "en": "Water please",
+          "kn": "Neeru kodi",
+          "translit": "nee-ru ko-di"
+        },
+        {
+          "id": 14,
+          "en": "The bill please",
+          "kn": "Bill kodi",
+          "translit": "bill ko-di"
+        },
+        {
+          "id": 15,
+          "en": "I am vegetarian",
+          "kn": "Naanu shaakaahaari",
+          "translit": "naa-nu shaa-kaa-haa-ri"
+        },
+        {
+          "id": 16,
+          "en": "No onion, no garlic",
+          "kn": "Eerulli beda, bellulli beda",
+          "translit": "ee-rul-li be-da, bel-lul-li be-da"
+        },
+        {
+          "id": 17,
+          "en": "Spicy please",
+          "kn": "Kharagide haaki",
+          "translit": "kha-ra-gi-de haa-ki"
+        },
+        {
+          "id": 18,
+          "en": "Less spicy please",
+          "kn": "Kadu mechu beda",
+          "translit": "ka-du me-chu be-da"
+        },
+        {
+          "id": 19,
+          "en": "Bring quickly",
+          "kn": "Bega thandi",
+          "translit": "be-ga than-di"
+        },
+        {
+          "id": 20,
+          "en": "Tasty food",
+          "kn": "Ruchi aagide",
+          "translit": "ru-chi aa-gi-de"
+        },
+        {
+          "id": 21,
+          "en": "More rice please",
+          "kn": "Innu anna kodi",
+          "translit": "in-nu an-na ko-di"
+        },
+        {
+          "id": 22,
+          "en": "Enough, thank you",
+          "kn": "Saku, dhanyavaada",
+          "translit": "sa-ku, dhan-ya-vaa-da"
+        }
+      ]
+    },
+    {
+      "id": "family",
+      "title": "Family & Relationships",
+      "icon": "👨‍👩‍👧‍👦",
+      "phrases": [
+        {
+          "id": 62,
+          "en": "This is my father",
+          "kn": "Ivaru nanna thaande",
+          "translit": "i-va-ru nan-na thaan-de"
+        },
+        {
+          "id": 63,
+          "en": "This is my mother",
+          "kn": "Ivaru nanna thayi",
+          "translit": "i-va-ru nan-na tha-yi"
+        },
+        {
+          "id": 64,
+          "en": "Brother",
+          "kn": "Anna",
+          "translit": "an-na"
+        },
+        {
+          "id": 65,
+          "en": "Sister",
+          "kn": "Thangi / Akka",
+          "translit": "than-gi / ak-ka"
+        },
+        {
+          "id": 66,
+          "en": "Husband",
+          "kn": "Ganda",
+          "translit": "gan-da"
+        },
+        {
+          "id": 67,
+          "en": "Wife",
+          "kn": "Hendathi",
+          "translit": "hen-da-thi"
+        },
+        {
+          "id": 68,
+          "en": "Son",
+          "kn": "Magana",
+          "translit": "ma-ga-na"
+        },
+        {
+          "id": 69,
+          "en": "Daughter",
+          "kn": "Magalu",
+          "translit": "ma-ga-lu"
+        },
+        {
+          "id": 70,
+          "en": "Friend",
+          "kn": "Snehita",
+          "translit": "sne-hi-ta"
+        },
+        {
+          "id": 71,
+          "en": "Relative",
+          "kn": "Bandhu",
+          "translit": "ban-dhu"
+        }
+      ]
+    },
+    {
+      "id": "home",
+      "title": "At Home & Chores",
+      "icon": "🏠",
+      "phrases": [
+        {
+          "id": 42,
+          "en": "Come inside",
+          "kn": "Olage banni",
+          "translit": "o-la-ge ban-ni"
+        },
+        {
+          "id": 43,
+          "en": "Sit down",
+          "kn": "Kootkolli",
+          "translit": "koot-ko-li"
+        },
+        {
+          "id": 44,
+          "en": "Eat food",
+          "kn": "Oota maadi",
+          "translit": "oo-ta maa-di"
+        },
+        {
+          "id": 45,
+          "en": "Clean this",
+          "kn": "Idanna clean maadi",
+          "translit": "i-dan-na clean maa-di"
+        },
+        {
+          "id": 46,
+          "en": "Wash clothes",
+          "kn": "Batate toLi",
+          "translit": "ba-ta-te to-li"
+        },
+        {
+          "id": 47,
+          "en": "Sweep the floor",
+          "kn": "Hallu kaddi",
+          "translit": "hal-lu kad-di"
+        },
+        {
+          "id": 48,
+          "en": "Close the door",
+          "kn": "Bage serisi",
+          "translit": "ba-ge se-ri-si"
+        },
+        {
+          "id": 49,
+          "en": "Turn off the light",
+          "kn": "Light off maadi",
+          "translit": "light off maa-di"
+        },
+        {
+          "id": 50,
+          "en": "Come quickly",
+          "kn": "Bega banni",
+          "translit": "be-ga ban-ni"
+        },
+        {
+          "id": 51,
+          "en": "I am tired",
+          "kn": "Naanu bejaragiddini",
+          "translit": "naa-nu be-ja-ra-gid-di-ni"
+        }
+      ]
+    },
+    {
+      "id": "shopping",
+      "title": "Shopping & Money",
+      "icon": "🛍️",
+      "phrases": [
+        {
+          "id": 32,
+          "en": "How much is this?",
+          "kn": "Idara bele eshtu?",
+          "translit": "i-da-ra be-le esh-tu"
+        },
+        {
+          "id": 33,
+          "en": "Too expensive",
+          "kn": "Bahala beleyide",
+          "translit": "ba-ha-la be-ley-i-de"
+        },
+        {
+          "id": 34,
+          "en": "Please reduce the price",
+          "kn": "Bele kadime maadi",
+          "translit": "be-le ka-di-me maa-di"
+        },
+        {
+          "id": 35,
+          "en": "Do you accept card?",
+          "kn": "Card togolthira?",
+          "translit": "kaar-d to-gol-thi-ra"
+        },
+        {
+          "id": 36,
+          "en": "Cash only",
+          "kn": "Cash maatra",
+          "translit": "cash maa-tra"
+        },
+        {
+          "id": 37,
+          "en": "I need a bag",
+          "kn": "Ondu bag beku",
+          "translit": "on-du bag be-ku"
+        },
+        {
+          "id": 38,
+          "en": "Small change please",
+          "kn": "Sanna chillu kodi",
+          "translit": "san-na chil-lu ko-di"
+        },
+        {
+          "id": 39,
+          "en": "Can I try this?",
+          "kn": "Idanna try maadabahuda?",
+          "translit": "i-dan-na try maa-da-bahu-da"
+        },
+        {
+          "id": 40,
+          "en": "Looks nice",
+          "kn": "Chennagide",
+          "translit": "chen-na-gi-de"
+        },
+        {
+          "id": 41,
+          "en": "I will buy this",
+          "kn": "Idanna kondukoLLuttene",
+          "translit": "i-dan-na kon-du-koL-lut-te-ne"
+        }
+      ]
+    },
+    {
+      "id": "smalltalk",
+      "title": "Social Small Talk",
+      "icon": "💬",
+      "phrases": [
+        {
+          "id": 52,
+          "en": "Where are you from?",
+          "kn": "Neenu yavude inda?",
+          "translit": "nee-nu ya-vu-de in-da"
+        },
+        {
+          "id": 53,
+          "en": "I am from Bangalore",
+          "kn": "Naanu Bengalooru inda",
+          "translit": "naa-nu ben-ga-loo-ru in-da"
+        },
+        {
+          "id": 54,
+          "en": "What do you do?",
+          "kn": "Neenu enu maadtiya?",
+          "translit": "nee-nu e-nu maa-dti-ya"
+        },
+        {
+          "id": 55,
+          "en": "I am a student",
+          "kn": "Naanu vidyaarthi",
+          "translit": "naa-nu vid-yaa-rthi"
+        },
+        {
+          "id": 56,
+          "en": "I am working",
+          "kn": "Naanu kelasa maadti-dini",
+          "translit": "naa-nu ke-la-sa maa-dti-di-ni"
+        },
+        {
+          "id": 57,
+          "en": "Nice to meet you",
+          "kn": "Nimmanu nodi santoshavayitu",
+          "translit": "nim-ma-nu no-di san-to-sha-va-yi-tu"
+        },
+        {
+          "id": 58,
+          "en": "Good morning",
+          "kn": "Shubhodaya",
+          "translit": "shu-bho-da-ya"
+        },
+        {
+          "id": 59,
+          "en": "Good night",
+          "kn": "Shubharatri",
+          "translit": "shu-bha-raa-tri"
+        },
+        {
+          "id": 60,
+          "en": "See you later",
+          "kn": "Matte sigona",
+          "translit": "mat-te si-go-na"
+        },
+        {
+          "id": 61,
+          "en": "Take care",
+          "kn": "Jagrate irri",
+          "translit": "ja-gra-te ir-ri"
+        }
+      ]
+    }
+  ],
+  "userData": {
+    "key": "profile",
+    "name": "Cara",
+    "streak": 0,
+    "wordsLearned": [
+      13,
+      30,
+      31,
+      12
+    ],
+    "accuracy": {
+      "correct": 4,
+      "total": 14
+    }
+  }
+}
