@@ -172,10 +172,50 @@
         }
         
         function getStore(storeName, mode) { return db.transaction(storeName, mode).objectStore(storeName); }
-        function addOrUpdate(storeName, data) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readwrite').put(data); req.onsuccess = resolve; req.onerror = e => reject("DB Error: " + e.target.error); }); }
+        
+        // --- ROBUST DATABASE WRITE OPERATIONS ---
+        function addOrUpdate(storeName, data) {
+            return new Promise((resolve, reject) => {
+                // A transaction is a wrapper around a series of database operations.
+                // It ensures that all operations within it complete successfully as a group.
+                const transaction = db.transaction(storeName, 'readwrite');
+                const store = transaction.objectStore(storeName);
+                store.put(data);
+
+                // The 'oncomplete' event is a more reliable signal that data has been saved.
+                // It fires only after the entire transaction is successfully committed to the database.
+                transaction.oncomplete = () => {
+                    resolve();
+                };
+
+                // The 'onerror' event for the transaction will catch any failures during the process.
+                transaction.onerror = (event) => {
+                    console.error(`Transaction error on store ${storeName}:`, event.target.error);
+                    reject("DB Error: " + event.target.error);
+                };
+            });
+        }
+
+        async function clearStore(storeName) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, 'readwrite');
+                const store = transaction.objectStore(storeName);
+                store.clear();
+
+                transaction.oncomplete = () => {
+                    resolve();
+                };
+
+                transaction.onerror = (event) => {
+                    console.error(`Transaction error on store ${storeName}:`, event.target.error);
+                    reject("DB Error: " + event.target.error);
+                };
+            });
+        }
+        
+        // --- DATABASE READ OPERATIONS ---
         function getData(storeName, key) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readonly').get(key); req.onsuccess = () => resolve(req.result); req.onerror = e => reject("DB Error: " + e.target.error); }); }
         function getAllData(storeName) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readonly').getAll(); req.onsuccess = () => resolve(req.result); req.onerror = e => reject("DB Error: " + e.target.error); }); }
-        async function clearStore(storeName) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readwrite').clear(); req.onsuccess = resolve; req.onerror = e => reject("DB Error: " + e.target.error); }); }
 
         // --- SEED DATA & CONFIG ---
         const seedModules = [
