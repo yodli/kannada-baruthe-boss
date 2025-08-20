@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kannada Baruthe, Boss</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-scale@4"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#34D399"/>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-karnataka { background-image: url('https://placehold.co/1200x800/FFFBEB/34D399?text=Karnataka+Landscape'); background-size: cover; background-position: center; }
+        .card-bg { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .dot { transform: translateX(0); }
+        input:checked ~ .dot { transform: translateX(100%); }
+        .heatmap-day { transition: all 0.2s ease-in-out; }
+        .heatmap-day:hover { transform: scale(1.2); }
+        .recording { animation: pulse 1.5s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body class="bg-emerald-50 text-gray-800">
+
+    <div id="app" class="max-w-4xl mx-auto p-4">
+        <!-- App Header -->
+        <header id="app-header" class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-emerald-700">Kannada Baruthe, Boss</h1>
+            <div class="flex items-center space-x-4">
+                <div id="user-profile" class="flex items-center space-x-2 cursor-pointer">
+                    <span id="username-display" class="font-semibold">Cara</span>
+                    <input type="file" id="profile-pic-input" class="hidden" accept="image/*">
+                    <img id="profile-pic" src="https://placehold.co/40x40/34D399/FFFFFF?text=C" class="rounded-full w-10 h-10 object-cover" alt="Profile Picture">
+                </div>
+                <button id="author-mode-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg">Author Mode</button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+            <!-- Dashboard View -->
+            <div id="dashboard-view">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white p-4 rounded-xl shadow-md text-center">
+                        <h3 class="font-bold text-lg">Streak</h3>
+                        <p class="text-3xl text-emerald-500"><span id="streak-days">0</span> Days</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow-md text-center">
+                        <h3 class="font-bold text-lg">Words Learned</h3>
+                        <p class="text-3xl text-emerald-500" id="words-learned">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow-md text-center">
+                        <h3 class="font-bold text-lg">Accuracy</h3>
+                        <p class="text-3xl text-emerald-500" id="accuracy-percent">0%</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                    <h2 class="text-2xl font-bold mb-4">Your Progress</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-semibold mb-2 text-center">Daily Activity</h3>
+                            <div id="calendar-heatmap" class="flex justify-center"></div>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2 text-center">Accuracy Trend</h3>
+                            <div id="accuracy-chart" class="flex justify-center items-end h-48"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold mb-4">Modules</h2>
+                    <div id="modules-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md mt-6">
+                    <h2 class="text-2xl font-bold mb-4">Mini-Games</h2>
+                    <div id="minigames-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button id="speed-match-btn" class="bg-teal-100 p-4 rounded-xl shadow-md text-center cursor-pointer hover:bg-teal-200 transition">
+                            <div class="text-4xl mb-2">⏱️</div>
+                            <h3 class="font-bold">Speed Match</h3>
+                        </button>
+                        <button id="memory-grid-btn" class="bg-amber-100 p-4 rounded-xl shadow-md text-center cursor-pointer hover:bg-amber-200 transition">
+                            <div class="text-4xl mb-2">🧠</div>
+                            <h3 class="font-bold">Memory Grid</h3>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lesson View -->
+            <div id="lesson-view" class="hidden">
+                <div id="focus-mode-header" class="flex justify-between items-center mb-4">
+                     <h2 id="lesson-title" class="text-2xl font-bold"></h2>
+                     <div id="lesson-timer" class="text-lg font-mono bg-gray-200 px-3 py-1 rounded-lg">00:00</div>
+                </div>
+                <button id="back-to-dashboard" class="mb-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">&larr; Back to Modules</button>
+                <div class="flex justify-center mb-4">
+                    <label for="tone-toggle" class="flex items-center cursor-pointer">
+                        <span class="mr-3 font-semibold">Buddy</span>
+                        <div class="relative">
+                            <input type="checkbox" id="tone-toggle" class="sr-only">
+                            <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                        </div>
+                        <span class="ml-3 font-semibold">Elder</span>
+                    </label>
+                </div>
+                 <!-- Activity: Flashcard -->
+                <div id="flashcard-activity" class="hidden bg-white p-6 rounded-xl shadow-md">
+                     <canvas id="flashcard-canvas" class="w-full h-64 rounded-lg bg-gray-100 cursor-pointer"></canvas>
+                     <div class="flex justify-around mt-4">
+                        <button id="flashcard-wrong" class="bg-red-500 text-white font-bold py-3 px-6 rounded-lg text-lg">Again</button>
+                        <button id="flashcard-right" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg text-lg">Got it!</button>
+                     </div>
+                </div>
+            </div>
+            
+            <!-- Game View -->
+            <div id="game-view" class="hidden">
+                 <div class="flex justify-between items-center mb-4">
+                    <h2 id="game-title" class="text-2xl font-bold"></h2>
+                    <button id="exit-game-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Exit Game</button>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-md">
+                    <div class="flex justify-around mb-2 text-lg font-bold">
+                        <div id="game-timer">Time: 60s</div>
+                        <div id="game-score">Score: 0</div>
+                    </div>
+                    <canvas id="game-canvas" class="w-full h-96 rounded-lg bg-gray-100 cursor-pointer"></canvas>
+                </div>
+            </div>
+
+            <!-- Author Mode View -->
+            <div id="author-mode-view" class="hidden bg-white p-6 rounded-xl shadow-md"></div>
+        </main>
+    </div>
+
+    <!-- All Modals -->
+    <div id="passcode-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"></div>
+    <div id="message-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"></div>
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"></div>
+    <div id="prompt-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"></div>
+    <div id="trivia-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"></div>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // --- SERVICE WORKER REGISTRATION ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('ServiceWorker registration successful'))
+                    .catch(err => console.log('ServiceWorker registration failed: ', err));
+            });
+        }
+
+        // --- DATABASE SETUP (IndexedDB) ---
+        const DB_NAME = 'KannadaBarutheBossDB';
+        const DB_VERSION = 1;
+        let db;
+
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onerror = e => reject("DB error: " + e.target.errorCode);
+                request.onupgradeneeded = e => {
+                    db = e.target.result;
+                    if (!db.objectStoreNames.contains('modules')) db.createObjectStore('modules', { keyPath: 'id' });
+                    if (!db.objectStoreNames.contains('userData')) db.createObjectStore('userData', { keyPath: 'key' });
+                    if (!db.objectStoreNames.contains('srs')) db.createObjectStore('srs', { keyPath: 'phraseId' });
+                    if (!db.objectStoreNames.contains('progressLog')) db.createObjectStore('progressLog', { keyPath: 'date' });
+                };
+                request.onsuccess = e => {
+                    db = e.target.result;
+                    console.log("DB initialized.");
+                    resolve(db);
+                };
+            });
+        }
+        
+        function getStore(storeName, mode) { return db.transaction(storeName, mode).objectStore(storeName); }
+        function addOrUpdate(storeName, data) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readwrite').put(data); req.onsuccess = resolve; req.onerror = e => reject("DB Error: " + e.target.error); }); }
+        function getData(storeName, key) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readonly').get(key); req.onsuccess = () => resolve(req.result); req.onerror = e => reject("DB Error: " + e.target.error); }); }
+        function getAllData(storeName) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readonly').getAll(); req.onsuccess = () => resolve(req.result); req.onerror = e => reject("DB Error: " + e.target.error); }); }
+
+        // --- SEED DATA ---
+        const seedModules = [
+            { id: 'greetings', title: 'Greetings', icon: '👋', phrases: [ { id: 1, en: 'Hello', kn: 'Namaskara', translit: 'nah-mus-kaa-rah' }, { id: 2, en: 'How are you?', kn: 'Hegiddeera?', translit: 'hey-gee-dee-rah' }, { id: 3, en: 'What is your name?', kn: 'Ninna hesarenu?', translit: 'nin-nah heh-sah-rey-nu' }, { id: 4, en: 'My name is...', kn: 'Nanna hesaru...', translit: 'nun-nah heh-sah-ru' }, { id: 5, en: 'Thank you', kn: 'Dhanyavadagalu', translit: 'dhan-ya-va-da-ga-lu' }, { id: 6, en: 'Yes', kn: 'Houdu', translit: 'how-du' }, { id: 7, en: 'No', kn: 'Illa', translit: 'il-la' }, { id: 8, en: 'Goodbye', kn: 'Hogi bartini', translit: 'ho-gi bar-tee-ni' } ]},
+            { id: 'numbers', title: 'Numbers', icon: '🔢', phrases: [ { id: 9, en: 'One', kn: 'Ondu', translit: 'on-du' }, { id: 10, en: 'Two', kn: 'Eradu', translit: 'er-a-du' }, { id: 11, en: 'Three', kn: 'Mooru', translit: 'moo-ru' }, { id: 12, en: 'How much?', kn: 'Eshtu?', translit: 'esh-tu' } ]},
+            { id: 'eating', title: 'Eating Out', icon: '🍲', phrases: [ { id: 13, en: 'Water please', kn: 'Neeru kodi', translit: 'nee-ru ko-di' }, { id: 14, en: 'The bill please', kn: 'Bill kodi', translit: 'bill ko-di' } ]},
+        ];
+        const triviaData = [ { q: "What is the capital of Karnataka?", a: "Bengaluru (Bangalore)" }, { q: "Which famous waterfalls are known as the 'Niagara of India'?", a: "Gokak Falls" }, { q: "What is the traditional dance form of Karnataka?", a: "Yakshagana" } ];
+
+        async function seedDatabase() {
+            if ((await getAllData('modules')).length === 0) {
+                console.log("Seeding database...");
+                for (const module of seedModules) await addOrUpdate('modules', module);
+            }
+            if (!await getData('userData', 'profile')) {
+                await addOrUpdate('userData', { key: 'profile', name: 'Cara', streak: 0, wordsLearned: [], accuracy: { correct: 0, total: 0 } });
+            }
+        }
+
+        // --- UI & STATE ---
+        const allViews = {
+            dashboard: document.getElementById('dashboard-view'),
+            lesson: document.getElementById('lesson-view'),
+            authorMode: document.getElementById('author-mode-view'),
+            game: document.getElementById('game-view'),
+        };
+        const flashcardActivity = document.getElementById('flashcard-activity');
+        let currentModule = null, currentPhraseIndex = 0, isFlipped = false, lessonTimerInterval = null, lessonSeconds = 0;
+
+        function showView(viewName) {
+            Object.values(allViews).forEach(v => v.classList.add('hidden'));
+            allViews[viewName].classList.remove('hidden');
+        }
+
+        async function renderDashboard() {
+            const modulesGrid = document.getElementById('modules-grid');
+            const modules = await getAllData('modules');
+            modulesGrid.innerHTML = '';
+            modules.forEach(module => {
+                const card = document.createElement('div');
+                card.className = 'bg-emerald-100 p-4 rounded-xl shadow-md text-center cursor-pointer hover:bg-emerald-200 transition';
+                card.innerHTML = `<div class="text-4xl mb-2">${module.icon}</div><h3 class="font-bold">${module.title}</h3>`;
+                card.addEventListener('click', () => startLesson(module.id));
+                modulesGrid.appendChild(card);
+            });
+            
+            const profile = await getData('userData', 'profile');
+            document.getElementById('username-display').textContent = profile.name || 'Cara';
+            document.getElementById('streak-days').textContent = profile.streak || 0;
+            document.getElementById('words-learned').textContent = profile.wordsLearned?.length || 0;
+            const acc = profile.accuracy;
+            const accPercent = (acc && acc.total > 0) ? Math.round((acc.correct / acc.total) * 100) : 0;
+            document.getElementById('accuracy-percent').textContent = `${accPercent}%`;
+            await renderProgressVisuals();
+            showView('dashboard');
+        }
+        
+        async function renderProgressVisuals() {
+            const progressLog = await getAllData('progressLog');
+            const heatmapData = new Map();
+            progressLog.forEach(log => heatmapData.set(log.date, log.minutes));
+
+            const calendarContainer = document.getElementById('calendar-heatmap');
+            calendarContainer.innerHTML = '';
+            const today = new Date();
+            const sixtyDaysAgo = new Date();
+            sixtyDaysAgo.setDate(today.getDate() - 60);
+            
+            let week = document.createElement('div');
+            week.className = 'flex flex-col';
+            
+            for (let d = new Date(sixtyDaysAgo); d <= today; d.setDate(d.getDate() + 1)) {
+                if (d.getDay() === 0 && week.children.length > 0) { calendarContainer.appendChild(week); week = document.createElement('div'); week.className = 'flex flex-col'; }
+                const dayElem = document.createElement('div');
+                const dateStr = d.toISOString().split('T')[0];
+                const minutes = heatmapData.get(dateStr) || 0;
+                const colorScale = d3.scaleLinear().domain([0, 1, 10]).range(['#E5E7EB', '#A7F3D0', '#10B981']);
+                dayElem.className = 'w-4 h-4 m-0.5 rounded-sm heatmap-day';
+                dayElem.style.backgroundColor = colorScale(minutes);
+                dayElem.title = `${dateStr}: ${minutes} min`;
+                week.appendChild(dayElem);
+            }
+            calendarContainer.appendChild(week);
+
+            const chartContainer = document.getElementById('accuracy-chart');
+            chartContainer.innerHTML = '';
+            const accuracyData = progressLog.slice(-7).map(log => ({ date: log.date, acc: (log.accuracy.correct / log.accuracy.total) * 100 || 0 }));
+            if (accuracyData.length > 0) {
+                const maxAcc = d3.max(accuracyData, d => d.acc);
+                const yScale = d3.scaleLinear().domain([0, Math.max(100, maxAcc)]).range([0, 192]);
+                accuracyData.forEach(d => {
+                    const bar = document.createElement('div');
+                    bar.className = 'bg-emerald-400 rounded-t-md hover:bg-emerald-500 mx-1';
+                    bar.style.width = `20px`;
+                    bar.style.height = `${yScale(d.acc)}px`;
+                    bar.title = `${d.date.slice(5)}: ${d.acc.toFixed(0)}%`;
+                    chartContainer.appendChild(bar);
+                });
+            }
+        }
+
+        // --- LESSON LOGIC ---
+        async function startLesson(moduleId) {
+            currentModule = await getData('modules', moduleId);
+            if (!currentModule || currentModule.phrases.length === 0) { showMessage("This module has no phrases yet."); return; }
+            document.getElementById('lesson-title').textContent = currentModule.title;
+            showView('lesson');
+            document.getElementById('app-header').classList.add('hidden');
+            document.getElementById('back-to-dashboard').classList.add('hidden');
+            
+            lessonSeconds = 0;
+            const timerDisplay = document.getElementById('lesson-timer');
+            timerDisplay.textContent = '00:00';
+            lessonTimerInterval = setInterval(() => {
+                lessonSeconds++;
+                const mins = String(Math.floor(lessonSeconds / 60)).padStart(2, '0');
+                const secs = String(lessonSeconds % 60).padStart(2, '0');
+                timerDisplay.textContent = `${mins}:${secs}`;
+            }, 1000);
+
+            currentPhraseIndex = 0;
+            nextActivity();
+        }
+
+        async function endLesson() {
+            clearInterval(lessonTimerInterval);
+            document.getElementById('app-header').classList.remove('hidden');
+            
+            const dateStr = new Date().toISOString().split('T')[0];
+            let log = await getData('progressLog', dateStr) || { date: dateStr, minutes: 0, accuracy: { correct: 0, total: 0 } };
+            log.minutes += Math.ceil(lessonSeconds / 60);
+            const profile = await getData('userData', 'profile');
+            log.accuracy = { ...profile.accuracy };
+            await addOrUpdate('progressLog', log);
+
+            showTrivia();
+        }
+        
+        function showTrivia() {
+            const trivia = triviaData[Math.floor(Math.random() * triviaData.length)];
+            const modal = document.getElementById('trivia-modal');
+            modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center"><h3 class="text-lg font-bold mb-2">Did you know?</h3><p class="mb-2">${trivia.q}</p><p class="font-bold text-emerald-600 mb-4">${trivia.a}</p><button id="trivia-close" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded">Continue</button></div>`;
+            modal.classList.remove('hidden');
+            modal.querySelector('#trivia-close').addEventListener('click', () => { modal.classList.add('hidden'); renderDashboard(); });
+        }
+
+        function nextActivity() {
+            if (currentPhraseIndex >= currentModule.phrases.length) { endLesson(); return; }
+            showFlashcard();
+            currentPhraseIndex++;
+        }
+
+        async function updateProgress(wasCorrect, phraseId) {
+            const profile = await getData('userData', 'profile');
+            profile.accuracy.total++;
+            if (wasCorrect) {
+                profile.accuracy.correct++;
+                if (!profile.wordsLearned.includes(phraseId)) profile.wordsLearned.push(phraseId);
+                let srsData = await getData('srs', phraseId) || { phraseId, step: 0 };
+                srsData.step++;
+                const reviewIntervals = [1, 3, 7];
+                const interval = reviewIntervals[Math.min(srsData.step - 1, reviewIntervals.length - 1)];
+                const nextReviewDate = new Date();
+                nextReviewDate.setDate(nextReviewDate.getDate() + interval);
+                srsData.nextReview = nextReviewDate.toISOString().split('T')[0];
+                srsData.lastReviewed = new Date().toISOString().split('T')[0];
+                await addOrUpdate('srs', srsData);
+            }
+            await addOrUpdate('userData', profile);
+        }
+        
+        const flashcardCanvas = document.getElementById('flashcard-canvas');
+        const flashcardCtx = flashcardCanvas.getContext('2d');
+        function drawFlashcard(phrase, showKannada) {
+            const canvas = flashcardCanvas; canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; const ctx = flashcardCtx; ctx.fillStyle = '#FFFBEB'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#10B981'; ctx.textAlign = 'center';
+            if (showKannada) { ctx.font = 'bold 32px Inter'; ctx.fillText(phrase.kn, canvas.width / 2, canvas.height / 2 - 20); ctx.font = '20px Inter'; ctx.fillStyle = '#6B7280'; ctx.fillText(phrase.translit, canvas.width / 2, canvas.height / 2 + 20); } else { ctx.font = 'bold 32px Inter'; ctx.fillText(phrase.en, canvas.width / 2, canvas.height / 2); }
+            ctx.font = '14px Inter'; ctx.fillStyle = '#9CA3AF'; ctx.fillText('Tap to flip', canvas.width / 2, canvas.height - 20);
+        }
+        function showFlashcard() { flashcardActivity.classList.remove('hidden'); isFlipped = false; const phrase = currentModule.phrases[currentPhraseIndex]; drawFlashcard(phrase, isFlipped); }
+        
+        function speakTTS(phrase) {
+            if ('speechSynthesis' in window && phrase && phrase.kn) {
+                const utterance = new SpeechSynthesisUtterance(phrase.kn);
+                utterance.lang = 'kn-IN';
+                const kannadaVoice = window.speechSynthesis.getVoices().find(v => v.lang === 'kn-IN');
+                if (kannadaVoice) utterance.voice = kannadaVoice;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function speak(phrase) {
+            if (phrase && phrase.audioData) {
+                const audio = new Audio(phrase.audioData);
+                audio.play().catch(e => {
+                    console.error("Audio playback failed:", e.name, e.message);
+                    if (e.name === 'NotSupportedError') {
+                        console.warn("Recorded audio format not supported, falling back to TTS.");
+                        showMessage("Couldn't play recording, using default voice.");
+                        speakTTS(phrase);
+                    }
+                });
+            } else {
+                speakTTS(phrase);
+            }
+        }
+        if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+
+        // --- GAME LOGIC ---
+        const gameCanvas = document.getElementById('game-canvas');
+        const gameCtx = gameCanvas.getContext('2d');
+        let activeGame = null, gameLoopId = null, timerIntervalId = null, gameState = {};
+        class Card {
+            constructor(id, text, type, x, y, width, height) { this.id = id; this.text = text; this.type = type; this.x = x; this.y = y; this.width = width; this.height = height; this.state = 'hidden'; }
+            draw(ctx) {
+                ctx.strokeStyle = '#34D399'; ctx.lineWidth = 3; ctx.fillStyle = this.state === 'matched' ? '#A7F3D0' : (this.state === 'revealed' ? '#FFFBEB' : '#10B981');
+                ctx.beginPath(); const r = 10; ctx.moveTo(this.x + r, this.y); ctx.arcTo(this.x + this.width, this.y, this.x + this.width, this.y + this.height, r); ctx.arcTo(this.x + this.width, this.y + this.height, this.x, this.y + this.height, r); ctx.arcTo(this.x, this.y + this.height, this.x, this.y, r); ctx.arcTo(this.x, this.y, this.x + this.width, this.y, r); ctx.closePath(); ctx.fill(); ctx.stroke();
+                if (this.state === 'revealed') { ctx.fillStyle = '#1F2937'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = 'bold 16px Inter'; ctx.fillText(this.text, this.x + this.width / 2, this.y + this.height / 2); }
+            }
+            isClicked(mx, my) { return mx > this.x && mx < this.x + this.width && my > this.y && my < this.y + this.height; }
+        }
+        async function getPhrasesForGame(count) { const allModules = await getAllData('modules'); const allPhrases = allModules.flatMap(m => m.phrases).filter(p => p.en && p.kn); if (allPhrases.length < count) { showMessage(`You need at least ${count} phrases to play.`); return []; } return allPhrases.sort(() => 0.5 - Math.random()).slice(0, count); }
+        function exitGame() { if (gameLoopId) cancelAnimationFrame(gameLoopId); if (timerIntervalId) clearInterval(timerIntervalId); activeGame = null; renderDashboard(); }
+        function gameLoop() { gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height); if (gameState.cards) gameState.cards.forEach(card => card.draw(gameCtx)); if (!gameState.gameOver) gameLoopId = requestAnimationFrame(gameLoop); }
+        function updateTimer() { gameState.timeLeft--; document.getElementById('game-timer').textContent = `Time: ${gameState.timeLeft}s`; if (gameState.timeLeft <= 0) { gameState.gameOver = true; clearInterval(timerIntervalId); showMessage(`Time's up! Final Score: ${gameState.score}`); exitGame(); } }
+        function checkWinCondition() { const allMatched = gameState.cards.every(c => c.state === 'matched'); if (allMatched) { gameState.gameOver = true; gameState.score += activeGame === 'SpeedMatch' ? 5 : gameState.timeLeft; setTimeout(() => { showMessage(`You won! Final Score: ${gameState.score}`); exitGame(); }, 500); } }
+        function setupGameCanvas() { gameCanvas.width = gameCanvas.offsetWidth; gameCanvas.height = gameCanvas.offsetHeight; }
+        async function startSpeedMatchGame() { const phrases = await getPhrasesForGame(8); if (phrases.length === 0) return; activeGame = 'SpeedMatch'; document.getElementById('game-title').textContent = 'Speed Match'; showView('game'); setupGameCanvas(); gameState = { cards: [], selected: [], score: 0, timeLeft: 60, gameOver: false }; document.getElementById('game-score').textContent = 'Score: 0'; document.getElementById('game-timer').textContent = 'Time: 60s'; let cardData = []; phrases.forEach(p => { cardData.push({ id: p.id, text: p.en, type: 'en' }); cardData.push({ id: p.id, text: p.kn, type: 'kn' }); }); cardData.sort(() => 0.5 - Math.random()); const cols = 4, rows = 4; const cardWidth = (gameCanvas.width - (cols + 1) * 10) / cols; const cardHeight = (gameCanvas.height - (rows + 1) * 10) / rows; for (let i = 0; i < cardData.length; i++) { const row = Math.floor(i / cols), col = i % cols; const x = col * (cardWidth + 10) + 10, y = row * (cardHeight + 10) + 10; gameState.cards.push(new Card(cardData[i].id, cardData[i].text, cardData[i].type, x, y, cardWidth, cardHeight)); } timerIntervalId = setInterval(updateTimer, 1000); gameLoopId = requestAnimationFrame(gameLoop); }
+        function handleSpeedMatchClick(e) { if (gameState.gameOver || gameState.selected.length === 2) return; const rect = gameCanvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left, mouseY = e.clientY - rect.top; for (const card of gameState.cards) { if (card.state === 'hidden' && card.isClicked(mouseX, mouseY)) { card.state = 'revealed'; gameState.selected.push(card); break; } } if (gameState.selected.length === 2) { const [c1, c2] = gameState.selected; if (c1.id === c2.id) { c1.state = 'matched'; c2.state = 'matched'; gameState.score += 10; document.getElementById('game-score').textContent = `Score: ${gameState.score}`; gameState.selected = []; checkWinCondition(); } else { setTimeout(() => { c1.state = 'hidden'; c2.state = 'hidden'; gameState.selected = []; }, 500); } } }
+        async function startMemoryGridGame() { const phrases = await getPhrasesForGame(8); if (phrases.length === 0) return; activeGame = 'MemoryGrid'; document.getElementById('game-title').textContent = 'Memory Grid'; showView('game'); setupGameCanvas(); gameState = { cards: [], phase: 'study', timeLeft: 60, score: 0, gameOver: false, studyTime: 5 }; document.getElementById('game-score').textContent = 'Score: 0'; document.getElementById('game-timer').textContent = 'Memorize!'; const cols = 4, rows = 2; const cardWidth = (gameCanvas.width - (cols + 1) * 10) / cols; const cardHeight = (gameCanvas.height - (rows + 1) * 10) / rows; for (let i = 0; i < phrases.length; i++) { const row = Math.floor(i / cols), col = i % cols; const x = col * (cardWidth + 10) + 10, y = row * (cardHeight + 10) + 10; const card = new Card(phrases[i].id, phrases[i].kn, 'kn', x, y, cardWidth, cardHeight); card.phrase = phrases[i]; card.state = 'revealed'; gameState.cards.push(card); } setTimeout(() => { gameState.phase = 'recall'; gameState.cards.forEach(c => c.state = 'hidden'); timerIntervalId = setInterval(updateTimer, 1000); }, gameState.studyTime * 1000); gameLoopId = requestAnimationFrame(gameLoop); }
+        async function handleMemoryGridClick(e) { if (gameState.gameOver || gameState.phase !== 'recall') return; const rect = gameCanvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left, mouseY = e.clientY - rect.top; for (const card of gameState.cards) { if (card.state === 'hidden' && card.isClicked(mouseX, mouseY)) { const userAnswer = await showPrompt(`What is the English for "${card.text}"?`); if (userAnswer && userAnswer.toLowerCase().trim() === card.phrase.en.toLowerCase().trim()) { card.state = 'matched'; gameState.score += 5; } else { gameState.score -= 2; } document.getElementById('game-score').textContent = `Score: ${gameState.score}`; checkWinCondition(); break; } } }
+        
+        // --- AUTHOR MODE & MODALS ---
+        let mediaRecorder;
+        let audioChunks = [];
+
+        async function renderAuthorEditor() { const editor = document.getElementById('author-mode-view'); editor.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Author Mode</h2><button id="exit-author-mode-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Exit</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><button id="import-json-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Import JSON</button><input type="file" id="json-file-input" class="hidden" accept=".json"><button id="export-json-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Export JSON</button></div><h3 class="text-xl font-bold mb-2">Edit Modules & Phrases</h3><div id="author-content-editor" class="space-y-4"></div><button id="add-module-btn" class="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">Add New Module</button>`; const contentEditor = document.getElementById('author-content-editor'); const modules = await getAllData('modules'); contentEditor.innerHTML = ''; modules.forEach(module => { const container = document.createElement('div'); container.className = 'p-4 border rounded-lg'; container.innerHTML = `<div class="flex justify-between items-center mb-2"><input class="text-xl font-bold border-b-2" value="${module.title}" data-module-id="${module.id}" data-field="title" /><input class="w-12 text-center border-b-2" value="${module.icon}" data-module-id="${module.id}" data-field="icon" /></div><div class="phrases-container space-y-2">${module.phrases.map((p, i) => `<div class="grid grid-cols-6 gap-2 items-center p-2 bg-gray-50 rounded"><input class="border rounded px-2 py-1" placeholder="English" value="${p.en}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="en" /><input class="border rounded px-2 py-1" placeholder="Kannada" value="${p.kn}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="kn" /><input class="border rounded px-2 py-1 col-span-2" placeholder="Transliteration" value="${p.translit || ''}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="translit" />${p.audioData ? `<audio controls class="w-24 h-8" src="${p.audioData}"></audio>` : `<div class="w-24 h-8"></div>`}<div class="flex items-center gap-2"><button class="text-xl" data-record-btn data-module-id="${module.id}" data-phrase-index="${i}">🎤</button><button class="text-red-500 hover:font-bold" data-delete-btn data-module-id="${module.id}" data-phrase-index="${i}">X</button></div></div>`).join('')}</div><button class="mt-2 text-blue-500 hover:font-bold" data-add-phrase-btn data-module-id="${module.id}">Add Phrase</button>`; contentEditor.appendChild(container); }); contentEditor.querySelectorAll('input').forEach(input => input.addEventListener('change', handleAuthorInputChange)); contentEditor.querySelectorAll('[data-add-phrase-btn]').forEach(btn => btn.addEventListener('click', () => addPhrase(btn.dataset.moduleId))); contentEditor.querySelectorAll('[data-delete-btn]').forEach(btn => btn.addEventListener('click', () => deletePhrase(btn.dataset.moduleId, btn.dataset.phraseIndex))); contentEditor.querySelectorAll('[data-record-btn]').forEach(btn => btn.addEventListener('click', (e) => toggleRecording(e.target, btn.dataset.moduleId, btn.dataset.phraseIndex))); document.getElementById('exit-author-mode-btn').addEventListener('click', renderDashboard); document.getElementById('add-module-btn').addEventListener('click', async () => { const title = await showPrompt("Enter new module title:"); if (title) { const newModule = { id: title.toLowerCase().replace(/\s+/g, '-'), title, icon: '✨', phrases: [] }; await addOrUpdate('modules', newModule); renderAuthorEditor(); } }); document.getElementById('export-json-btn').addEventListener('click', exportToJson); const jsonFileInput = document.getElementById('json-file-input'); document.getElementById('import-json-btn').addEventListener('click', () => jsonFileInput.click()); jsonFileInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async (re) => { try { const data = JSON.parse(re.target.result); if (data.modules && Array.isArray(data.modules)) { for (const module of data.modules) await addOrUpdate('modules', module); } if (data.userData) await addOrUpdate('userData', data.userData); showMessage('Data imported successfully!'); renderAuthorEditor(); } catch (err) { showMessage('Error importing JSON: ' + err.message); } }; reader.readAsText(file); }); }
+        async function toggleRecording(button, moduleId, phraseIndex) {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                button.classList.remove("recording", "text-red-500");
+            } else {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
+                    button.classList.add("recording", "text-red-500");
+                    audioChunks = [];
+                    mediaRecorder.addEventListener("dataavailable", event => audioChunks.push(event.data));
+                    mediaRecorder.addEventListener("stop", async () => {
+                        const audioBlob = new Blob(audioChunks);
+                        const reader = new FileReader();
+                        reader.readAsDataURL(audioBlob);
+                        reader.onloadend = async function() {
+                            const base64String = reader.result;
+                            const module = await getData('modules', moduleId);
+                            module.phrases[phraseIndex].audioData = base64String;
+                            await addOrUpdate('modules', module);
+                            renderAuthorEditor();
+                        };
+                        stream.getTracks().forEach(track => track.stop());
+                    });
+                } catch (err) {
+                    showMessage("Microphone access denied or not available.");
+                    console.error("Error accessing microphone:", err);
+                }
+            }
+        }
+        async function handleAuthorInputChange(e) { const { moduleId, field, phraseIndex } = e.target.dataset; const module = await getData('modules', moduleId); if (phraseIndex) module.phrases[parseInt(phraseIndex)][field] = e.target.value; else module[field] = e.target.value; await addOrUpdate('modules', module); }
+        async function addPhrase(moduleId) { const module = await getData('modules', moduleId); const newId = module.phrases.length > 0 ? Math.max(...module.phrases.map(p => p.id)) + 1 : Date.now(); module.phrases.push({ id: newId, en: '', kn: '', translit: '' }); await addOrUpdate('modules', module); renderAuthorEditor(); }
+        async function deletePhrase(moduleId, phraseIndex) { const confirmed = await showConfirm('Are you sure?'); if (confirmed) { const module = await getData('modules', moduleId); module.phrases.splice(phraseIndex, 1); await addOrUpdate('modules', module); renderAuthorEditor(); } }
+        async function exportToJson() { const exportData = { modules: await getAllData('modules'), userData: await getData('userData', 'profile') }; const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2)); const a = document.createElement('a'); a.href = dataStr; a.download = "kbb_export.json"; a.click(); }
+        function showMessage(text) { const modal = document.getElementById('message-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center">${text}</p><button class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div>`; modal.classList.remove('hidden'); modal.querySelector('button').addEventListener('click', () => modal.classList.add('hidden')); }
+        function showConfirm(message) { return new Promise(resolve => { const modal = document.getElementById('confirm-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center">${message}</p><div class="flex justify-end space-x-4"><button id="confirm-no-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">No</button><button id="confirm-yes-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Yes</button></div></div>`; modal.classList.remove('hidden'); modal.querySelector('#confirm-yes-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(true); }); modal.querySelector('#confirm-no-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(false); }); }); }
+        function showPrompt(text) { return new Promise(resolve => { const modal = document.getElementById('prompt-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96"><p class="mb-4 text-center">${text}</p><input id="prompt-input" class="w-full p-2 border rounded mb-4"><div class="flex justify-end space-x-2"><button id="prompt-cancel" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Cancel</button><button id="prompt-ok" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div></div>`; modal.classList.remove('hidden'); const input = modal.querySelector('#prompt-input'); input.focus(); modal.querySelector('#prompt-ok').addEventListener('click', () => { modal.classList.add('hidden'); resolve(input.value); }); modal.querySelector('#prompt-cancel').addEventListener('click', () => { modal.classList.add('hidden'); resolve(null); }); input.addEventListener('keyup', (e) => { if (e.key === 'Enter') modal.querySelector('#prompt-ok').click(); }); }); }
+        
+        await initDB();
+        await seedDatabase();
+        await renderDashboard();
+        
+        document.getElementById('back-to-dashboard').addEventListener('click', renderDashboard);
+        document.getElementById('exit-game-btn').addEventListener('click', exitGame);
+        document.getElementById('speed-match-btn').addEventListener('click', startSpeedMatchGame);
+        document.getElementById('memory-grid-btn').addEventListener('click', startMemoryGridGame);
+        
+        flashcardCanvas.addEventListener('click', () => { isFlipped = !isFlipped; const phrase = currentModule.phrases[currentPhraseIndex-1]; drawFlashcard(phrase, isFlipped); if (isFlipped) speak(phrase); });
+        document.getElementById('flashcard-right').addEventListener('click', () => { updateProgress(true, currentModule.phrases[currentPhraseIndex-1].id); nextActivity(); });
+        document.getElementById('flashcard-wrong').addEventListener('click', () => { updateProgress(false, currentModule.phrases[currentPhraseIndex-1].id); nextActivity(); });
+        
+        gameCanvas.addEventListener('click', (e) => { if (activeGame === 'SpeedMatch') handleSpeedMatchClick(e); else if (activeGame === 'MemoryGrid') handleMemoryGridClick(e); });
+
+        document.getElementById('author-mode-btn').addEventListener('click', () => {
+            const modal = document.getElementById('passcode-modal');
+            modal.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-xl w-80"><h3 class="text-xl font-bold mb-4 text-center">Enter Passcode</h3><input type="password" id="passcode-input" maxlength="4" class="w-full p-3 text-center text-2xl tracking-[1em] border-2 rounded-lg mb-2"><p id="passcode-error" class="text-red-500 h-5 text-center mb-4"></p><button id="passcode-submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">Enter</button><button id="passcode-close" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg mt-2">Cancel</button></div>`;
+            modal.classList.remove('hidden');
+            const input = modal.querySelector('#passcode-input');
+            input.focus();
+            modal.querySelector('#passcode-close').addEventListener('click', () => modal.classList.add('hidden'));
+            modal.querySelector('#passcode-submit').addEventListener('click', () => { if (input.value === '1104') { modal.classList.add('hidden'); showView('authorMode'); renderAuthorEditor(); } else { modal.querySelector('#passcode-error').textContent = 'Incorrect passcode.'; } });
+            input.addEventListener('keyup', (e) => { if (e.key === 'Enter') modal.querySelector('#passcode-submit').click(); });
+        });
+        
+        const profilePic = document.getElementById('profile-pic');
+        const profilePicInput = document.getElementById('profile-pic-input');
+        document.getElementById('user-profile').addEventListener('click', async (e) => {
+            if (e.target.id === 'username-display') {
+                const newName = await showPrompt("What's your name?");
+                if (newName) { const profile = await getData('userData', 'profile'); profile.name = newName; await addOrUpdate('userData', profile); document.getElementById('username-display').textContent = newName; }
+            } else {
+                profilePicInput.click();
+            }
+        });
+        profilePicInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) { const reader = new FileReader(); reader.onload = (re) => { const imageData = re.target.result; localStorage.setItem('profilePic', imageData); profilePic.src = imageData; }; reader.readAsDataURL(file); }
+        });
+        const savedPic = localStorage.getItem('profilePic');
+        if (savedPic) profilePic.src = savedPic;
+    });
+    </script>
+</body>
+</html>
