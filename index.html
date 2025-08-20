@@ -11,10 +11,6 @@
     <meta name="theme-color" content="#34D399"/>
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .bg-karnataka { background-image: url('https://placehold.co/1200x800/FFFBEB/34D399?text=Karnataka+Landscape'); background-size: cover; background-position: center; }
-        .card-bg { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-        .dot { transform: translateX(0); }
-        input:checked ~ .dot { transform: translateX(100%); }
         .heatmap-day { transition: all 0.2s ease-in-out; }
         .heatmap-day:hover { transform: scale(1.2); }
         .recording { animation: pulse 1.5s infinite; }
@@ -102,18 +98,6 @@
                      <h2 id="lesson-title" class="text-2xl font-bold"></h2>
                      <div id="lesson-timer" class="text-lg font-mono bg-gray-200 px-3 py-1 rounded-lg">00:00</div>
                 </div>
-                <button id="back-to-dashboard" class="mb-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">&larr; Back to Modules</button>
-                <div class="flex justify-center mb-4">
-                    <label for="tone-toggle" class="flex items-center cursor-pointer">
-                        <span class="mr-3 font-semibold">Buddy</span>
-                        <div class="relative">
-                            <input type="checkbox" id="tone-toggle" class="sr-only">
-                            <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
-                            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
-                        </div>
-                        <span class="ml-3 font-semibold">Elder</span>
-                    </label>
-                </div>
                  <!-- Activity: Flashcard -->
                 <div id="flashcard-activity" class="hidden bg-white p-6 rounded-xl shadow-md">
                      <canvas id="flashcard-canvas" class="w-full h-64 rounded-lg bg-gray-100 cursor-pointer"></canvas>
@@ -154,7 +138,7 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
-        // --- SERVICE WORKER REGISTRATION ---
+        // --- SERVICE WORKER ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('service-worker.js')
@@ -163,7 +147,7 @@
             });
         }
 
-        // --- DATABASE SETUP (IndexedDB) ---
+        // --- DATABASE ---
         const DB_NAME = 'KannadaBarutheBossDB';
         const DB_VERSION = 1;
         let db;
@@ -191,10 +175,11 @@
         function addOrUpdate(storeName, data) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readwrite').put(data); req.onsuccess = resolve; req.onerror = e => reject("DB Error: " + e.target.error); }); }
         function getData(storeName, key) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readonly').get(key); req.onsuccess = () => resolve(req.result); req.onerror = e => reject("DB Error: " + e.target.error); }); }
         function getAllData(storeName) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readonly').getAll(); req.onsuccess = () => resolve(req.result); req.onerror = e => reject("DB Error: " + e.target.error); }); }
+        async function clearStore(storeName) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readwrite').clear(); req.onsuccess = resolve; req.onerror = e => reject("DB Error: " + e.target.error); }); }
 
-        // --- SEED DATA ---
+        // --- SEED DATA & CONFIG ---
         const seedModules = [
-            { id: 'greetings', title: 'Greetings', icon: '👋', phrases: [ { id: 1, en: 'Hello', kn: 'Namaskara', translit: 'nah-mus-kaa-rah' }, { id: 2, en: 'How are you?', kn: 'Hegiddeera?', translit: 'hey-gee-dee-rah' }, { id: 3, en: 'What is your name?', kn: 'Ninna hesarenu?', translit: 'nin-nah heh-sah-rey-nu' }, { id: 4, en: 'My name is...', kn: 'Nanna hesaru...', translit: 'nun-nah heh-sah-ru' }, { id: 5, en: 'Thank you', kn: 'Dhanyavadagalu', translit: 'dhan-ya-va-da-ga-lu' }, { id: 6, en: 'Yes', kn: 'Houdu', translit: 'how-du' }, { id: 7, en: 'No', kn: 'Illa', translit: 'il-la' }, { id: 8, en: 'Goodbye', kn: 'Hogi bartini', translit: 'ho-gi bar-tee-ni' } ]},
+            { id: 'greetings', title: 'Greetings', icon: '👋', phrases: [ { id: 1, en: 'Hello', kn: 'Namaskara', translit: 'nah-mus-kaa-rah' }, { id: 2, en: 'How are you?', kn: 'Hegiddeera?', translit: 'hey-gee-dee-rah' }, { id: 3, en: 'What is your name?', kn: 'Ninna hesarenu?', translit: 'nin-nah heh-sah-rey-nu' }, { id: 4, en: 'My name is...', kn: 'Nanna hesaru...', translit: 'nun-nah heh-sah-ru' }, { id: 5, en: 'Thank you', kn: 'Dhanyavadagalu', translit: 'dhan-ya-va-da-ga-lu' }, { id: 6, en: 'Yes', kn: 'Houdu', translit: 'how-du' }, { id: 7, en: 'No', kn: 'Illa', translit: 'il-la' }, { id: 8, en: 'Goodbye', kn: 'Hogi bartini', translit: 'ho-gi bar-tee-ni' }, { id: 15, en: 'Good morning', kn: 'Shubhodaya', translit: 'shu-bho-da-ya' }, { id: 16, en: 'Good night', kn: 'Shubha raatri', translit: 'shu-bha raa-tri' }, { id: 17, en: 'See you later', kn: 'Matte sigona', translit: 'mat-te si-go-na' } ]},
             { id: 'numbers', title: 'Numbers', icon: '🔢', phrases: [ { id: 9, en: 'One', kn: 'Ondu', translit: 'on-du' }, { id: 10, en: 'Two', kn: 'Eradu', translit: 'er-a-du' }, { id: 11, en: 'Three', kn: 'Mooru', translit: 'moo-ru' }, { id: 12, en: 'How much?', kn: 'Eshtu?', translit: 'esh-tu' } ]},
             { id: 'eating', title: 'Eating Out', icon: '🍲', phrases: [ { id: 13, en: 'Water please', kn: 'Neeru kodi', translit: 'nee-ru ko-di' }, { id: 14, en: 'The bill please', kn: 'Bill kodi', translit: 'bill ko-di' } ]},
         ];
@@ -296,10 +281,21 @@
         async function startLesson(moduleId) {
             currentModule = await getData('modules', moduleId);
             if (!currentModule || currentModule.phrases.length === 0) { showMessage("This module has no phrases yet."); return; }
+            
+            let phrases = [...currentModule.phrases];
+            if (phrases.length > 10) {
+                for (let i = phrases.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [phrases[i], phrases[j]] = [phrases[j], phrases[i]];
+                }
+                currentModule.lessonPhrases = phrases.slice(0, 10);
+            } else {
+                currentModule.lessonPhrases = phrases;
+            }
+
             document.getElementById('lesson-title').textContent = currentModule.title;
             showView('lesson');
             document.getElementById('app-header').classList.add('hidden');
-            document.getElementById('back-to-dashboard').classList.add('hidden');
             
             lessonSeconds = 0;
             const timerDisplay = document.getElementById('lesson-timer');
@@ -338,7 +334,7 @@
         }
 
         function nextActivity() {
-            if (currentPhraseIndex >= currentModule.phrases.length) { endLesson(); return; }
+            if (currentPhraseIndex >= currentModule.lessonPhrases.length) { endLesson(); return; }
             showFlashcard();
             currentPhraseIndex++;
         }
@@ -369,7 +365,7 @@
             if (showKannada) { ctx.font = 'bold 32px Inter'; ctx.fillText(phrase.kn, canvas.width / 2, canvas.height / 2 - 20); ctx.font = '20px Inter'; ctx.fillStyle = '#6B7280'; ctx.fillText(phrase.translit, canvas.width / 2, canvas.height / 2 + 20); } else { ctx.font = 'bold 32px Inter'; ctx.fillText(phrase.en, canvas.width / 2, canvas.height / 2); }
             ctx.font = '14px Inter'; ctx.fillStyle = '#9CA3AF'; ctx.fillText('Tap to flip', canvas.width / 2, canvas.height - 20);
         }
-        function showFlashcard() { flashcardActivity.classList.remove('hidden'); isFlipped = false; const phrase = currentModule.phrases[currentPhraseIndex]; drawFlashcard(phrase, isFlipped); }
+        function showFlashcard() { flashcardActivity.classList.remove('hidden'); isFlipped = false; const phrase = currentModule.lessonPhrases[currentPhraseIndex]; drawFlashcard(phrase, isFlipped); }
         
         function speakTTS(phrase) {
             if ('speechSynthesis' in window && phrase && phrase.kn) {
@@ -426,7 +422,7 @@
         let mediaRecorder;
         let audioChunks = [];
 
-        async function renderAuthorEditor() { const editor = document.getElementById('author-mode-view'); editor.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Author Mode</h2><button id="exit-author-mode-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Exit</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><button id="import-json-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Import JSON</button><input type="file" id="json-file-input" class="hidden" accept=".json"><button id="export-json-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Export JSON</button></div><h3 class="text-xl font-bold mb-2">Edit Modules & Phrases</h3><div id="author-content-editor" class="space-y-4"></div><button id="add-module-btn" class="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">Add New Module</button>`; const contentEditor = document.getElementById('author-content-editor'); const modules = await getAllData('modules'); contentEditor.innerHTML = ''; modules.forEach(module => { const container = document.createElement('div'); container.className = 'p-4 border rounded-lg'; container.innerHTML = `<div class="flex justify-between items-center mb-2"><input class="text-xl font-bold border-b-2" value="${module.title}" data-module-id="${module.id}" data-field="title" /><input class="w-12 text-center border-b-2" value="${module.icon}" data-module-id="${module.id}" data-field="icon" /></div><div class="phrases-container space-y-2">${module.phrases.map((p, i) => `<div class="grid grid-cols-6 gap-2 items-center p-2 bg-gray-50 rounded"><input class="border rounded px-2 py-1" placeholder="English" value="${p.en}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="en" /><input class="border rounded px-2 py-1" placeholder="Kannada" value="${p.kn}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="kn" /><input class="border rounded px-2 py-1 col-span-2" placeholder="Transliteration" value="${p.translit || ''}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="translit" />${p.audioData ? `<audio controls class="w-24 h-8" src="${p.audioData}"></audio>` : `<div class="w-24 h-8"></div>`}<div class="flex items-center gap-2"><button class="text-xl" data-record-btn data-module-id="${module.id}" data-phrase-index="${i}">🎤</button><button class="text-red-500 hover:font-bold" data-delete-btn data-module-id="${module.id}" data-phrase-index="${i}">X</button></div></div>`).join('')}</div><button class="mt-2 text-blue-500 hover:font-bold" data-add-phrase-btn data-module-id="${module.id}">Add Phrase</button>`; contentEditor.appendChild(container); }); contentEditor.querySelectorAll('input').forEach(input => input.addEventListener('change', handleAuthorInputChange)); contentEditor.querySelectorAll('[data-add-phrase-btn]').forEach(btn => btn.addEventListener('click', () => addPhrase(btn.dataset.moduleId))); contentEditor.querySelectorAll('[data-delete-btn]').forEach(btn => btn.addEventListener('click', () => deletePhrase(btn.dataset.moduleId, btn.dataset.phraseIndex))); contentEditor.querySelectorAll('[data-record-btn]').forEach(btn => btn.addEventListener('click', (e) => toggleRecording(e.target, btn.dataset.moduleId, btn.dataset.phraseIndex))); document.getElementById('exit-author-mode-btn').addEventListener('click', renderDashboard); document.getElementById('add-module-btn').addEventListener('click', async () => { const title = await showPrompt("Enter new module title:"); if (title) { const newModule = { id: title.toLowerCase().replace(/\s+/g, '-'), title, icon: '✨', phrases: [] }; await addOrUpdate('modules', newModule); renderAuthorEditor(); } }); document.getElementById('export-json-btn').addEventListener('click', exportToJson); const jsonFileInput = document.getElementById('json-file-input'); document.getElementById('import-json-btn').addEventListener('click', () => jsonFileInput.click()); jsonFileInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async (re) => { try { const data = JSON.parse(re.target.result); if (data.modules && Array.isArray(data.modules)) { for (const module of data.modules) await addOrUpdate('modules', module); } if (data.userData) await addOrUpdate('userData', data.userData); showMessage('Data imported successfully!'); renderAuthorEditor(); } catch (err) { showMessage('Error importing JSON: ' + err.message); } }; reader.readAsText(file); }); }
+        async function renderAuthorEditor() { const editor = document.getElementById('author-mode-view'); editor.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Author Mode</h2><button id="exit-author-mode-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Exit</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><button id="import-json-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Import JSON</button><input type="file" id="json-file-input" class="hidden" accept=".json"><button id="export-json-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Export JSON</button></div><h3 class="text-xl font-bold mb-2">Edit Modules & Phrases</h3><div id="author-content-editor" class="space-y-4"></div><button id="add-module-btn" class="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">Add New Module</button><div class="mt-6 border-t pt-4"><h3 class="text-xl font-bold mb-2 text-red-600">Danger Zone</h3><button id="reset-progress-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Reset All Progress</button></div>`; const contentEditor = document.getElementById('author-content-editor'); const modules = await getAllData('modules'); contentEditor.innerHTML = ''; modules.forEach(module => { const container = document.createElement('div'); container.className = 'p-4 border rounded-lg'; container.innerHTML = `<div class="flex justify-between items-center mb-2"><input class="text-xl font-bold border-b-2" value="${module.title}" data-module-id="${module.id}" data-field="title" /><input class="w-12 text-center border-b-2" value="${module.icon}" data-module-id="${module.id}" data-field="icon" /></div><div class="phrases-container space-y-2">${module.phrases.map((p, i) => `<div class="grid grid-cols-6 gap-2 items-center p-2 bg-gray-50 rounded"><input class="border rounded px-2 py-1" placeholder="English" value="${p.en}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="en" /><input class="border rounded px-2 py-1" placeholder="Kannada" value="${p.kn}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="kn" /><input class="border rounded px-2 py-1 col-span-2" placeholder="Transliteration" value="${p.translit || ''}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="translit" />${p.audioData ? `<audio controls class="w-24 h-8" src="${p.audioData}"></audio>` : `<div class="w-24 h-8"></div>`}<div class="flex items-center gap-2"><button class="text-xl" data-record-btn data-module-id="${module.id}" data-phrase-index="${i}">🎤</button><button class="text-red-500 hover:font-bold" data-delete-btn data-module-id="${module.id}" data-phrase-index="${i}">X</button></div></div>`).join('')}</div><button class="mt-2 text-blue-500 hover:font-bold" data-add-phrase-btn data-module-id="${module.id}">Add Phrase</button>`; contentEditor.appendChild(container); }); contentEditor.querySelectorAll('input').forEach(input => input.addEventListener('change', handleAuthorInputChange)); contentEditor.querySelectorAll('[data-add-phrase-btn]').forEach(btn => btn.addEventListener('click', () => addPhrase(btn.dataset.moduleId))); contentEditor.querySelectorAll('[data-delete-btn]').forEach(btn => btn.addEventListener('click', () => deletePhrase(btn.dataset.moduleId, btn.dataset.phraseIndex))); contentEditor.querySelectorAll('[data-record-btn]').forEach(btn => btn.addEventListener('click', (e) => toggleRecording(e.target, btn.dataset.moduleId, btn.dataset.phraseIndex))); document.getElementById('exit-author-mode-btn').addEventListener('click', renderDashboard); document.getElementById('add-module-btn').addEventListener('click', async () => { const title = await showPrompt("Enter new module title:"); if (title) { const newModule = { id: title.toLowerCase().replace(/\s+/g, '-'), title, icon: '✨', phrases: [] }; await addOrUpdate('modules', newModule); renderAuthorEditor(); } }); document.getElementById('export-json-btn').addEventListener('click', exportToJson); const jsonFileInput = document.getElementById('json-file-input'); document.getElementById('import-json-btn').addEventListener('click', () => jsonFileInput.click()); jsonFileInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async (re) => { try { const data = JSON.parse(re.target.result); if (data.modules && Array.isArray(data.modules)) { for (const module of data.modules) await addOrUpdate('modules', module); } if (data.userData) await addOrUpdate('userData', data.userData); showMessage('Data imported successfully!'); renderAuthorEditor(); } catch (err) { showMessage('Error importing JSON: ' + err.message); } }; reader.readAsText(file); }); document.getElementById('reset-progress-btn').addEventListener('click', resetAllProgress); }
         async function toggleRecording(button, moduleId, phraseIndex) {
             if (mediaRecorder && mediaRecorder.state === "recording") {
                 mediaRecorder.stop();
@@ -434,13 +430,14 @@
             } else {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
+                    const options = { mimeType: 'audio/webm; codecs=opus' };
+                    mediaRecorder = MediaRecorder.isTypeSupported(options.mimeType) ? new MediaRecorder(stream, options) : new MediaRecorder(stream);
                     mediaRecorder.start();
                     button.classList.add("recording", "text-red-500");
                     audioChunks = [];
                     mediaRecorder.addEventListener("dataavailable", event => audioChunks.push(event.data));
                     mediaRecorder.addEventListener("stop", async () => {
-                        const audioBlob = new Blob(audioChunks);
+                        const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
                         const reader = new FileReader();
                         reader.readAsDataURL(audioBlob);
                         reader.onloadend = async function() {
@@ -462,6 +459,7 @@
         async function addPhrase(moduleId) { const module = await getData('modules', moduleId); const newId = module.phrases.length > 0 ? Math.max(...module.phrases.map(p => p.id)) + 1 : Date.now(); module.phrases.push({ id: newId, en: '', kn: '', translit: '' }); await addOrUpdate('modules', module); renderAuthorEditor(); }
         async function deletePhrase(moduleId, phraseIndex) { const confirmed = await showConfirm('Are you sure?'); if (confirmed) { const module = await getData('modules', moduleId); module.phrases.splice(phraseIndex, 1); await addOrUpdate('modules', module); renderAuthorEditor(); } }
         async function exportToJson() { const exportData = { modules: await getAllData('modules'), userData: await getData('userData', 'profile') }; const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2)); const a = document.createElement('a'); a.href = dataStr; a.download = "kbb_export.json"; a.click(); }
+        async function resetAllProgress() { const confirmed = await showConfirm("Are you sure you want to reset ALL progress? This cannot be undone."); if (confirmed) { await clearStore('userData'); await clearStore('srs'); await clearStore('progressLog'); await addOrUpdate('userData', { key: 'profile', name: 'Cara', streak: 0, wordsLearned: [], accuracy: { correct: 0, total: 0 } }); showMessage("All progress has been reset."); renderDashboard(); } }
         function showMessage(text) { const modal = document.getElementById('message-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center">${text}</p><button class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div>`; modal.classList.remove('hidden'); modal.querySelector('button').addEventListener('click', () => modal.classList.add('hidden')); }
         function showConfirm(message) { return new Promise(resolve => { const modal = document.getElementById('confirm-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center">${message}</p><div class="flex justify-end space-x-4"><button id="confirm-no-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">No</button><button id="confirm-yes-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Yes</button></div></div>`; modal.classList.remove('hidden'); modal.querySelector('#confirm-yes-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(true); }); modal.querySelector('#confirm-no-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(false); }); }); }
         function showPrompt(text) { return new Promise(resolve => { const modal = document.getElementById('prompt-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96"><p class="mb-4 text-center">${text}</p><input id="prompt-input" class="w-full p-2 border rounded mb-4"><div class="flex justify-end space-x-2"><button id="prompt-cancel" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Cancel</button><button id="prompt-ok" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div></div>`; modal.classList.remove('hidden'); const input = modal.querySelector('#prompt-input'); input.focus(); modal.querySelector('#prompt-ok').addEventListener('click', () => { modal.classList.add('hidden'); resolve(input.value); }); modal.querySelector('#prompt-cancel').addEventListener('click', () => { modal.classList.add('hidden'); resolve(null); }); input.addEventListener('keyup', (e) => { if (e.key === 'Enter') modal.querySelector('#prompt-ok').click(); }); }); }
@@ -470,14 +468,13 @@
         await seedDatabase();
         await renderDashboard();
         
-        document.getElementById('back-to-dashboard').addEventListener('click', renderDashboard);
         document.getElementById('exit-game-btn').addEventListener('click', exitGame);
         document.getElementById('speed-match-btn').addEventListener('click', startSpeedMatchGame);
         document.getElementById('memory-grid-btn').addEventListener('click', startMemoryGridGame);
         
-        flashcardCanvas.addEventListener('click', () => { isFlipped = !isFlipped; const phrase = currentModule.phrases[currentPhraseIndex-1]; drawFlashcard(phrase, isFlipped); if (isFlipped) speak(phrase); });
-        document.getElementById('flashcard-right').addEventListener('click', () => { updateProgress(true, currentModule.phrases[currentPhraseIndex-1].id); nextActivity(); });
-        document.getElementById('flashcard-wrong').addEventListener('click', () => { updateProgress(false, currentModule.phrases[currentPhraseIndex-1].id); nextActivity(); });
+        flashcardCanvas.addEventListener('click', () => { isFlipped = !isFlipped; const phrase = currentModule.lessonPhrases[currentPhraseIndex-1]; drawFlashcard(phrase, isFlipped); if (isFlipped) speak(phrase); });
+        document.getElementById('flashcard-right').addEventListener('click', () => { updateProgress(true, currentModule.lessonPhrases[currentPhraseIndex-1].id); nextActivity(); });
+        document.getElementById('flashcard-wrong').addEventListener('click', () => { updateProgress(false, currentModule.lessonPhrases[currentPhraseIndex-1].id); nextActivity(); });
         
         gameCanvas.addEventListener('click', (e) => { if (activeGame === 'SpeedMatch') handleSpeedMatchClick(e); else if (activeGame === 'MemoryGrid') handleMemoryGridClick(e); });
 
