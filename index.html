@@ -176,11 +176,31 @@
         // --- ROBUST DATABASE WRITE OPERATIONS ---
         function addOrUpdate(storeName, data) {
             return new Promise((resolve, reject) => {
+<<<<<<< HEAD
                 const transaction = db.transaction(storeName, 'readwrite');
                 const store = transaction.objectStore(storeName);
                 store.put(data);
                 transaction.oncomplete = () => { resolve(); };
                 transaction.onerror = (event) => { console.error(`Transaction error on store ${storeName}:`, event.target.error); reject("DB Error: " + event.target.error); };
+=======
+                // A transaction is a wrapper around a series of database operations.
+                // It ensures that all operations within it complete successfully as a group.
+                const transaction = db.transaction(storeName, 'readwrite');
+                const store = transaction.objectStore(storeName);
+                store.put(data);
+
+                // The 'oncomplete' event is a more reliable signal that data has been saved.
+                // It fires only after the entire transaction is successfully committed to the database.
+                transaction.oncomplete = () => {
+                    resolve();
+                };
+
+                // The 'onerror' event for the transaction will catch any failures during the process.
+                transaction.onerror = (event) => {
+                    console.error(`Transaction error on store ${storeName}:`, event.target.error);
+                    reject("DB Error: " + event.target.error);
+                };
+>>>>>>> 9c956e71690f82538722e2e02073d1df8f39a077
             });
         }
 
@@ -189,8 +209,20 @@
                 const transaction = db.transaction(storeName, 'readwrite');
                 const store = transaction.objectStore(storeName);
                 store.clear();
+<<<<<<< HEAD
                 transaction.oncomplete = () => { resolve(); };
                 transaction.onerror = (event) => { console.error(`Transaction error on store ${storeName}:`, event.target.error); reject("DB Error: " + event.target.error); };
+=======
+
+                transaction.oncomplete = () => {
+                    resolve();
+                };
+
+                transaction.onerror = (event) => {
+                    console.error(`Transaction error on store ${storeName}:`, event.target.error);
+                    reject("DB Error: " + event.target.error);
+                };
+>>>>>>> 9c956e71690f82538722e2e02073d1df8f39a077
             });
         }
         
