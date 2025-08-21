@@ -19,6 +19,8 @@
             70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
+        .correct-answer { background-color: #A7F3D0 !important; }
+        .incorrect-answer { background-color: #FECACA !important; }
     </style>
     <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
@@ -88,6 +90,10 @@
                             <div class="text-4xl mb-2">🧠</div>
                             <h3 class="font-bold">Memory Grid</h3>
                         </button>
+                        <button id="trivia-game-btn" class="bg-purple-100 p-4 rounded-xl shadow-md text-center cursor-pointer hover:bg-purple-200 transition">
+                            <div class="text-4xl mb-2">🌍</div>
+                            <h3 class="font-bold">Trivia</h3>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -114,12 +120,8 @@
                     <h2 id="game-title" class="text-2xl font-bold"></h2>
                     <button id="exit-game-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Exit Game</button>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow-md">
-                    <div class="flex justify-around mb-2 text-lg font-bold">
-                        <div id="game-timer">Time: 60s</div>
-                        <div id="game-score">Score: 0</div>
-                    </div>
-                    <canvas id="game-canvas" class="w-full h-96 rounded-lg bg-gray-100 cursor-pointer"></canvas>
+                <div id="game-container" class="bg-white p-4 rounded-xl shadow-md">
+                    <!-- Game content will be dynamically inserted here -->
                 </div>
             </div>
 
@@ -138,6 +140,9 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
+        // --- GOOGLE CLOUD TTS CONFIG ---
+        const GOOGLE_API_KEY = "AIzaSyASuitUOpDtMmaC-5YyWG2AjN5VGkOr-IM"; // <-- PASTE YOUR KEY HERE
+
         // --- SERVICE WORKER ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -173,22 +178,12 @@
         
         function getStore(storeName, mode) { return db.transaction(storeName, mode).objectStore(storeName); }
         
-        // --- ROBUST DATABASE WRITE OPERATIONS ---
         function addOrUpdate(storeName, data) {
             return new Promise((resolve, reject) => {
-                // A transaction is a wrapper around a series of database operations.
-                // It ensures that all operations within it complete successfully as a group.
                 const transaction = db.transaction(storeName, 'readwrite');
                 const store = transaction.objectStore(storeName);
                 store.put(data);
-
-                // The 'oncomplete' event is a more reliable signal that data has been saved.
-                // It fires only after the entire transaction is successfully committed to the database.
-                transaction.oncomplete = () => {
-                    resolve();
-                };
-
-                // The 'onerror' event for the transaction will catch any failures during the process.
+                transaction.oncomplete = () => resolve();
                 transaction.onerror = (event) => {
                     console.error(`Transaction error on store ${storeName}:`, event.target.error);
                     reject("DB Error: " + event.target.error);
@@ -201,11 +196,7 @@
                 const transaction = db.transaction(storeName, 'readwrite');
                 const store = transaction.objectStore(storeName);
                 store.clear();
-
-                transaction.oncomplete = () => {
-                    resolve();
-                };
-
+                transaction.oncomplete = () => resolve();
                 transaction.onerror = (event) => {
                     console.error(`Transaction error on store ${storeName}:`, event.target.error);
                     reject("DB Error: " + event.target.error);
@@ -213,34 +204,83 @@
             });
         }
         
-        // --- DATABASE READ OPERATIONS ---
         function getData(storeName, key) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readonly').get(key); req.onsuccess = () => resolve(req.result); req.onerror = e => reject("DB Error: " + e.target.error); }); }
         function getAllData(storeName) { return new Promise((resolve, reject) => { const req = getStore(storeName, 'readonly').getAll(); req.onsuccess = () => resolve(req.result); req.onerror = e => reject("DB Error: " + e.target.error); }); }
 
         // --- SEED DATA & CONFIG ---
+        const moduleOrder = ["greetings", "numbers", "directions", "eating", "shopping", "home", "smalltalk", "family"];
         const seedModules = [
-            {"id":"greetings","title":"Greetings & Introductions","icon":"👋","phrases":[{"id":1,"en":"Hello","kn":"ನಮಸ್ಕಾರ","translit":"na-mas-ka-ra"},{"id":2,"en":"How are you?","kn":"ಹೇಗಿದ್ದೀರಾ?","translit":"he-gid-dee-ra"},{"id":3,"en":"I'm fine","kn":"ಚೆನ್ನಾಗಿದ್ದೀನಿ","translit":"chen-na-gid-dee-ni"},{"id":4,"en":"What's your name?","kn":"ನಿಮ್ಮ ಹೆಸರೇನು?","translit":"nim-ma he-sa-re-nu"},{"id":5,"en":"My name is...","kn":"ನನ್ನ ಹೆಸರು...","translit":"nan-na he-sa-ru"},{"id":6,"en":"Nice to meet you","kn":"ನಿಮ್ಮನ್ನು ಭೇಟಿ ಮಾಡಿ ಸಂತೋಷವಾಯಿತು","translit":"nim-man-nu bhe-ti maa-di san-to-sha-va-yi-tu"},{"id":7,"en":"Thank you","kn":"ಧನ್ಯವಾದಗಳು","translit":"dhan-ya-vaa-da-ga-lu"},{"id":8,"en":"You're welcome","kn":"ಪರವಾಗಿಲ್ಲ","translit":"pa-ra-va-gil-la"},{"id":9,"en":"Excuse me / Sorry","kn":"ಕ್ಷಮಿಸಿ","translit":"ksha-mi-si"},{"id":10,"en":"Yes","kn":"ಹೌದು","translit":"hou-du"},{"id":11,"en":"No","kn":"ಇಲ್ಲ","translit":"il-la"},{"id":12,"en":"Please","kn":"ದಯವಿಟ್ಟು","translit":"da-ya-vit-tu"},{"id":13,"en":"Goodbye","kn":"ಹೋಗಿ ಬರುತ್ತೇನೆ","translit":"ho-gi ba-rut-te-ne"},{"id":14,"en":"Good morning","kn":"ಶುಭೋದಯ","translit":"shu-bho-da-ya"},{"id":15,"en":"Good night","kn":"ಶುಭ ರಾತ್ರಿ","translit":"shu-bha raa-tri"},{"id":16,"en":"See you later","kn":"ಮತ್ತೆ ಸಿಗೋಣ","translit":"mat-te si-go-na"},{"id":17,"en":"Take care","kn":"ಜಾಗ್ರತೆ","translit":"jaa-gra-te"},{"id":18,"en":"Where are you from?","kn":"ನೀವು ಎಲ್ಲಿಯವರು?","translit":"nee-vu el-li-ya-va-ru"},{"id":19,"en":"I am from...","kn":"ನಾನು ... ಇಂದ ಬಂದಿದ್ದೇನೆ","translit":"naa-nu ... in-da ban-di-dde-ne"},{"id":20,"en":"Do you speak English?","kn":"ನೀವು ಇಂಗ್ಲಿಷ್ ಮಾತನಾಡುತ್ತೀರಾ?","translit":"nee-vu English maa-ta-naa-dut-tee-ra"},{"id":21,"en":"I speak a little Kannada","kn":"ನಾನು ಸ್ವಲ್ಪ ಕನ್ನಡ ಮಾತನಾಡುತ್ತೇನೆ","translit":"naa-nu swal-pa kan-na-da maa-ta-naa-dut-te-ne"},{"id":22,"en":"I don't understand","kn":"ನನಗೆ ಅರ್ಥವಾಗಲಿಲ್ಲ","translit":"na-na-ge ar-tha-va-ga-lil-la"},{"id":23,"en":"Can you repeat that?","kn":"ಇನ್ನೊಮ್ಮೆ ಹೇಳಿ","translit":"in-nom-me he-li"},{"id":24,"en":"Speak slowly","kn":"ನಿಧಾನವಾಗಿ ಮಾತನಾಡಿ","translit":"ni-dhaa-na-va-gi maa-ta-naa-di"},{"id":25,"en":"What is this?","kn":"ಇದು ಏನು?","translit":"i-du ye-nu"},{"id":26,"en":"What happened?","kn":"ಏನಾಯಿತು?","translit":"ye-na-yi-tu"},{"id":27,"en":"It's okay","kn":"ಪರವಾಗಿಲ್ಲ","translit":"pa-ra-va-gil-la"},{"id":28,"en":"I am learning","kn":"ನಾನು ಕಲಿಯುತ್ತಿದ್ದೇನೆ","translit":"naa-nu ka-li-yut-tid-de-ne"},{"id":29,"en":"Welcome","kn":"ಸ್ವಾಗತ","translit":"swa-ga-ta"},{"id":30,"en":"And you?","kn":"ಮತ್ತು ನೀವು?","translit":"mat-tu nee-vu"},{"id":31,"en":"Very good","kn":"ತುಂಬಾ ಒಳ್ಳೆಯದು","translit":"tum-ba ol-le-ya-du"},{"id":32,"en":"Not bad","kn":"ಕೆಟ್ಟದಾಗಿಲ್ಲ","translit":"ket-ta-da-gil-la"},{"id":33,"en":"What's new?","kn":"ಏನು ಸಮಾಚಾರ?","translit":"ye-nu sa-ma-chaa-ra"},{"id":34,"en":"Nothing much","kn":"ಏನು ಇಲ್ಲ","translit":"ye-nu il-la"},{"id":35,"en":"What do you do?","kn":"ನೀವು ಏನು ಕೆಲಸ ಮಾಡುತ್ತೀರಾ?","translit":"nee-vu ye-nu kel-a-sa maa-dut-tee-ra"},{"id":36,"en":"I am a student","kn":"ನಾನು ವಿದ್ಯಾರ್ಥಿ","translit":"naa-nu vid-yaar-thi"},{"id":37,"en":"Have a good day","kn":"ದಿನವು ಚೆನ್ನಾಗಿರಲಿ","translit":"di-na-vu chen-na-gi-ra-li"},{"id":38,"en":"You too","kn":"ನಿಮಗೂ ಕೂಡ","translit":"ni-ma-goo koo-da"},{"id":39,"en":"I am happy","kn":"ನನಗೆ ಸಂತೋಷವಾಗಿದೆ","translit":"na-na-ge san-to-sha-va-gi-de"},{"id":40,"en":"I am tired","kn":"ನನಗೆ ಆಯಾಸವಾಗಿದೆ","translit":"na-na-ge aa-yaa-sa-va-gi-de"},{"id":41,"en":"Are you busy?","kn":"ನೀವು ಬಿಡುವಿಲ್ಲದಿದ್ದೀರಾ?","translit":"nee-vu bi-du-vil-la-did-dee-ra"},{"id":42,"en":"A little bit","kn":"ಸ್ವಲ್ಪ","translit":"swal-pa"},{"id":43,"en":"Not at all","kn":"ಖಂಡಿತ ಇಲ್ಲ","translit":"khan-di-ta il-la"},{"id":44,"en":"What is your phone number?","kn":"ನಿಮ್ಮ ಫೋನ್ ಸಂಖ್ಯೆ ಏನು?","translit":"nim-ma phone sank-hye ye-nu"},{"id":45,"en":"Can I help you?","kn":"ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಹುದೇ?","translit":"naa-nu ni-ma-ge sa-haa-ya maa-da-bahu-de"},{"id":46,"en":"I need help","kn":"ನನಗೆ ಸಹಾಯ ಬೇಕು","translit":"na-na-ge sa-haa-ya be-ku"},{"id":47,"en":"Congratulations!","kn":"ಅಭಿನಂದನೆಗಳು!","translit":"a-bhi-nan-da-ne-ga-lu"},{"id":48,"en":"All the best!","kn":"ಶುಭವಾಗಲಿ!","translit":"shu-bha-va-ga-li"},{"id":49,"en":"I am thirsty","kn":"ನನಗೆ ಬಾಯಾರಿಕೆಯಾಗಿದೆ","translit":"na-na-ge baa-yaa-ri-ke-ya-gi-de"},{"id":50,"en":"I am hungry","kn":"ನನಗೆ ಹಸಿವಾಗಿದೆ","translit":"na-na-ge ha-si-va-gi-de"}]},
-            {"id":"numbers","title":"Numbers & Time","icon":"🔢","phrases":[{"id":51,"en":"One","kn":"ಒಂದು","translit":"on-du"},{"id":52,"en":"Two","kn":"ಎರಡು","translit":"e-ra-du"},{"id":53,"en":"Three","kn":"ಮೂರು","translit":"moo-ru"},{"id":54,"en":"Four","kn":"ನಾಲ್ಕು","translit":"naal-ku"},{"id":55,"en":"Five","kn":"ಐದು","translit":"ai-du"},{"id":56,"en":"Six","kn":"ಆರು","translit":"aa-ru"},{"id":57,"en":"Seven","kn":"ಏಳು","translit":"ye-lu"},{"id":58,"en":"Eight","kn":"ಎಂಟು","translit":"en-tu"},{"id":59,"en":"Nine","kn":"ಒಂಬತ್ತು","translit":"om-bat-tu"},{"id":60,"en":"Ten","kn":"ಹತ್ತು","translit":"hat-tu"},{"id":61,"en":"Twenty","kn":"ಇಪ್ಪತ್ತು","translit":"ip-pat-tu"},{"id":62,"en":"Thirty","kn":"ಮೂವತ್ತು","translit":"moo-vat-tu"},{"id":63,"en":"Forty","kn":"ನಲವತ್ತು","translit":"na-la-vat-tu"},{"id":64,"en":"Fifty","kn":"ಐವತ್ತು","translit":"ai-vat-tu"},{"id":65,"en":"One Hundred","kn":"ನೂರು","translit":"noo-ru"},{"id":66,"en":"One Thousand","kn":"ಸಾವಿರ","translit":"saa-vi-ra"},{"id":67,"en":"What time is it?","kn":"ಸಮಯ ಎಷ್ಟು?","translit":"sa-ma-ya esh-tu"},{"id":68,"en":"It is 1 o'clock","kn":"ಒಂದು ಗಂಟೆ","translit":"on-du gan-te"},{"id":69,"en":"Half past two","kn":"ಎರಡೂವರೆ ಗಂಟೆ","translit":"e-ra-doo-va-re gan-te"},{"id":70,"en":"Quarter to three","kn":"ಮೂರಕ್ಕೆ ಕಾಲು ಕಡಿಮೆ","translit":"moo-rak-ke kaa-lu ka-di-me"},{"id":71,"en":"Quarter past four","kn":"ನಾಲ್ಕೂ ಕಾಲು","translit":"naal-koo kaa-lu"},{"id":72,"en":"Today","kn":"ಇವತ್ತು","translit":"i-vat-tu"},{"id":73,"en":"Yesterday","kn":"ನಿನ್ನೆ","translit":"nin-ne"},{"id":74,"en":"Tomorrow","kn":"ನಾಳೆ","translit":"naa-le"},{"id":75,"en":"Morning","kn":"ಬೆಳಿಗ್ಗೆ","translit":"be-lig-ge"},{"id":76,"en":"Afternoon","kn":"ಮಧ್ಯಾಹ್ನ","translit":"madh-yaah-na"},{"id":77,"en":"Evening","kn":"ಸಂಜೆ","translit":"san-je"},{"id":78,"en":"Night","kn":"ರಾತ್ರಿ","translit":"raa-tri"},{"id":79,"en":"Now","kn":"ಈಗ","translit":"ee-ga"},{"id":80,"en":"Later","kn":"ನಂತರ","translit":"nan-ta-ra"},{"id":81,"en":"Before","kn":"ಮೊದಲು","translit":"mo-da-lu"},{"id":82,"en":"Minute","kn":"ನಿಮಿಷ","translit":"ni-mi-sha"},{"id":83,"en":"Hour","kn":"ಗಂಟೆ","translit":"gan-te"},{"id":84,"en":"Day","kn":"ದಿನ","translit":"di-na"},{"id":85,"en":"Week","kn":"ವಾರ","translit":"vaa-ra"},{"id":86,"en":"Month","kn":"ತಿಂಗಳು","translit":"tin-ga-lu"},{"id":87,"en":"Year","kn":"ವರ್ಷ","translit":"var-sha"},{"id":88,"en":"When?","kn":"ಯಾವಾಗ?","translit":"yaa-vaa-ga"},{"id":89,"en":"How many?","kn":"ಎಷ್ಟು?","translit":"esh-tu"},{"id":90,"en":"Date","kn":"ದಿನಾಂಕ","translit":"di-naan-ka"},{"id":91,"en":"What is the date today?","kn":"ಇವತ್ತಿನ ದಿನಾಂಕ ಏನು?","translit":"i-vat-ti-na di-naan-ka ye-nu"},{"id":92,"en":"Early","kn":"ಬೇಗ","translit":"be-ga"},{"id":93,"en":"Late","kn":"ತಡವಾಗಿ","translit":"ta-da-va-gi"},{"id":94,"en":"Wait for 5 minutes","kn":"ಐದು ನಿಮಿಷ ಕಾಯಿರಿ","translit":"ai-du ni-mi-sha kaa-yi-ri"},{"id":95,"en":"Day before yesterday","kn":"ಮೊನ್ನೆ","translit":"mon-ne"},{"id":96,"en":"Day after tomorrow","kn":"ನಾಡಿದ್ದು","translit":"naa-did-du"},{"id":97,"en":"This week","kn":"ಈ ವಾರ","translit":"ee vaa-ra"},{"id":98,"en":"Next month","kn":"ಮುಂದಿನ ತಿಂಗಳು","translit":"mun-di-na tin-ga-lu"},{"id":99,"en":"Last year","kn":"ಕಳೆದ ವರ್ಷ","translit":"ka-le-da var-sha"},{"id":100,"en":"Always","kn":"ಯಾವಾಗಲೂ","translit":"yaa-vaa-ga-loo"}]},
-            {"id":"directions","title":"Directions & Transport","icon":"🚃","phrases":[{"id":101,"en":"Where is...?","kn":"... ಎಲ್ಲಿದೆ?","translit":"el-li-de"},{"id":102,"en":"Bus stand","kn":"ಬಸ್ ನಿಲ್ದಾಣ","translit":"bus nil-daa-na"},{"id":103,"en":"Railway station","kn":"ರೈಲ್ವೆ ನಿಲ್ದಾಣ","translit":"rail-way nil-daa-na"},{"id":104,"en":"Airport","kn":"ವಿಮಾನ ನಿಲ್ದಾಣ","translit":"vi-maa-na nil-daa-na"},{"id":105,"en":"Left","kn":"ಎಡ","translit":"e-da"},{"id":106,"en":"Right","kn":"ಬಲ","translit":"ba-la"},{"id":107,"en":"Straight","kn":"ನೇರವಾಗಿ","translit":"ne-ra-va-gi"},{"id":108,"en":"Go straight","kn":"ನೇರವಾಗಿ ಹೋಗಿ","translit":"ne-ra-va-gi ho-gi"},{"id":109,"en":"Turn left","kn":"ಎಡಕ್ಕೆ ತಿರುಗಿ","translit":"e-dak-ke ti-ru-gi"},{"id":110,"en":"Turn right","kn":"ಬಲಕ್ಕೆ ತಿರುಗಿ","translit":"ba-lak-ke ti-ru-gi"},{"id":111,"en":"Here","kn":"ಇಲ್ಲಿ","translit":"il-li"},{"id":112,"en":"There","kn":"ಅಲ್ಲಿ","translit":"al-li"},{"id":113,"en":"Near","kn":"ಹತ್ತಿರ","translit":"hat-ti-ra"},{"id":114,"en":"Far","kn":"ದೂರ","translit":"doo-ra"},{"id":115,"en":"Stop here","kn":"ಇಲ್ಲಿ ನಿಲ್ಲಿಸಿ","translit":"il-li nil-li-si"},{"id":116,"en":"How to go to...?","kn":"...ಗೆ ಹೇಗೆ ಹೋಗುವುದು?","translit":"ge he-ge ho-gu-vu-du"},{"id":117,"en":"How much is the ticket?","kn":"ಟಿಕೆಟ್ ಎಷ್ಟು?","translit":"ticket esh-tu"},{"id":118,"en":"One ticket to...","kn":"...ಗೆ ಒಂದು ಟಿಕೆಟ್","translit":"ge on-du ticket"},{"id":119,"en":"Which bus goes to...?","kn":"...ಗೆ ಯಾವ ಬಸ್ ಹೋಗುತ್ತದೆ?","translit":"ge yaa-va bus ho-gut-ta-de"},{"id":120,"en":"Auto rickshaw","kn":"ಆಟೋ","translit":"aa-to"},{"id":121,"en":"Come","kn":"ಬನ್ನಿ","translit":"ban-ni"},{"id":122,"en":"Go","kn":"ಹೋಗಿ","translit":"ho-gi"},{"id":123,"en":"Road","kn":"ರಸ್ತೆ","translit":"ras-te"},{"id":124,"en":"Where is the hotel?","kn":"ಹೋಟೆಲ್ ಎಲ್ಲಿದೆ?","translit":"hotel el-li-de"},{"id":125,"en":"Is it far?","kn":"ಇದು ದೂರವೇ?","translit":"i-du doo-ra-ve"},{"id":126,"en":"Please take me to this address","kn":"ದಯವಿಟ್ಟು ನನ್ನನ್ನು ಈ ವಿಳಾಸಕ್ಕೆ ಕರೆದೊಯ್ಯಿರಿ","translit":"da-ya-vit-tu nan-nan-nu ee vi-la-sak-ke ka-re-doy-yi-ri"},{"id":127,"en":"How long will it take?","kn":"ಎಷ್ಟು ಸಮಯ ತೆಗೆದುಕೊಳ್ಳುತ್ತದೆ?","translit":"esh-tu sa-ma-ya te-ge-du-kol-lut-ta-de"},{"id":128,"en":"Next stop","kn":"ಮುಂದಿನ ನಿಲ್ದಾಣ","translit":"mun-di-na nil-daa-na"},{"id":129,"en":"I want to get down here","kn":"ನಾನು ಇಲ್ಲಿ ಇಳಿಯಬೇಕು","translit":"naa-nu il-li i-li-ya-be-ku"},{"id":130,"en":"Traffic","kn":"ಸಂಚಾರ","translit":"san-chaa-ra"},{"id":131,"en":"Bridge","kn":"ಸೇತುವೆ","translit":"se-tu-ve"},{"id":132,"en":"Go back","kn":"ಹಿಂದೆ ಹೋಗಿ","translit":"hin-de ho-gi"},{"id":133,"en":"In front of","kn":"ಮುಂದೆ","translit":"mun-de"},{"id":134,"en":"Behind","kn":"ಹಿಂದೆ","translit":"hin-de"},{"id":135,"en":"Opposite","kn":"ವಿರುದ್ಧ","translit":"vi-rud-dha"},{"id":136,"en":"Which way?","kn":"ಯಾವ ದಾರಿ?","translit":"yaa-va daa-ri"},{"id":137,"en":"I am lost","kn":"ನಾನು ದಾರಿ ತಪ್ಪಿಸಿಕೊಂಡಿದ್ದೇನೆ","translit":"naa-nu daa-ri tap-pi-si-kon-did-de-ne"},{"id":138,"en":"Can you show me on the map?","kn":"ನಕ್ಷೆಯಲ್ಲಿ ತೋರಿಸಬಹುದೇ?","translit":"nak-she-yal-li to-ri-sa-bahu-de"},{"id":139,"en":"Walk","kn":"ನಡಿ","translit":"na-di"},{"id":140,"en":"Vehicle","kn":"ವಾಹನ","translit":"vaa-ha-na"},{"id":141,"en":"Fast","kn":"ವೇಗವಾಗಿ","translit":"ve-ga-va-gi"},{"id":142,"en":"Slow","kn":"ನಿಧಾನ","translit":"ni-dhaa-na"},{"id":143,"en":"Go slow","kn":"ನಿಧಾನವಾಗಿ ಹೋಗಿ","translit":"ni-dhaa-na-va-gi ho-gi"},{"id":144,"en":"Entrance","kn":"ಪ್ರವೇಶ","translit":"pra-ve-sha"},{"id":145,"en":"Exit","kn":"ನಿರ್ಗಮನ","translit":"nir-ga-ma-na"},{"id":146,"en":"Petrol station","kn":"ಪೆಟ್ರೋಲ್ ಬಂಕ್","translit":"petrol bunk"},{"id":147,"en":"How far is it?","kn":"ಇದು ಎಷ್ಟು ದೂರದಲ್ಲಿದೆ?","translit":"i-du esh-tu doo-ra-dal-li-de"},{"id":148,"en":"Is this the right bus?","kn":"ಇದು ಸರಿಯಾದ ಬಸ್ಸಾ?","translit":"i-du sa-ri-ya-da bas-sa"},{"id":149,"en":"When does the train leave?","kn":"ರೈಲು ಯಾವಾಗ ಹೊರಡುತ್ತದೆ?","translit":"rai-lu yaa-vaa-ga ho-ra-dut-ta-de"},{"id":150,"en":"From where?","kn":"ಎಲ್ಲಿಂದ?","translit":"el-lin-da"}]},
-            {"id":"eating","title":"Eating Out","icon":"🍽️","phrases":[{"id":151,"en":"Restaurant","kn":"ಉಪಾಹಾರ ಗೃಹ","translit":"u-pa-haa-ra gru-ha"},{"id":152,"en":"Water","kn":"ನೀರು","translit":"nee-ru"},{"id":153,"en":"Coffee","kn":"ಕಾಫಿ","translit":"kaa-phi"},{"id":154,"en":"Tea","kn":"ಚಹಾ","translit":"cha-haa"},{"id":155,"en":"Food","kn":"ಊಟ","translit":"oo-ta"},{"id":156,"en":"Breakfast","kn":"ತಿಂಡಿ","translit":"tin-di"},{"id":157,"en":"Lunch","kn":"ಊಟ","translit":"oo-ta"},{"id":158,"en":"Dinner","kn":"ಊಟ","translit":"oo-ta"},{"id":159,"en":"Menu please","kn":"ಮೆನು ಕೊಡಿ","translit":"menu ko-di"},{"id":160,"en":"What is special today?","kn":"ಇವತ್ತು ಏನು ವಿಶೇಷ?","translit":"i-vat-tu ye-nu vi-she-sha"},{"id":161,"en":"I am vegetarian","kn":"ನಾನು ಸಸ್ಯಾಹಾರಿ","translit":"naa-nu sas-yaa-haa-ri"},{"id":162,"en":"Without egg","kn":"ಮೊಟ್ಟೆ ಇಲ್ಲದೆ","translit":"mot-te il-la-de"},{"id":163,"en":"Spicy","kn":"ಖಾರ","translit":"khaa-ra"},{"id":164,"en":"Less spicy","kn":"ಖಾರ ಕಡಿಮೆ","translit":"khaa-ra ka-di-me"},{"id":165,"en":"No spice","kn":"ಖಾರ ಬೇಡ","translit":"khaa-ra be-da"},{"id":166,"en":"Sweet","kn":"ಸಿಹಿ","translit":"si-hi"},{"id":167,"en":"Salt","kn":"ಉಪ್ಪು","translit":"up-pu"},{"id":168,"en":"Sugar","kn":"ಸಕ್ಕರೆ","translit":"sak-ka-re"},{"id":169,"en":"The bill please","kn":"ಬಿಲ್ ಕೊಡಿ","translit":"bill ko-di"},{"id":170,"en":"The food is tasty","kn":"ಊಟ ರುಚಿಯಾಗಿದೆ","translit":"oo-ta ru-chi-ya-gi-de"},{"id":171,"en":"Rice","kn":"ಅನ್ನ","translit":"an-na"},{"id":172,"en":"Sambar","kn":"ಸಾರು","translit":"saa-ru"},{"id":173,"en":"Curd / Yogurt","kn":"ಮೊಸರು","translit":"mo-sa-ru"},{"id":174,"en":"Dosa","kn":"ದೋಸೆ","translit":"do-se"},{"id":175,"en":"Idli","kn":"ಇಡ್ಲಿ","translit":"id-li"},{"id":176,"en":"One plate...","kn":"ಒಂದು ಪ್ಲೇಟ್...","translit":"on-du plate"},{"id":177,"en":"More","kn":"ಇನ್ನಷ್ಟು","translit":"in-nash-tu"},{"id":178,"en":"Enough","kn":"ಸಾಕು","translit":"saa-ku"},{"id":179,"en":"Hot water","kn":"ಬಿಸಿ ನೀರು","translit":"bi-si nee-ru"},{"id":180,"en":"Cold water","kn":"ತಣ್ಣೀರು","translit":"tan-nee-ru"},{"id":181,"en":"Fork","kn":"ಫೋರ್ಕ್","translit":"fork"},{"id":182,"en":"Spoon","kn":"ಚಮಚ","translit":"cha-ma-cha"},{"id":183,"en":"Plate","kn":"ತಟ್ಟೆ","translit":"tat-te"},{"id":184,"en":"Glass","kn":"ಲೋಟ","translit":"lo-ta"},{"id":185,"en":"Is this fresh?","kn":"ಇದು ತಾಜಾ ಇದೆಯೇ?","translit":"i-du taa-ja i-de-ye"},{"id":186,"en":"I want to order","kn":"ನಾನು ಆರ್ಡರ್ ಮಾಡಲು ಬಯಸುತ್ತೇನೆ","translit":"naa-nu order maa-da-lu ba-ya-sut-te-ne"},{"id":187,"en":"What do you recommend?","kn":"ನೀವು ಏನು ಶಿಫಾರಸು ಮಾಡುತ್ತೀರಿ?","translit":"nee-vu ye-nu shi-pha-ra-su maa-dut-ti-ri"},{"id":188,"en":"Without onion","kn":"ಈರುಳ್ಳಿ ಇಲ್ಲದೆ","translit":"ee-rul-li il-la-de"},{"id":189,"en":"Without garlic","kn":"ಬೆಳ್ಳುಳ್ಳಿ ಇಲ್ಲದೆ","translit":"bel-lul-li il-la-de"},{"id":190,"en":"Table for two","kn":"ಇಬ್ಬರಿಗೆ ಟೇಬಲ್","translit":"ib-ba-ri-ge table"},{"id":191,"en":"Can I have some more water?","kn":"ಇನ್ನೂ ಸ್ವಲ್ಪ ನೀರು ಸಿಗುವುದೇ?","translit":"in-nu swal-pa nee-ru si-gu-vu-de"},{"id":192,"en":"Juice","kn":"ರಸ","translit":"ra-sa"},{"id":193,"en":"Vegetables","kn":"ತರಕಾರಿಗಳು","translit":"ta-ra-kaa-ri-ga-lu"},{"id":194,"en":"Fruits","kn":"ಹಣ್ಣುಗಳು","translit":"han-nu-ga-lu"},{"id":195,"en":"I am full","kn":"ನನ್ನ ಹೊಟ್ಟೆ ತುಂಬಿದೆ","translit":"nan-na hot-te tum-bi-de"},{"id":196,"en":"Take away / Parcel","kn":"ಪಾರ್ಸೆಲ್","translit":"par-cel"},{"id":197,"en":"It's delicious","kn":"ಇದು ರುಚಿಕರವಾಗಿದೆ","translit":"i-du ru-chi-ka-ra-va-gi-de"},{"id":198,"en":"I did not order this","kn":"ನಾನು ಇದನ್ನು ಆರ್ಡರ್ ಮಾಡಲಿಲ್ಲ","translit":"naa-nu i-dan-nu order maa-da-lil-la"},{"id":199,"en":"Can we sit here?","kn":"ನಾವು ಇಲ್ಲಿ ಕುಳಿತುಕೊಳ್ಳಬಹುದೇ?","translit":"naa-vu il-li ku-li-tu-kol-la-bahu-de"},{"id":200,"en":"Is service included?","kn":"ಸೇವೆ ಸೇರಿದೆ?","translit":"se-ve se-ri-de"}]},
-            {"id":"shopping","title":"Shopping & Money","icon":"🛍️","phrases":[{"id":201,"en":"How much is this?","kn":"ಇದರ ಬೆಲೆ ಎಷ್ಟು?","translit":"i-da-ra be-le esh-tu"},{"id":202,"en":"It's too expensive","kn":"ಇದು ತುಂಬಾ ದುಬಾರಿ","translit":"i-du tum-ba du-baa-ri"},{"id":203,"en":"Reduce the price","kn":"ಬೆಲೆ ಕಡಿಮೆ ಮಾಡಿ","translit":"be-le ka-di-me maa-di"},{"id":204,"en":"Do you have...?","kn":"ನಿಮ್ಮ ಹತ್ತಿರ ... ಇದೆಯೇ?","translit":"nim-ma hat-ti-ra i-de-ye"},{"id":205,"en":"I want this","kn":"ನನಗೆ ಇದು ಬೇಕು","translit":"na-na-ge i-du be-ku"},{"id":206,"en":"I don't want this","kn":"ನನಗೆ ಇದು ಬೇಡ","translit":"na-na-ge i-du be-da"},{"id":207,"en":"Shop","kn":"ಅಂಗಡಿ","translit":"an-ga-di"},{"id":208,"en":"Market","kn":"ಮಾರುಕಟ್ಟೆ","translit":"maa-ru-kat-te"},{"id":209,"en":"Money","kn":"ಹಣ","translit":"ha-na"},{"id":210,"en":"Change (coins)","kn":"ಚಿಲ್ಲರೆ","translit":"chil-la-re"},{"id":211,"en":"Do you have change?","kn":"ಚಿಲ್ಲರೆ ಇದೆಯೇ?","translit":"chil-la-re i-de-ye"},{"id":212,"en":"I will buy it","kn":"ನಾನು ಇದನ್ನು ಕೊಳ್ಳುತ್ತೇನೆ","translit":"naa-nu i-dan-nu kol-lut-te-ne"},{"id":213,"en":"Just looking","kn":"ನೋಡುತ್ತಿದ್ದೇನೆ","translit":"no-dut-tid-de-ne"},{"id":214,"en":"Can I pay by card?","kn":"ಕಾರ್ಡ್ ಮೂಲಕ ಪಾವತಿಸಬಹುದೇ?","translit":"card moo-la-ka paa-va-ti-sa-bahu-de"},{"id":215,"en":"Cash only","kn":"ನಗದು ಮಾತ್ರ","translit":"na-ga-du maa-tra"},{"id":216,"en":"What color?","kn":"ಯಾವ ಬಣ್ಣ?","translit":"yaa-va ban-na"},{"id":217,"en":"Big","kn":"ದೊಡ್ಡದು","translit":"dod-da-du"},{"id":218,"en":"Small","kn":"ಚಿಕ್ಕದು","translit":"chik-ka-du"},{"id":219,"en":"New","kn":"ಹೊಸದು","translit":"ho-sa-du"},{"id":220,"en":"Old","kn":"ಹಳೆಯದು","translit":"ha-le-ya-du"},{"id":221,"en":"Good","kn":"ಒಳ್ಳೆಯದು","translit":"ol-le-ya-du"},{"id":222,"en":"Bad","kn":"ಕೆಟ್ಟದು","translit":"ket-ta-du"},{"id":223,"en":"Receipt","kn":"ರಶೀದಿ","translit":"ra-shee-di"},{"id":224,"en":"Can I try this on?","kn":"ನಾನು ಇದನ್ನು ಪ್ರಯತ್ನಿಸಬಹುದೇ?","translit":"naa-nu i-dan-nu pra-yat-ni-sa-bahu-de"},{"id":225,"en":"Trial room","kn":"ಟ್ರಯಲ್ ರೂಮ್","translit":"trial room"},{"id":226,"en":"Do you have a smaller size?","kn":"ನಿಮ್ಮಲ್ಲಿ ಚಿಕ್ಕ ಗಾತ್ರವಿದೆಯೇ?","translit":"nim-mal-li chik-ka gaa-tra-vi-de-ye"},{"id":227,"en":"Do you have a larger size?","kn":"ನಿಮ್ಮಲ್ಲಿ ದೊಡ್ಡ ಗಾತ್ರವಿದೆಯೇ?","translit":"nim-mal-li dod-da gaa-tra-vi-de-ye"},{"id":228,"en":"I'll take this one","kn":"ನಾನು ಇದನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತೇನೆ","translit":"naa-nu i-dan-nu te-ge-du-kol-lut-te-ne"},{"id":229,"en":"Anything else?","kn":"ಬೇರೆ ಏನಾದರೂ?","translit":"be-re ye-na-da-ru"},{"id":230,"en":"That's all","kn":"ಅಷ್ಟೇ","translit":"ash-te"},{"id":231,"en":"Please pack this","kn":"ದಯವಿಟ್ಟು ಇದನ್ನು ಪ್ಯಾಕ್ ಮಾಡಿ","translit":"da-ya-vit-tu i-dan-nu pack maa-di"},{"id":232,"en":"What is this made of?","kn":"ಇದು ಯಾವುದರಿಂದ ಮಾಡಲ್ಪಟ್ಟಿದೆ?","translit":"i-du yaa-vu-da-rin-da maa-dal-pat-ti-de"},{"id":233,"en":"Discount","kn":"ರಿಯಾಯಿತಿ","translit":"ri-yaa-yi-ti"},{"id":234,"en":"Is there a discount?","kn":"ರಿಯಾಯಿತಿ ಇದೆಯೇ?","translit":"ri-yaa-yi-ti i-de-ye"},{"id":235,"en":"Fixed price","kn":"ನಿಗದಿತ ಬೆಲೆ","translit":"ni-ga-di-ta be-le"},{"id":236,"en":"Bargain","kn":"ಚೌಕಾಸಿ","translit":"chau-kaa-si"},{"id":237,"en":"Can it be gift wrapped?","kn":"ಇದನ್ನು ಗಿಫ್ಟ್ ರಾಪ್ ಮಾಡಬಹುದೇ?","translit":"i-dan-nu gift wrap maa-da-bahu-de"},{"id":238,"en":"I am looking for...","kn":"ನಾನು ... ಹುಡುಕುತ್ತಿದ್ದೇನೆ","translit":"naa-nu hu-du-kut-tid-de-ne"},{"id":239,"en":"Where can I find vegetables?","kn":"ನನಗೆ ತರಕಾರಿಗಳು ಎಲ್ಲಿ ಸಿಗುತ್ತವೆ?","translit":"na-na-ge ta-ra-kaa-ri-ga-lu el-li si-gut-ta-ve"},{"id":240,"en":"One kilo","kn":"ಒಂದು ಕೆಜಿ","translit":"on-du kg"},{"id":241,"en":"Half a kilo","kn":"ಅರ್ಧ ಕೆಜಿ","translit":"ar-dha kg"},{"id":242,"en":"Give me this","kn":"ಇದು ಕೊಡಿ","translit":"i-du ko-di"},{"id":243,"en":"Is the shop open?","kn":"ಅಂಗಡಿ ತೆರೆದಿದೆಯೇ?","translit":"an-ga-di te-re-di-de-ye"},{"id":244,"en":"When does it close?","kn":"ಅದು ಯಾವಾಗ ಮುಚ್ಚುತ್ತದೆ?","translit":"a-du yaa-vaa-ga much-chut-ta-de"},{"id":245,"en":"I want to return this","kn":"ನಾನು ಇದನ್ನು ಹಿಂತಿರುಗಿಸಲು ಬಯಸುತ್ತೇನೆ","translit":"naa-nu i-dan-nu hin-ti-ru-gi-sa-lu ba-ya-sut-te-ne"},{"id":246,"en":"What is the final price?","kn":"ಅಂತಿಮ ಬೆಲೆ ಏನು?","translit":"an-ti-ma be-le ye-nu"},{"id":247,"en":"Keep the change","kn":"ಚಿಲ್ಲರೆ ಇಟ್ಟುಕೊಳ್ಳಿ","translit":"chil-la-re it-tu-kol-li"},{"id":248,"en":"Do you accept UPI?","kn":"ನೀವು ಯುಪಿಐ ಸ್ವೀಕರಿಸುತ್ತೀರಾ?","translit":"nee-vu UPI swee-ka-ri-sut-tee-ra"},{"id":249,"en":"Where is the ATM?","kn":"ಎಟಿಎಂ ಎಲ್ಲಿದೆ?","translit":"ATM el-li-de"},{"id":250,"en":"How much in total?","kn":"ಒಟ್ಟು ಎಷ್ಟು?","translit":"vot-tu esh-tu"}]},
-            {"id":"home","title":"At Home & Chores","icon":"🏠","phrases":[{"id":251,"en":"House","kn":"ಮನೆ","translit":"ma-ne"},{"id":252,"en":"Room","kn":"ಕೋಣೆ","translit":"ko-ne"},{"id":253,"en":"Door","kn":"ಬಾಗಿಲು","translit":"baa-gi-lu"},{"id":254,"en":"Window","kn":"ಕಿಟಕಿ","translit":"ki-ta-ki"},{"id":255,"en":"Key","kn":"ಕೀಲಿ","translit":"kee-li"},{"id":256,"en":"Where is the key?","kn":"ಕೀಲಿ ಎಲ್ಲಿದೆ?","translit":"kee-li el-li-de"},{"id":257,"en":"Switch on the light","kn":"ಲೈಟ್ ಹಾಕಿ","translit":"light haa-ki"},{"id":258,"en":"Switch off the fan","kn":"ಫ್ಯಾನ್ ಆಫ್ ಮಾಡಿ","translit":"fan off maa-di"},{"id":259,"en":"Clean the house","kn":"ಮನೆ ಸ್ವಚ್ಛಗೊಳಿಸಿ","translit":"ma-ne swach-cha-go-li-si"},{"id":260,"en":"Cooking","kn":"ಅಡುಗೆ","translit":"a-du-ge"},{"id":261,"en":"I am cooking","kn":"ನಾನು ಅಡುಗೆ ಮಾಡುತ್ತಿದ್ದೇನೆ","translit":"naa-nu a-du-ge maa-dut-tid-de-ne"},{"id":262,"en":"Sleep","kn":"ನಿದ್ರೆ","translit":"nid-re"},{"id":263,"en":"I want to sleep","kn":"ನನಗೆ ನಿದ್ರೆ ಬೇಕು","translit":"na-na-ge nid-re be-ku"},{"id":264,"en":"Wake up","kn":"ಏಳು","translit":"ye-lu"},{"id":265,"en":"Water is coming","kn":"ನೀರು ಬರುತ್ತಿದೆ","translit":"nee-ru ba-rut-ti-de"},{"id":266,"en":"Power cut","kn":"ವಿದ್ಯುತ್ ಕಡಿತ","translit":"vid-yut ka-di-ta"},{"id":267,"en":"Wash clothes","kn":"ಬಟ್ಟೆ ಒಗೆಯಿರಿ","translit":"bat-te o-ge-yi-ri"},{"id":268,"en":"Newspaper","kn":"ವೃತ್ತಪತ್ರಿಕೆ","translit":"vrut-ta-pat-ri-ke"},{"id":269,"en":"Guests are coming","kn":"ಅತಿಥಿಗಳು ಬರುತ್ತಿದ್ದಾರೆ","translit":"a-tithi-ga-lu ba-rut-tid-daa-re"},{"id":270,"en":"Lock the door","kn":"ಬಾಗಿಲು ಲಾಕ್ ಮಾಡಿ","translit":"baa-gi-lu lock maa-di"},{"id":271,"en":"Open the door","kn":"ಬಾಗಿಲು ತೆರೆಯಿರಿ","translit":"baa-gi-lu te-re-yi-ri"},{"id":272,"en":"Where is the remote?","kn":"ರಿಮೋಟ್ ಎಲ್ಲಿದೆ?","translit":"remote el-li-de"},{"id":273,"en":"Increase the volume","kn":"ಶಬ್ದವನ್ನು ಹೆಚ್ಚಿಸಿ","translit":"shab-da-van-nu hech-chi-si"},{"id":274,"en":"Decrease the volume","kn":"ಶಬ್ದವನ್ನು ಕಡಿಮೆ ಮಾಡಿ","translit":"shab-da-van-nu ka-di-me maa-di"},{"id":275,"en":"What's for dinner?","kn":"ರಾತ್ರಿ ಊಟಕ್ಕೆ ಏನು?","translit":"raa-tri oo-tak-ke ye-nu"},{"id":276,"en":"I will do it","kn":"ನಾನು ಮಾಡುತ್ತೇನೆ","translit":"naa-nu maa-dut-te-ne"},{"id":277,"en":"I am tired","kn":"ನನಗೆ ಆಯಾಸವಾಗಿದೆ","translit":"na-na-ge aa-yaa-sa-va-gi-de"},{"id":278,"en":"I am busy","kn":"ನಾನು ಕಾರ್ಯನಿರತನಾಗಿದ್ದೇನೆ","translit":"naa-nu kaar-ya-ni-ra-ta-na-gid-de-ne"},{"id":279,"en":"Bed","kn":"ಹಾಸಿಗೆ","translit":"haa-si-ge"},{"id":280,"en":"Pillow","kn":"ದಿಂಬು","translit":"dim-bu"},{"id":281,"en":"Blanket","kn":"ಕಂಬಳಿ","translit":"kam-ba-li"},{"id":282,"en":"Chair","kn":"ಕುರ್ಚಿ","translit":"kur-chi"},{"id":283,"en":"Table","kn":"ಮೇಜು","translit":"me-ju"},{"id":284,"en":"I need to take a bath","kn":"ನಾನು ಸ್ನಾನ ಮಾಡಬೇಕು","translit":"naa-nu snaa-na maa-da-be-ku"},{"id":285,"en":"The phone is ringing","kn":"ಫೋನ್ ರಿಂಗ್ ಆಗುತ್ತಿದೆ","translit":"phone ring aa-gut-ti-de"},{"id":286,"en":"Who is at the door?","kn":"ಬಾಗಿಲಲ್ಲಿ ಯಾರು?","translit":"baa-gi-lal-li yaa-ru"},{"id":287,"en":"Come inside","kn":"ಒಳಗೆ ಬನ್ನಿ","translit":"o-la-ge ban-ni"},{"id":288,"en":"Sit down","kn":"ಕುಳಿತುಕೊಳ್ಳಿ","translit":"ku-li-tu-kol-li"},{"id":289,"en":"I am going out","kn":"ನಾನು ಹೊರಗೆ ಹೋಗುತ್ತಿದ್ದೇನೆ","translit":"naa-nu ho-ra-ge ho-gut-tid-de-ne"},{"id":290,"en":"I will be back soon","kn":"ನಾನು ಬೇಗನೆ ಹಿಂತಿರುಗುತ್ತೇನೆ","translit":"naa-nu be-ga-ne hin-ti-ru-gut-te-ne"},{"id":291,"en":"Did you eat?","kn":"ಊಟ ಮಾಡಿದ್ರಾ?","translit":"oo-ta maa-did-ra"},{"id":292,"en":"Let's eat","kn":"ಊಟ ಮಾಡೋಣ","translit":"oo-ta maa-do-na"},{"id":293,"en":"The water is hot","kn":"ನೀರು ಬಿಸಿಯಾಗಿದೆ","translit":"nee-ru bi-si-ya-gi-de"},{"id":294,"en":"The power is back","kn":"ವಿದ್ಯುತ್ ಬಂದಿದೆ","translit":"vid-yut ban-di-de"},{"id":295,"en":"Throw the trash","kn":"ಕಸವನ್ನು ಎಸೆಯಿರಿ","translit":"ka-sa-van-nu e-se-yi-ri"},{"id":296,"en":"I have work","kn":"ನನಗೆ ಕೆಲಸವಿದೆ","translit":"na-na-ge ke-la-sa-vi-de"},{"id":297,"en":"What is this smell?","kn":"ಇದು ಯಾವ ವಾಸನೆ?","translit":"i-du yaa-va vaa-sa-ne"},{"id":298,"en":"I am feeling sleepy","kn":"ನನಗೆ ನಿದ್ರೆ ಬರುತ್ತಿದೆ","translit":"na-na-ge nid-re ba-rut-ti-de"},{"id":299,"en":"Turn on the TV","kn":"ಟಿವಿ ಹಾಕಿ","translit":"TV haa-ki"},{"id":300,"en":"It is time to go","kn":"ಹೋಗುವ ಸಮಯವಾಯಿತು","translit":"ho-gu-va sa-ma-ya-va-yi-tu"}]},
-            {"id":"smalltalk","title":"Social Small Talk","icon":"💬","phrases":[{"id":301,"en":"How was your day?","kn":"ನಿಮ್ಮ ದಿನ ಹೇಗಿತ್ತು?","translit":"nim-ma di-na he-git-tu"},{"id":302,"en":"It was good","kn":"ಚೆನ್ನಾಗಿತ್ತು","translit":"chen-na-git-tu"},{"id":303,"en":"What are your hobbies?","kn":"ನಿಮ್ಮ ಹವ್ಯಾಸಗಳೇನು?","translit":"nim-ma ha-vyaa-sa-ga-le-nu"},{"id":304,"en":"I like reading books","kn":"ನನಗೆ ಪುಸ್ತಕಗಳನ್ನು ಓದಲು ಇಷ್ಟ","translit":"na-na-ge pus-ta-ka-ga-lan-nu o-da-lu ish-ta"},{"id":305,"en":"I like music","kn":"ನನಗೆ ಸಂಗೀತ ಇಷ್ಟ","translit":"na-na-ge san-gee-ta ish-ta"},{"id":306,"en":"What movie is this?","kn":"ಇದು ಯಾವ ಸಿನಿಮಾ?","translit":"i-du yaa-va cinema"},{"id":307,"en":"The weather is nice","kn":"ಹವಾಮಾನ ಚೆನ್ನಾಗಿದೆ","translit":"ha-vaa-maa-na chen-na-gi-de"},{"id":308,"en":"It is hot","kn":"ಬಿಸಿಯಾಗಿದೆ","translit":"bi-si-ya-gi-de"},{"id":309,"en":"It is cold","kn":"ಚಳಿಯಾಗಿದೆ","translit":"cha-li-ya-gi-de"},{"id":310,"en":"It is raining","kn":"ಮಳೆ ಬರುತ್ತಿದೆ","translit":"ma-le ba-rut-ti-de"},{"id":311,"en":"I agree","kn":"ನಾನು ಒಪ್ಪುತ್ತೇನೆ","translit":"naa-nu op-put-te-ne"},{"id":312,"en":"I don't agree","kn":"ನಾನು ಒಪ್ಪುವುದಿಲ್ಲ","translit":"naa-nu op-pu-vu-dil-la"},{"id":313,"en":"Really?","kn":"ನಿಜವಾಗಲೂ?","translit":"ni-ja-va-gloo"},{"id":314,"en":"Tell me more","kn":"ಇನ್ನಷ್ಟು ಹೇಳಿ","translit":"in-nash-tu he-li"},{"id":315,"en":"What do you think?","kn":"ನೀವು ಏನು ಯೋಚಿಸುತ್ತೀರಿ?","translit":"nee-vu ye-nu yo-chis-ut-tee-ri"},{"id":316,"en":"It's funny","kn":"ಇದು ತಮಾಷೆಯಾಗಿದೆ","translit":"i-du ta-maa-she-ya-gi-de"},{"id":317,"en":"Be careful","kn":"ಜಾಗರೂಕರಾಗಿರಿ","translit":"jaa-ga-roo-ka-ra-gi-ri"},{"id":318,"en":"What are you doing?","kn":"ನೀವು ಏನು ಮಾಡುತ್ತಿದ್ದೀರಾ?","translit":"nee-vu ye-nu maa-dut-tid-dee-ra"},{"id":319,"en":"I am watching TV","kn":"ನಾನು ಟಿವಿ ನೋಡುತ್ತಿದ್ದೇನೆ","translit":"naa-nu TV no-dut-tid-de-ne"},{"id":320,"en":"I am reading","kn":"ನಾನು ಓದುತ್ತಿದ್ದೇನೆ","translit":"naa-nu o-dut-tid-de-ne"},{"id":321,"en":"How is work?","kn":"ಕೆಲಸ ಹೇಗಿದೆ?","translit":"ke-la-sa he-gi-de"},{"id":322,"en":"Work is good","kn":"ಕೆಲಸ ಚೆನ್ನಾಗಿದೆ","translit":"ke-la-sa chen-na-gi-de"},{"id":323,"en":"What are your plans for the weekend?","kn":"ವಾರಾಂತ್ಯದಲ್ಲಿ ನಿಮ್ಮ ಯೋಜನೆಗಳೇನು?","translit":"vaa-raan-tya-dal-li nim-ma yo-ja-ne-ga-le-nu"},{"id":324,"en":"No plans","kn":"ಯಾವುದೇ ಯೋಜನೆಗಳಿಲ್ಲ","translit":"yaa-vu-de yo-ja-ne-ga-lil-la"},{"id":325,"en":"I will go out with friends","kn":"ನಾನು ಸ್ನೇಹಿತರೊಂದಿಗೆ ಹೊರಗೆ ಹೋಗುತ್ತೇನೆ","translit":"naa-nu sne-hi-ta-ron-di-ge ho-ra-ge ho-gut-te-ne"},{"id":326,"en":"That's interesting","kn":"ಅದು ಆಸಕ್ತಿದಾಯಕವಾಗಿದೆ","translit":"a-du aa-sak-ti-daa-ya-ka-va-gi-de"},{"id":327,"en":"I don't know","kn":"ನನಗೆ ಗೊತ್ತಿಲ್ಲ","translit":"na-na-ge got-til-la"},{"id":328,"en":"Let's go","kn":"ಹೋಗೋಣ","translit":"ho-go-na"},{"id":329,"en":"Are you coming?","kn":"ನೀವು ಬರುತ್ತಿದ್ದೀರಾ?","translit":"nee-vu ba-rut-tid-dee-ra"},{"id":330,"en":"I am coming","kn":"ನಾನು ಬರುತ್ತಿದ್ದೇನೆ","translit":"naa-nu ba-rut-tid-de-ne"},{"id":331,"en":"What's wrong?","kn":"ಏನು ತಪ್ಪಾಗಿದೆ?","translit":"ye-nu tap-pa-gi-de"},{"id":332,"en":"Nothing","kn":"ಏನೂ ಇಲ್ಲ","translit":"ye-noo il-la"},{"id":333,"en":"I have an idea","kn":"ನನ್ನ ಬಳಿ ಒಂದು ಆಲೋಚನೆ ಇದೆ","translit":"nan-na ba-li on-du aa-lo-cha-ne i-de"},{"id":334,"en":"Good idea","kn":"ಒಳ್ಳೆಯ ಆಲೋಚನೆ","translit":"ol-le-ya aa-lo-cha-ne"},{"id":335,"en":"Of course","kn":"ಖಂಡಿತ","translit":"khan-di-ta"},{"id":336,"en":"Exactly","kn":"ಸರಿಯಾಗಿ","translit":"sa-ri-ya-gi"},{"id":337,"en":"Maybe","kn":"ಬಹುಶಃ","translit":"ba-hu-shah"},{"id":338,"en":"I think so","kn":"ನಾನು ಹಾಗೆ ಭಾವಿಸುತ್ತೇನೆ","translit":"naa-nu haa-ge bhaa-vi-sut-te-ne"},{"id":339,"en":"I don't think so","kn":"ನಾನು ಹಾಗೆ ಭಾವಿಸುವುದಿಲ್ಲ","translit":"naa-nu haa-ge bhaa-vi-su-vu-dil-la"},{"id":340,"en":"It seems so","kn":"ಹಾಗೆ ತೋರುತ್ತದೆ","translit":"haa-ge to-rut-ta-de"},{"id":341,"en":"Are you sure?","kn":"ನಿಮಗೆ ಖಚಿತವೇ?","translit":"ni-ma-ge kha-chi-ta-ve"},{"id":342,"en":"I am sure","kn":"ನನಗೆ ಖಚಿತವಾಗಿದೆ","translit":"na-na-ge kha-chi-ta-va-gi-de"},{"id":343,"en":"I forgot","kn":"ನಾನು ಮರೆತುಬಿಟ್ಟೆ","translit":"naa-nu ma-re-tu-bit-te"},{"id":344,"en":"No problem","kn":"ತೊಂದರೆಯಿಲ್ಲ","translit":"ton-da-re-yil-la"},{"id":345,"en":"Don't worry","kn":"ಚಿಂತಿಸಬೇಡಿ","translit":"chin-ti-sa-be-di"},{"id":346,"en":"Hurry up","kn":"ಬೇಗ ಮಾಡಿ","translit":"be-ga maa-di"},{"id":347,"en":"Just a moment","kn":"ಒಂದು ಕ್ಷಣ","translit":"on-du ksha-na"},{"id":348,"en":"I am joking","kn":"ನಾನು ತಮಾಷೆ ಮಾಡುತ್ತಿದ್ದೇನೆ","translit":"naa-nu ta-maa-she maa-dut-tid-de-ne"},{"id":349,"en":"It's beautiful","kn":"ಇದು ಸುಂದರವಾಗಿದೆ","translit":"i-du sun-da-ra-va-gi-de"},{"id":350,"en":"I am lucky","kn":"ನಾನು ಅದೃಷ್ಟಶಾಲಿ","translit":"naa-nu a-drush-ta-shaa-li"}]},
-            {"id":"family","title":"Family & Relationships","icon":"👨‍👩‍👧‍👦","phrases":[{"id":351,"en":"Family","kn":"ಕುಟುಂಬ","translit":"ku-tum-ba"},{"id":352,"en":"Mother","kn":"ಅಮ್ಮ","translit":"am-ma"},{"id":353,"en":"Father","kn":"ಅಪ್ಪ","translit":"ap-pa"},{"id":354,"en":"Parents","kn":"ಪೋಷಕರು","translit":"po-sha-ka-ru"},{"id":355,"en":"Brother","kn":"ಸಹೋದರ","translit":"sa-ho-da-ra"},{"id":356,"en":"Sister","kn":"ಸಹೋದರಿ","translit":"sa-ho-da-ri"},{"id":357,"en":"Elder brother","kn":"ಅಣ್ಣ","translit":"an-na"},{"id":358,"en":"Younger brother","kn":"ತಮ್ಮ","translit":"tam-ma"},{"id":359,"en":"Elder sister","kn":"ಅಕ್ಕ","translit":"ak-ka"},{"id":360,"en":"Younger sister","kn":"ತಂಗಿ","translit":"tan-gi"},{"id":361,"en":"Husband","kn":"ಗಂಡ","translit":"gan-da"},{"id":362,"en":"Wife","kn":"ಹೆಂಡತಿ","translit":"hen-da-ti"},{"id":363,"en":"Son","kn":"ಮಗ","translit":"ma-ga"},{"id":364,"en":"Daughter","kn":"ಮಗಳು","translit":"ma-ga-lu"},{"id":365,"en":"Friend","kn":"ಸ್ನೇಹಿತ","translit":"sne-hi-ta"},{"id":366,"en":"Are you married?","kn":"ನಿಮಗೆ ಮದುವೆಯಾಗಿದೆಯೇ?","translit":"ni-ma-ge ma-du-ve-ya-gi-de-ye"},{"id":367,"en":"I am single","kn":"ನಾನು ಒಬ್ಬಂಟಿ","translit":"naa-nu ob-ban-ti"},{"id":368,"en":"I am married","kn":"ನನಗೆ ಮದುವೆಯಾಗಿದೆ","translit":"na-na-ge ma-du-ve-ya-gi-de"},{"id":369,"en":"Do you have children?","kn":"ನಿಮಗೆ ಮಕ್ಕಳಿದ್ದಾರೆಯೇ?","translit":"ni-ma-ge mak-ka-lid-daa-re-ye"},{"id":370,"en":"How many siblings?","kn":"ಎಷ್ಟು ಸಹೋದರರು?","translit":"esh-tu sa-ho-da-ra-ru"},{"id":371,"en":"Grandfather","kn":"ಅಜ್ಜ","translit":"aj-ja"},{"id":372,"en":"Grandmother","kn":"ಅಜ್ಜಿ","translit":"aj-ji"},{"id":373,"en":"Uncle","kn":"ಚಿಕ್ಕಪ್ಪ / ಮಾವ","translit":"chik-kap-pa / maa-va"},{"id":374,"en":"Aunt","kn":"ಚಿಕ್ಕಮ್ಮ / ಅತ್ತೆ","translit":"chik-kam-ma / at-te"},{"id":375,"en":"Cousin","kn":"ಸಂಬಂಧಿ","translit":"sam-ban-dhi"},{"id":376,"en":"My family","kn":"ನನ್ನ ಕುಟುಂಬ","translit":"nan-na ku-tum-ba"},{"id":377,"en":"This is my friend","kn":"ಇವನು ನನ್ನ ಸ್ನೇಹಿತ","translit":"i-va-nu nan-na sne-hi-ta"},{"id":378,"en":"How is your mother?","kn":"ನಿಮ್ಮ ತಾಯಿ ಹೇಗಿದ್ದಾರೆ?","translit":"nim-ma taa-yi he-gid-daa-re"},{"id":379,"en":"She is fine","kn":"ಅವಳು ಚೆನ್ನಾಗಿದ್ದಾಳೆ","translit":"a-va-lu chen-na-gid-daa-le"},{"id":380,"en":"How is your father?","kn":"ನಿಮ್ಮ ತಂದೆ ಹೇಗಿದ್ದಾರೆ?","translit":"nim-ma tan-de he-gid-daa-re"},{"id":381,"en":"He is fine","kn":"ಅವನು ಚೆನ್ನಾಗಿದ್ದಾನೆ","translit":"a-va-nu chen-na-gid-daa-ne"},{"id":382,"en":"I love my family","kn":"ನಾನು ನನ್ನ ಕುಟುಂಬವನ್ನು ಪ್ರೀತಿಸುತ್ತೇನೆ","translit":"naa-nu nan-na ku-tum-ba-van-nu pree-ti-sut-te-ne"},{"id":383,"en":"Boy","kn":"ಹುಡುಗ","translit":"hu-du-ga"},{"id":384,"en":"Girl","kn":"ಹುಡುಗಿ","translit":"hu-du-gi"},{"id":385,"en":"Man","kn":"ಗಂಡಸು","translit":"gan-da-su"},{"id":386,"en":"Woman","kn":"ಹೆಂಗಸು","translit":"hen-ga-su"},{"id":387,"en":"Child","kn":"ಮಗು","translit":"ma-gu"},{"id":388,"en":"Children","kn":"ಮಕ್ಕಳು","translit":"mak-ka-lu"},{"id":389,"en":"How old is your son?","kn":"ನಿಮ್ಮ ಮಗನಿಗೆ ಎಷ್ಟು ವಯಸ್ಸು?","translit":"nim-ma ma-ga-ni-ge esh-tu va-yas-su"},{"id":390,"en":"My daughter is 5 years old","kn":"ನನ್ನ ಮಗಳಿಗೆ 5 ವರ್ಷ","translit":"nan-na ma-ga-li-ge 5 var-sha"},{"id":391,"en":"We are friends","kn":"ನಾವು ಸ್ನೇಹಿತರು","translit":"naa-vu sne-hi-ta-ru"},{"id":392,"en":"He is my colleague","kn":"ಅವನು ನನ್ನ ಸಹೋದ್ಯೋಗಿ","translit":"a-va-nu nan-na sa-hod-yo-gi"},{"id":393,"en":"She is my neighbor","kn":"ಅವಳು ನನ್ನ ನೆರೆಹೊರೆಯವಳು","translit":"a-va-lu nan-na ne-re-ho-re-ya-va-lu"},{"id":394,"en":"Do you live alone?","kn":"ನೀವು ಒಬ್ಬರೇ ವಾಸಿಸುತ್ತೀರಾ?","translit":"nee-vu ob-ba-re vaa-si-sut-tee-ra"},{"id":395,"en":"I live with my family","kn":"ನಾನು ನನ್ನ ಕುಟುಂಬದೊಂದಿಗೆ ವಾಸಿಸುತ್ತಿದ್ದೇನೆ","translit":"naa-nu nan-na ku-tum-ba-don-di-ge vaa-si-sut-tid-de-ne"},{"id":396,"en":"Happy anniversary!","kn":"ವಿವಾಹ ವಾರ್ಷಿಕೋತ್ಸವದ ಶುಭಾಶಯಗಳು!","translit":"vi-vaa-ha var-shi-kot-sa-va-da shu-bhaa-sha-ya-ga-lu"},{"id":397,"en":"I miss you","kn":"ನೀವು ನೆನಪಾಗುತ್ತಿದ್ದೀರಿ","translit":"nee-vu ne-na-pa-gut-tid-di-ri"},{"id":398,"en":"Give my regards to your family","kn":"ನಿಮ್ಮ ಕುಟುಂಬಕ್ಕೆ ನನ್ನ ನಮಸ್ಕಾರಗಳನ್ನು ತಿಳಿಸಿ","translit":"nim-ma ku-tum-bak-ke nan-na na-mas-kaa-ra-ga-lan-nu ti-li-si"},{"id":399,"en":"Let's meet again","kn":"ಮತ್ತೆ ಭೇಟಿಯಾಗೋಣ","translit":"mat-te bhe-ti-ya-go-na"},{"id":400,"en":"Everyone is fine","kn":"ಎಲ್ಲರೂ ಚೆನ್ನಾಗಿದ್ದಾರೆ","translit":"el-la-roo chen-na-gid-daa-re"}]}
+            {"id":"greetings","title":"Greetings & Introductions","icon":"👋","phrases":[{"id":1,"en":"Hello","kn":"ನಮಸ್ಕಾರ","translit":"na-mas-ka-ra"}]},
+            {"id":"numbers","title":"Numbers & Time","icon":"🔢","phrases":[{"id":51,"en":"One","kn":"ಒಂದು","translit":"on-du"}]},
+            {"id":"directions","title":"Directions & Transport","icon":"🚃","phrases":[{"id":101,"en":"Where is...?","kn":"... ಎಲ್ಲಿದೆ?","translit":"el-li-de"}]},
+            {"id":"eating","title":"Eating Out","icon":"🍽️","phrases":[{"id":151,"en":"Restaurant","kn":"ಉಪಾಹಾರ ಗೃಹ","translit":"u-pa-haa-ra gru-ha"}]},
+            {"id":"shopping","title":"Shopping & Money","icon":"🛍️","phrases":[{"id":201,"en":"How much is this?","kn":"ಇದರ ಬೆಲೆ ಎಷ್ಟು?","translit":"i-da-ra be-le esh-tu"}]},
+            {"id":"home","title":"At Home & Chores","icon":"🏠","phrases":[{"id":251,"en":"House","kn":"ಮನೆ","translit":"ma-ne"}]},
+            {"id":"smalltalk","title":"Social Small Talk","icon":"💬","phrases":[{"id":301,"en":"How was your day?","kn":"ನಿಮ್ಮ ದಿನ ಹೇಗಿತ್ತು?","translit":"nim-ma di-na he-git-tu"}]},
+            {"id":"family","title":"Family & Relationships","icon":"👨‍👩‍👧‍👦","phrases":[{"id":351,"en":"Family","kn":"ಕುಟುಂಬ","translit":"ku-tum-ba"}]}
         ];
-        const triviaData = [ { q: "What is the capital of Karnataka?", a: "Bengaluru (Bangalore)" }, { q: "Which famous waterfalls are known as the 'Niagara of India'?", a: "Gokak Falls" }, { q: "What is the traditional dance form of Karnataka?", a: "Yakshagana" } ];
+        const karnatakaTrivia = [
+            { q: "What is the capital city of Karnataka?", options: ["Mysuru", "Bengaluru", "Mangaluru", "Hubballi"], answer: "Bengaluru" },
+            { q: "Which famous empire had its capital at Hampi?", options: ["Chalukya", "Hoysala", "Vijayanagara", "Rashtrakuta"], answer: "Vijayanagara" },
+            { q: "What is the state animal of Karnataka?", options: ["Tiger", "Lion", "Elephant", "Leopard"], answer: "Elephant" },
+            { q: "The Jog Falls, one of the highest waterfalls in India, is created by which river?", options: ["Kaveri", "Krishna", "Tungabhadra", "Sharavathi"], answer: "Sharavathi" },
+            { q: "Which city in Karnataka is famous for its sandalwood products?", options: ["Bengaluru", "Mysuru", "Belagavi", "Davanagere"], answer: "Mysuru" },
+            { q: "What is the traditional folk dance-drama of Karnataka?", options: ["Kathakali", "Bharatanatyam", "Yakshagana", "Kuchipudi"], answer: "Yakshagana" },
+            { q: "The Gol Gumbaz, known for its incredible whispering gallery, is located in which city?", options: ["Bidar", "Kalaburagi", "Vijayapura", "Raichur"], answer: "Vijayapura" },
+            { q: "Which of these is a famous national park in Karnataka, known for its tiger population?", options: ["Bandipur", "Gir", "Kaziranga", "Sundarbans"], answer: "Bandipur" },
+            { q: "What is the staple food grain of Southern Karnataka?", options: ["Wheat", "Ragi (Finger Millet)", "Bajra", "Maize"], answer: "Ragi (Finger Millet)" },
+            { q: "The ancient university town of Talakad, now buried in sand, is on the banks of which river?", options: ["Sharavathi", "Netravati", "Kaveri", "Tunga"], answer: "Kaveri" },
+            { q: "Which famous Indian scientist and Bharat Ratna recipient was from Karnataka?", options: ["C.V. Raman", "Homi Bhabha", "A.P.J. Abdul Kalam", "S. Chandrasekhar"], answer: "C.V. Raman" },
+            { q: "What is the famous sweet dish from Dharwad known for its unique texture?", options: ["Mysore Pak", "Dharwad Pedha", "Holige", "Chiroti"], answer: "Dharwad Pedha" },
+            { q: "The Karnataka Khadi Gramodyoga Samyukta Sangha in Bengeri is the only unit in India that is authorized to manufacture what?", options: ["Sandalwood Oil", "Indian National Flag", "Mysore Silk Sarees", "Bidriware"], answer: "Indian National Flag" },
+            { q: "Which coastal city in Karnataka is a major port and is known for its beaches?", options: ["Karwar", "Udupi", "Mangaluru", "Gokarna"], answer: "Mangaluru" },
+            { q: "The Hoysala temples at Belur and Halebidu are famous for their intricate what?", options: ["Paintings", "Sculptures", "Inlay work", "Glasswork"], answer: "Sculptures" },
+            { q: "What is the state bird of Karnataka?", options: ["Peacock", "Indian Roller", "Great Hornbill", "Parrot"], answer: "Indian Roller" },
+            { q: "Which mountain range runs parallel to the coast of Karnataka?", options: ["Himalayas", "Vindhyas", "Aravallis", "Western Ghats"], answer: "Western Ghats" },
+            { q: "The festival of 'Kambala' involves which sport?", options: ["Bullock Cart Race", "Cock Fight", "Buffalo Race", "Boat Race"], answer: "Buffalo Race" },
+            { q: "Which city is known as the 'Silicon Valley of India'?", options: ["Hyderabad", "Pune", "Bengaluru", "Chennai"], answer: "Bengaluru" },
+            { q: "The famous Mysore Palace is also known by what name?", options: ["Amba Vilas Palace", "Lalitha Mahal", "Jaganmohan Palace", "Cheluvamba Mansion"], answer: "Amba Vilas Palace" },
+            { q: "Which river is considered the 'Ganges of the South' and is a lifeline for Karnataka?", options: ["Krishna", "Godavari", "Kaveri", "Tungabhadra"], answer: "Kaveri" },
+            { q: "What is 'Bidriware'?", options: ["A type of silk", "A style of painting", "A metal handicraft", "A type of pottery"], answer: "A metal handicraft" },
+            { q: "The highest peak in Karnataka is Mullayanagiri. It is part of which hill range?", options: ["Nandi Hills", "Baba Budangiri", "Chamundi Hills", "Agumbe Ghat"], answer: "Baba Budangiri" },
+            { q: "Which city is famous for the Udupi Krishna Temple and its vegetarian cuisine?", options: ["Mangaluru", "Udupi", "Sringeri", "Dharmasthala"], answer: "Udupi" },
+            { q: "The historical figure Kittur Rani Chennamma is known for her rebellion against whom?", options: ["The Mughals", "The Marathas", "The British", "The Portuguese"], answer: "The British" },
+            { q: "What is the state flower of Karnataka?", options: ["Rose", "Jasmine", "Lotus", "Marigold"], answer: "Lotus" },
+            { q: "The world's second largest monolithic statue, Gommateshwara, is located at which place?", options: ["Hampi", "Shravanabelagola", "Badami", "Aihole"], answer: "Shravanabelagola" },
+            { q: "Which city is known for its unique style of sarees, woven with pure silk and gold zari?", options: ["Ilkal", "Mysuru", "Molakalmuru", "Dharwad"], answer: "Mysuru" },
+            { q: "What is the name of the film industry based in Karnataka?", options: ["Tollywood", "Kollywood", "Sandalwood", "Mollywood"], answer: "Sandalwood" },
+            { q: "The rock-cut cave temples at Badami are dedicated to which deities?", options: ["Shiva & Vishnu", "Brahma & Saraswati", "Ganesha & Kartikeya", "Rama & Sita"], answer: "Shiva & Vishnu" },
+            { q: "Which king of the Ganga Dynasty commissioned the Gommateshwara statue?", options: ["Rachamalla IV", "Chavundaraya", "Butuga II", "Sripurusha"], answer: "Chavundaraya" },
+            { q: "The famous 'Dasara' festival is celebrated with grand procession in which city?", options: ["Bengaluru", "Hassan", "Mysuru", "Shivamogga"], answer: "Mysuru" },
+            { q: "Which region in Karnataka is famous for its coffee plantations?", options: ["Coorg (Kodagu)", "Kolar", "Raichur", "Ballari"], answer: "Coorg (Kodagu)" },
+            { q: "The language 'Tulu' is predominantly spoken in which part of Karnataka?", options: ["North Karnataka", "Coastal Karnataka", "Old Mysore region", "Hyderabad-Karnataka"], answer: "Coastal Karnataka" },
+            { q: "What is the name of the ISRO's satellite tracking centre located near Bengaluru?", options: ["ISTRAC", "SHAR", "VSSC", "SAC"], answer: "ISTRAC" },
+            { q: "Which of these is a famous dish from North Karnataka made from sorghum?", options: ["Akki Rotti", "Jolada Rotti", "Ragi Mudde", "Neer Dosa"], answer: "Jolada Rotti" },
+            { q: "The historical site of Aihole is often called the 'cradle of Indian temple architecture'. It was the capital of which dynasty?", options: ["Hoysala", "Chalukya", "Kadamba", "Ganga"], answer: "Chalukya" },
+            { q: "Which famous writer from Karnataka won the Jnanpith Award for his work 'Mookajjiya Kanasugalu'?", options: ["U.R. Ananthamurthy", "Kuvempu", "Girish Karnad", "K. Shivaram Karanth"], answer: "K. Shivaram Karanth" },
+            { q: "The Lalbagh Botanical Garden in Bengaluru is famous for its what?", options: ["Rose Garden", "Glass House", "Topiary Garden", "Japanese Garden"], answer: "Glass House" },
+            { q: "Which city is considered the 'cradle of banking' in India?", options: ["Bengaluru", "Mangaluru", "Udupi", "Mysuru"], answer: "Udupi" },
+            { q: "The river Tungabhadra is a major tributary of which river?", options: ["Godavari", "Krishna", "Kaveri", "Mahanadi"], answer: "Krishna" },
+            { q: "What is the traditional attire for women in the Kodagu (Coorg) region?", options: ["Ghagra Choli", "Salwar Kameez", "Saree (draped in a unique style)", "Langa Voni"], answer: "Saree (draped in a unique style)" },
+            { q: "The 'Hoysala' emblem depicts a man fighting what animal?", options: ["A lion", "An elephant", "A tiger", "A boar"], answer: "A tiger" },
+            { q: "Which city is a major hub for the iron and steel industry in Karnataka?", options: ["Davanagere", "Ballari (Bellary)", "Tumakuru", "Chitradurga"], answer: "Ballari (Bellary)" },
+            { q: "The 'Karaga' is a famous and ancient festival celebrated in which city?", options: ["Mysuru", "Bengaluru", "Kolar", "Hassan"], answer: "Bengaluru" },
+            { q: "Which type of painting style, characterized by the use of gold foil, originated in Karnataka?", options: ["Madhubani", "Warli", "Tanjore", "Mysore Painting"], answer: "Mysore Painting" },
+            { q: "The 'Nagarahole National Park' is also known by what other name?", options: ["Rajiv Gandhi National Park", "Indira Gandhi National Park", "Jawaharlal Nehru National Park", "Sanjay Gandhi National Park"], answer: "Rajiv Gandhi National Park" },
+            { q: "Which famous dam is built across the Tungabhadra river near Hosapete?", options: ["Krishna Raja Sagara Dam", "Tungabhadra Dam", "Almatti Dam", "Linganamakki Dam"], answer: "Tungabhadra Dam" },
+            { q: "The founder of the Vijayanagara Empire, Harihara I, belonged to which dynasty?", options: ["Sangama", "Saluva", "Tuluva", "Aravidu"], answer: "Sangama" },
+            { q: "What is 'Bisi Bele Bath'?", options: ["A sweet dish", "A type of bread", "A spicy lentil rice dish", "A yogurt-based curry"], answer: "A spicy lentil rice dish" }
+        ];
 
         async function seedDatabase() {
             const modulesInDB = await getAllData('modules');
             if (modulesInDB.length === 0) {
                 console.log("Seeding database with new module data...");
                 for (const module of seedModules) {
-                    // This function now cleans the data as it adds it.
                     const cleanedPhrases = module.phrases.map(p => {
                         const kn_raw = p.kn || '';
                         const parts = kn_raw.split('(');
                         const kn_text = parts[0].trim();
-                        // The translit is already provided, so no need to parse it from the kn field.
                         return { ...p, kn: kn_text };
                     });
                     await addOrUpdate('modules', { ...module, phrases: cleanedPhrases });
@@ -269,6 +309,8 @@
         async function renderDashboard() {
             const modulesGrid = document.getElementById('modules-grid');
             const modules = await getAllData('modules');
+            modules.sort((a, b) => moduleOrder.indexOf(a.id) - moduleOrder.indexOf(b.id));
+
             modulesGrid.innerHTML = '';
             modules.forEach(module => {
                 const card = document.createElement('div');
@@ -382,9 +424,9 @@
         }
         
         function showTrivia() {
-            const trivia = triviaData[Math.floor(Math.random() * triviaData.length)];
+            const trivia = karnatakaTrivia[Math.floor(Math.random() * karnatakaTrivia.length)];
             const modal = document.getElementById('trivia-modal');
-            modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center"><h3 class="text-lg font-bold mb-2">Did you know?</h3><p class="mb-2">${trivia.q}</p><p class="font-bold text-emerald-600 mb-4">${trivia.a}</p><button id="trivia-close" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded">Continue</button></div>`;
+            modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center"><h3 class="text-lg font-bold mb-2">Did you know?</h3><p class="mb-2">${trivia.q}</p><p class="font-bold text-emerald-600 mb-4">${trivia.answer}</p><button id="trivia-close" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded">Continue</button></div>`;
             modal.classList.remove('hidden');
             modal.querySelector('#trivia-close').addEventListener('click', () => { modal.classList.add('hidden'); renderDashboard(); });
         }
@@ -423,13 +465,37 @@
         }
         function showFlashcard() { flashcardActivity.classList.remove('hidden'); isFlipped = false; const phrase = currentModule.lessonPhrases[currentPhraseIndex]; drawFlashcard(phrase, isFlipped); }
         
-        function speakTTS(phrase) {
-            if ('speechSynthesis' in window && phrase && phrase.kn) {
+        async function speakTTS(phrase) {
+            if (!GOOGLE_API_KEY || GOOGLE_API_KEY === "PASTE_YOUR_API_KEY_HERE") {
+                console.warn("Google API Key not set. Using browser's default TTS.");
                 const utterance = new SpeechSynthesisUtterance(phrase.kn);
                 utterance.lang = 'kn-IN';
-                const kannadaVoice = window.speechSynthesis.getVoices().find(v => v.lang === 'kn-IN');
-                if (kannadaVoice) utterance.voice = kannadaVoice;
                 window.speechSynthesis.speak(utterance);
+                return;
+            }
+
+            const ttsApiUrl = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${GOOGLE_API_KEY}`;
+            const requestBody = {
+                input: { text: phrase.kn },
+                voice: { languageCode: 'kn-IN', name: 'kn-IN-Wavenet-A' }, // Female voice
+                audioConfig: { audioEncoding: 'MP3' }
+            };
+
+            try {
+                const response = await fetch(ttsApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                const data = await response.json();
+                if (data.audioContent) {
+                    const audio = new Audio("data:audio/mp3;base64," + data.audioContent);
+                    audio.play();
+                }
+            } catch (error) {
+                console.error("Google TTS Error:", error);
+                showMessage("Could not play high-quality audio. Please check API key and configuration.");
             }
         }
 
@@ -451,9 +517,16 @@
         if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 
         // --- GAME LOGIC ---
-        const gameCanvas = document.getElementById('game-canvas');
-        const gameCtx = gameCanvas.getContext('2d');
+        const gameContainer = document.getElementById('game-container');
         let activeGame = null, gameLoopId = null, timerIntervalId = null, gameState = {};
+
+        function exitGame() {
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
+            if (timerIntervalId) clearInterval(timerIntervalId);
+            activeGame = null;
+            renderDashboard();
+        }
+
         class Card {
             constructor(id, text, type, x, y, width, height) { this.id = id; this.text = text; this.type = type; this.x = x; this.y = y; this.width = width; this.height = height; this.state = 'hidden'; }
             draw(ctx) {
@@ -464,21 +537,130 @@
             isClicked(mx, my) { return mx > this.x && mx < this.x + this.width && my > this.y && my < this.y + this.height; }
         }
         async function getPhrasesForGame(count) { const allModules = await getAllData('modules'); const allPhrases = allModules.flatMap(m => m.phrases).filter(p => p.en && p.kn); if (allPhrases.length < count) { showMessage(`You need at least ${count} phrases to play.`); return []; } return allPhrases.sort(() => 0.5 - Math.random()).slice(0, count); }
-        function exitGame() { if (gameLoopId) cancelAnimationFrame(gameLoopId); if (timerIntervalId) clearInterval(timerIntervalId); activeGame = null; renderDashboard(); }
-        function gameLoop() { gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height); if (gameState.cards) gameState.cards.forEach(card => card.draw(gameCtx)); if (!gameState.gameOver) gameLoopId = requestAnimationFrame(gameLoop); }
-        function updateTimer() { gameState.timeLeft--; document.getElementById('game-timer').textContent = `Time: ${gameState.timeLeft}s`; if (gameState.timeLeft <= 0) { gameState.gameOver = true; clearInterval(timerIntervalId); showMessage(`Time's up! Final Score: ${gameState.score}`); exitGame(); } }
-        function checkWinCondition() { const allMatched = gameState.cards.every(c => c.state === 'matched'); if (allMatched) { gameState.gameOver = true; gameState.score += activeGame === 'SpeedMatch' ? 5 : gameState.timeLeft; setTimeout(() => { showMessage(`You won! Final Score: ${gameState.score}`); exitGame(); }, 500); } }
-        function setupGameCanvas() { gameCanvas.width = gameCanvas.offsetWidth; gameCanvas.height = gameCanvas.offsetHeight; }
-        async function startSpeedMatchGame() { const phrases = await getPhrasesForGame(8); if (phrases.length === 0) return; activeGame = 'SpeedMatch'; document.getElementById('game-title').textContent = 'Speed Match'; showView('game'); setupGameCanvas(); gameState = { cards: [], selected: [], score: 0, timeLeft: 60, gameOver: false }; document.getElementById('game-score').textContent = 'Score: 0'; document.getElementById('game-timer').textContent = 'Time: 60s'; let cardData = []; phrases.forEach(p => { cardData.push({ id: p.id, text: p.en, type: 'en' }); cardData.push({ id: p.id, text: p.kn, type: 'kn' }); }); cardData.sort(() => 0.5 - Math.random()); const cols = 4, rows = 4; const cardWidth = (gameCanvas.width - (cols + 1) * 10) / cols; const cardHeight = (gameCanvas.height - (rows + 1) * 10) / rows; for (let i = 0; i < cardData.length; i++) { const row = Math.floor(i / cols), col = i % cols; const x = col * (cardWidth + 10) + 10, y = row * (cardHeight + 10) + 10; gameState.cards.push(new Card(cardData[i].id, cardData[i].text, cardData[i].type, x, y, cardWidth, cardHeight)); } timerIntervalId = setInterval(updateTimer, 1000); gameLoopId = requestAnimationFrame(gameLoop); }
-        function handleSpeedMatchClick(e) { if (gameState.gameOver || gameState.selected.length === 2) return; const rect = gameCanvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left, mouseY = e.clientY - rect.top; for (const card of gameState.cards) { if (card.state === 'hidden' && card.isClicked(mouseX, mouseY)) { card.state = 'revealed'; gameState.selected.push(card); break; } } if (gameState.selected.length === 2) { const [c1, c2] = gameState.selected; if (c1.id === c2.id) { c1.state = 'matched'; c2.state = 'matched'; gameState.score += 10; document.getElementById('game-score').textContent = `Score: ${gameState.score}`; gameState.selected = []; checkWinCondition(); } else { setTimeout(() => { c1.state = 'hidden'; c2.state = 'hidden'; gameState.selected = []; }, 500); } } }
-        async function startMemoryGridGame() { const phrases = await getPhrasesForGame(8); if (phrases.length === 0) return; activeGame = 'MemoryGrid'; document.getElementById('game-title').textContent = 'Memory Grid'; showView('game'); setupGameCanvas(); gameState = { cards: [], phase: 'study', timeLeft: 60, score: 0, gameOver: false, studyTime: 5 }; document.getElementById('game-score').textContent = 'Score: 0'; document.getElementById('game-timer').textContent = 'Memorize!'; const cols = 4, rows = 2; const cardWidth = (gameCanvas.width - (cols + 1) * 10) / cols; const cardHeight = (gameCanvas.height - (rows + 1) * 10) / rows; for (let i = 0; i < phrases.length; i++) { const row = Math.floor(i / cols), col = i % cols; const x = col * (cardWidth + 10) + 10, y = row * (cardHeight + 10) + 10; const card = new Card(phrases[i].id, phrases[i].kn, 'kn', x, y, cardWidth, cardHeight); card.phrase = phrases[i]; card.state = 'revealed'; gameState.cards.push(card); } setTimeout(() => { gameState.phase = 'recall'; gameState.cards.forEach(c => c.state = 'hidden'); timerIntervalId = setInterval(updateTimer, 1000); }, gameState.studyTime * 1000); gameLoopId = requestAnimationFrame(gameLoop); }
-        async function handleMemoryGridClick(e) { if (gameState.gameOver || gameState.phase !== 'recall') return; const rect = gameCanvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left, mouseY = e.clientY - rect.top; for (const card of gameState.cards) { if (card.state === 'hidden' && card.isClicked(mouseX, mouseY)) { const userAnswer = await showPrompt(`What is the English for "${card.text}"?`); if (userAnswer && userAnswer.toLowerCase().trim() === card.phrase.en.toLowerCase().trim()) { card.state = 'matched'; gameState.score += 5; } else { gameState.score -= 2; } document.getElementById('game-score').textContent = `Score: ${gameState.score}`; checkWinCondition(); break; } } }
         
+        function gameLoop() { 
+            const gameCanvas = gameContainer.querySelector('#game-canvas');
+            if (!gameCanvas) return;
+            const gameCtx = gameCanvas.getContext('2d');
+            gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height); 
+            if (gameState.cards) gameState.cards.forEach(card => card.draw(gameCtx)); 
+            if (!gameState.gameOver) gameLoopId = requestAnimationFrame(gameLoop); 
+        }
+        function updateTimer() { gameState.timeLeft--; gameContainer.querySelector('#game-timer').textContent = `Time: ${gameState.timeLeft}s`; if (gameState.timeLeft <= 0) { gameState.gameOver = true; clearInterval(timerIntervalId); showMessage(`Time's up! Final Score: ${gameState.score}`); exitGame(); } }
+        function checkWinCondition() { const allMatched = gameState.cards.every(c => c.state === 'matched'); if (allMatched) { gameState.gameOver = true; gameState.score += activeGame === 'SpeedMatch' ? 5 : gameState.timeLeft; setTimeout(() => { showMessage(`You won! Final Score: ${gameState.score}`); exitGame(); }, 500); } }
+        function setupGameCanvas() { 
+            gameContainer.innerHTML = `
+                <div class="flex justify-around mb-2 text-lg font-bold">
+                    <div id="game-timer">Time: 60s</div>
+                    <div id="game-score">Score: 0</div>
+                </div>
+                <canvas id="game-canvas" class="w-full h-96 rounded-lg bg-gray-100 cursor-pointer"></canvas>
+            `;
+            const gameCanvas = gameContainer.querySelector('#game-canvas');
+            gameCanvas.width = gameCanvas.offsetWidth; 
+            gameCanvas.height = gameCanvas.offsetHeight; 
+            gameCanvas.addEventListener('click', (e) => { if (activeGame === 'SpeedMatch') handleSpeedMatchClick(e); else if (activeGame === 'MemoryGrid') handleMemoryGridClick(e); });
+        }
+        async function startSpeedMatchGame() { const phrases = await getPhrasesForGame(8); if (phrases.length === 0) return; activeGame = 'SpeedMatch'; document.getElementById('game-title').textContent = 'Speed Match'; showView('game'); setupGameCanvas(); const gameCanvas = gameContainer.querySelector('#game-canvas'); gameState = { cards: [], selected: [], score: 0, timeLeft: 60, gameOver: false }; gameContainer.querySelector('#game-score').textContent = 'Score: 0'; gameContainer.querySelector('#game-timer').textContent = 'Time: 60s'; let cardData = []; phrases.forEach(p => { cardData.push({ id: p.id, text: p.en, type: 'en' }); cardData.push({ id: p.id, text: p.kn, type: 'kn' }); }); cardData.sort(() => 0.5 - Math.random()); const cols = 4, rows = 4; const cardWidth = (gameCanvas.width - (cols + 1) * 10) / cols; const cardHeight = (gameCanvas.height - (rows + 1) * 10) / rows; for (let i = 0; i < cardData.length; i++) { const row = Math.floor(i / cols), col = i % cols; const x = col * (cardWidth + 10) + 10, y = row * (cardHeight + 10) + 10; gameState.cards.push(new Card(cardData[i].id, cardData[i].text, cardData[i].type, x, y, cardWidth, cardHeight)); } timerIntervalId = setInterval(updateTimer, 1000); gameLoopId = requestAnimationFrame(gameLoop); }
+        function handleSpeedMatchClick(e) { if (gameState.gameOver || gameState.selected.length === 2) return; const gameCanvas = gameContainer.querySelector('#game-canvas'); const rect = gameCanvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left, mouseY = e.clientY - rect.top; for (const card of gameState.cards) { if (card.state === 'hidden' && card.isClicked(mouseX, mouseY)) { card.state = 'revealed'; gameState.selected.push(card); break; } } if (gameState.selected.length === 2) { const [c1, c2] = gameState.selected; if (c1.id === c2.id) { c1.state = 'matched'; c2.state = 'matched'; gameState.score += 10; gameContainer.querySelector('#game-score').textContent = `Score: ${gameState.score}`; gameState.selected = []; checkWinCondition(); } else { setTimeout(() => { c1.state = 'hidden'; c2.state = 'hidden'; gameState.selected = []; }, 500); } } }
+        async function startMemoryGridGame() { const phrases = await getPhrasesForGame(8); if (phrases.length === 0) return; activeGame = 'MemoryGrid'; document.getElementById('game-title').textContent = 'Memory Grid'; showView('game'); setupGameCanvas(); const gameCanvas = gameContainer.querySelector('#game-canvas'); gameState = { cards: [], phase: 'study', timeLeft: 60, score: 0, gameOver: false, studyTime: 5 }; gameContainer.querySelector('#game-score').textContent = 'Score: 0'; gameContainer.querySelector('#game-timer').textContent = 'Memorize!'; const cols = 4, rows = 2; const cardWidth = (gameCanvas.width - (cols + 1) * 10) / cols; const cardHeight = (gameCanvas.height - (rows + 1) * 10) / rows; for (let i = 0; i < phrases.length; i++) { const row = Math.floor(i / cols), col = i % cols; const x = col * (cardWidth + 10) + 10, y = row * (cardHeight + 10) + 10; const card = new Card(phrases[i].id, phrases[i].kn, 'kn', x, y, cardWidth, cardHeight); card.phrase = phrases[i]; card.state = 'revealed'; gameState.cards.push(card); } setTimeout(() => { gameState.phase = 'recall'; gameState.cards.forEach(c => c.state = 'hidden'); timerIntervalId = setInterval(updateTimer, 1000); }, gameState.studyTime * 1000); gameLoopId = requestAnimationFrame(gameLoop); }
+        async function handleMemoryGridClick(e) { if (gameState.gameOver || gameState.phase !== 'recall') return; const gameCanvas = gameContainer.querySelector('#game-canvas'); const rect = gameCanvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left, mouseY = e.clientY - rect.top; for (const card of gameState.cards) { if (card.state === 'hidden' && card.isClicked(mouseX, mouseY)) { const userAnswer = await showPrompt(`What is the English for "${card.text}"?`); if (userAnswer && userAnswer.toLowerCase().trim() === card.phrase.en.toLowerCase().trim()) { card.state = 'matched'; gameState.score += 5; } else { gameState.score -= 2; } gameContainer.querySelector('#game-score').textContent = `Score: ${gameState.score}`; checkWinCondition(); break; } } }
+
+        // --- TRIVIA GAME LOGIC ---
+        let triviaState = {};
+
+        function startTriviaGame() {
+            activeGame = 'Trivia';
+            document.getElementById('game-title').textContent = 'Karnataka Trivia';
+            showView('game');
+
+            const shuffledTrivia = [...karnatakaTrivia].sort(() => 0.5 - Math.random());
+            triviaState = {
+                questions: shuffledTrivia.slice(0, 3),
+                currentQuestionIndex: 0,
+                score: 0
+            };
+
+            renderTriviaQuestion();
+        }
+        
+        function renderTriviaQuestion() {
+            if (triviaState.currentQuestionIndex >= triviaState.questions.length) {
+                showMessage(`Trivia Complete! Your score: ${triviaState.score} / ${triviaState.questions.length}`);
+                exitGame();
+                return;
+            }
+
+            const questionData = triviaState.questions[triviaState.currentQuestionIndex];
+            gameContainer.innerHTML = `
+                <div class="text-center mb-4">
+                    <p class="text-lg font-semibold">${questionData.q}</p>
+                </div>
+                <div id="trivia-options" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    ${questionData.options.map(opt => `<button class="trivia-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt}</button>`).join('')}
+                </div>
+                <div class="mt-4 text-center font-bold text-lg">Score: ${triviaState.score}</div>
+            `;
+
+            document.querySelectorAll('.trivia-option').forEach(button => {
+                button.addEventListener('click', handleTriviaAnswer);
+            });
+        }
+
+        function handleTriviaAnswer(e) {
+            const selectedOption = e.target;
+            const questionData = triviaState.questions[triviaState.currentQuestionIndex];
+            const isCorrect = selectedOption.textContent === questionData.answer;
+
+            document.querySelectorAll('.trivia-option').forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === questionData.answer) {
+                    btn.classList.add('correct-answer');
+                }
+            });
+
+            if (isCorrect) {
+                triviaState.score++;
+                selectedOption.classList.add('correct-answer');
+            } else {
+                selectedOption.classList.add('incorrect-answer');
+            }
+
+            triviaState.currentQuestionIndex++;
+            setTimeout(renderTriviaQuestion, 1500);
+        }
+
         // --- AUTHOR MODE & MODALS ---
         let mediaRecorder;
         let audioChunks = [];
 
-        async function renderAuthorEditor() { const editor = document.getElementById('author-mode-view'); editor.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Author Mode</h2><button id="exit-author-mode-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Exit</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><button id="import-json-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Import JSON</button><input type="file" id="json-file-input" class="hidden" accept=".json"><button id="export-json-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Export JSON</button></div><h3 class="text-xl font-bold mb-2">Edit Modules & Phrases</h3><div id="author-content-editor" class="space-y-4"></div><button id="add-module-btn" class="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">Add New Module</button><div class="mt-6 border-t pt-4"><h3 class="text-xl font-bold mb-2 text-red-600">Danger Zone</h3><button id="reset-progress-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Reset All Progress</button></div>`; const contentEditor = document.getElementById('author-content-editor'); const modules = await getAllData('modules'); contentEditor.innerHTML = ''; modules.forEach(module => { const container = document.createElement('div'); container.className = 'p-4 border rounded-lg'; container.innerHTML = `<div class="flex justify-between items-center mb-2"><input class="text-xl font-bold border-b-2" value="${module.title}" data-module-id="${module.id}" data-field="title" /><input class="w-12 text-center border-b-2" value="${module.icon}" data-module-id="${module.id}" data-field="icon" /></div><div class="phrases-container space-y-2">${module.phrases.map((p, i) => `<div class="grid grid-cols-6 gap-2 items-center p-2 bg-gray-50 rounded"><input class="border rounded px-2 py-1" placeholder="English" value="${p.en}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="en" /><input class="border rounded px-2 py-1" placeholder="Kannada" value="${p.kn}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="kn" /><input class="border rounded px-2 py-1 col-span-2" placeholder="Transliteration" value="${p.translit || ''}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="translit" />${p.audioData ? `<audio controls class="w-24 h-8" src="${p.audioData}"></audio>` : `<div class="w-24 h-8"></div>`}<div class="flex items-center gap-2"><button class="text-xl" data-record-btn data-module-id="${module.id}" data-phrase-index="${i}">🎤</button><button class="text-red-500 hover:font-bold" data-delete-btn data-module-id="${module.id}" data-phrase-index="${i}">X</button></div></div>`).join('')}</div><button class="mt-2 text-blue-500 hover:font-bold" data-add-phrase-btn data-module-id="${module.id}">Add Phrase</button>`; contentEditor.appendChild(container); }); contentEditor.querySelectorAll('input').forEach(input => input.addEventListener('change', handleAuthorInputChange)); contentEditor.querySelectorAll('[data-add-phrase-btn]').forEach(btn => btn.addEventListener('click', () => addPhrase(btn.dataset.moduleId))); contentEditor.querySelectorAll('[data-delete-btn]').forEach(btn => btn.addEventListener('click', () => deletePhrase(btn.dataset.moduleId, btn.dataset.phraseIndex))); contentEditor.querySelectorAll('[data-record-btn]').forEach(btn => btn.addEventListener('click', (e) => toggleRecording(e.target, btn.dataset.moduleId, btn.dataset.phraseIndex))); document.getElementById('exit-author-mode-btn').addEventListener('click', renderDashboard); document.getElementById('add-module-btn').addEventListener('click', async () => { const title = await showPrompt("Enter new module title:"); if (title) { const newModule = { id: title.toLowerCase().replace(/\s+/g, '-'), title, icon: '✨', phrases: [] }; await addOrUpdate('modules', newModule); renderAuthorEditor(); } }); document.getElementById('export-json-btn').addEventListener('click', exportToJson); const jsonFileInput = document.getElementById('json-file-input'); document.getElementById('import-json-btn').addEventListener('click', () => jsonFileInput.click()); jsonFileInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async (re) => { try { const data = JSON.parse(re.target.result); if (data.modules && Array.isArray(data.modules)) { for (const module of data.modules) await addOrUpdate('modules', module); } if (data.userData) await addOrUpdate('userData', data.userData); showMessage('Data imported successfully!'); renderAuthorEditor(); } catch (err) { showMessage('Error importing JSON: ' + err.message); } }; reader.readAsText(file); }); document.getElementById('reset-progress-btn').addEventListener('click', resetAllProgress); }
+        async function renderAuthorEditor() { 
+            const editor = document.getElementById('author-mode-view'); 
+            editor.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Author Mode</h2><button id="exit-author-mode-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Exit</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><button id="import-json-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Import JSON</button><input type="file" id="json-file-input" class="hidden" accept=".json"><button id="export-json-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Export JSON</button></div><h3 class="text-xl font-bold mb-2">Edit Modules & Phrases</h3><div id="author-content-editor" class="space-y-4"></div><button id="add-module-btn" class="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">Add New Module</button><div class="mt-6 border-t pt-4"><h3 class="text-xl font-bold mb-2 text-red-600">Danger Zone</h3><button id="reset-progress-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Reset All Progress</button></div>`; 
+            const contentEditor = document.getElementById('author-content-editor'); 
+            const modules = await getAllData('modules'); 
+            modules.sort((a, b) => moduleOrder.indexOf(a.id) - moduleOrder.indexOf(b.id));
+
+            contentEditor.innerHTML = ''; 
+            modules.forEach(module => { 
+                const container = document.createElement('div'); 
+                container.className = 'p-4 border rounded-lg'; 
+                container.innerHTML = `<div class="flex justify-between items-center mb-2"><input class="text-xl font-bold border-b-2" value="${module.title}" data-module-id="${module.id}" data-field="title" /><input class="w-12 text-center border-b-2" value="${module.icon}" data-module-id="${module.id}" data-field="icon" /></div><div class="phrases-container space-y-2">${module.phrases.map((p, i) => `<div id="author-phrase-${module.id}-${i}" class="grid grid-cols-6 gap-2 items-center p-2 bg-gray-50 rounded"><input class="border rounded px-2 py-1" placeholder="English" value="${p.en}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="en" /><input class="border rounded px-2 py-1" placeholder="Kannada" value="${p.kn}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="kn" /><input class="border rounded px-2 py-1 col-span-2" placeholder="Transliteration" value="${p.translit || ''}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="translit" />${p.audioData ? `<audio controls class="w-24 h-8" src="${p.audioData}"></audio>` : `<div class="w-24 h-8 audio-placeholder"></div>`}<div class="flex items-center gap-2"><button class="text-xl" data-record-btn data-module-id="${module.id}" data-phrase-index="${i}">🎤</button><button class="text-red-500 hover:font-bold" data-delete-btn data-module-id="${module.id}" data-phrase-index="${i}">X</button></div></div>`).join('')}</div><button class="mt-2 text-blue-500 hover:font-bold" data-add-phrase-btn data-module-id="${module.id}">Add Phrase</button>`; 
+                contentEditor.appendChild(container); 
+            }); 
+            contentEditor.querySelectorAll('input').forEach(input => input.addEventListener('change', handleAuthorInputChange)); 
+            contentEditor.querySelectorAll('[data-add-phrase-btn]').forEach(btn => btn.addEventListener('click', () => addPhrase(btn.dataset.moduleId))); 
+            contentEditor.querySelectorAll('[data-delete-btn]').forEach(btn => btn.addEventListener('click', () => deletePhrase(btn.dataset.moduleId, btn.dataset.phraseIndex))); 
+            contentEditor.querySelectorAll('[data-record-btn]').forEach(btn => btn.addEventListener('click', (e) => toggleRecording(e.target, btn.dataset.moduleId, btn.dataset.phraseIndex))); 
+            document.getElementById('exit-author-mode-btn').addEventListener('click', renderDashboard); 
+            document.getElementById('add-module-btn').addEventListener('click', async () => { const title = await showPrompt("Enter new module title:"); if (title) { const newModule = { id: title.toLowerCase().replace(/\s+/g, '-'), title, icon: '✨', phrases: [] }; await addOrUpdate('modules', newModule); renderAuthorEditor(); } }); 
+            document.getElementById('export-json-btn').addEventListener('click', exportToJson); 
+            const jsonFileInput = document.getElementById('json-file-input'); 
+            document.getElementById('import-json-btn').addEventListener('click', () => jsonFileInput.click()); 
+            jsonFileInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async (re) => { try { const data = JSON.parse(re.target.result); if (data.modules && Array.isArray(data.modules)) { for (const module of data.modules) await addOrUpdate('modules', module); } if (data.userData) await addOrUpdate('userData', data.userData); showMessage('Data imported successfully!'); renderAuthorEditor(); } catch (err) { showMessage('Error importing JSON: ' + err.message); } }; reader.readAsText(file); }); 
+            document.getElementById('reset-progress-btn').addEventListener('click', resetAllProgress); 
+        }
+
         async function toggleRecording(button, moduleId, phraseIndex) {
             if (mediaRecorder && mediaRecorder.state === "recording") {
                 mediaRecorder.stop();
@@ -501,7 +683,23 @@
                             const module = await getData('modules', moduleId);
                             module.phrases[phraseIndex].audioData = base64String;
                             await addOrUpdate('modules', module);
-                            renderAuthorEditor();
+                            
+                            const phraseElement = document.getElementById(`author-phrase-${moduleId}-${phraseIndex}`);
+                            if (phraseElement) {
+                                const placeholder = phraseElement.querySelector('.audio-placeholder');
+                                const existingAudio = phraseElement.querySelector('audio');
+                                
+                                const newAudio = document.createElement('audio');
+                                newAudio.controls = true;
+                                newAudio.className = 'w-24 h-8';
+                                newAudio.src = base64String;
+
+                                if (placeholder) {
+                                    placeholder.replaceWith(newAudio);
+                                } else if (existingAudio) {
+                                    existingAudio.replaceWith(newAudio);
+                                }
+                            }
                         };
                         stream.getTracks().forEach(track => track.stop());
                     });
@@ -512,7 +710,7 @@
             }
         }
         async function handleAuthorInputChange(e) { const { moduleId, field, phraseIndex } = e.target.dataset; const module = await getData('modules', moduleId); if (phraseIndex) module.phrases[parseInt(phraseIndex)][field] = e.target.value; else module[field] = e.target.value; await addOrUpdate('modules', module); }
-        async function addPhrase(moduleId) { const module = await getData('modules', moduleId); const newId = module.phrases.length > 0 ? Math.max(...module.phrases.map(p => p.id)) + 1 : Date.now(); module.phrases.push({ id: newId, en: '', kn: '', translit: '' }); await addOrUpdate('modules', module); renderAuthorEditor(); }
+        async function addPhrase(moduleId) { const module = await getData('modules',moduleId); const newId = module.phrases.length > 0 ? Math.max(...module.phrases.map(p => p.id)) + 1 : Date.now(); module.phrases.push({ id: newId, en: '', kn: '', translit: '' }); await addOrUpdate('modules', module); renderAuthorEditor(); }
         async function deletePhrase(moduleId, phraseIndex) { const confirmed = await showConfirm('Are you sure?'); if (confirmed) { const module = await getData('modules', moduleId); module.phrases.splice(phraseIndex, 1); await addOrUpdate('modules', module); renderAuthorEditor(); } }
         async function exportToJson() { const exportData = { modules: await getAllData('modules'), userData: await getData('userData', 'profile') }; const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2)); const a = document.createElement('a'); a.href = dataStr; a.download = "kbb_export.json"; a.click(); }
         async function resetAllProgress() { const confirmed = await showConfirm("Are you sure you want to reset ALL progress? This cannot be undone."); if (confirmed) { await clearStore('userData'); await clearStore('srs'); await clearStore('progressLog'); await addOrUpdate('userData', { key: 'profile', name: 'Cara', streak: 0, wordsLearned: [], accuracy: { correct: 0, total: 0 } }); showMessage("All progress has been reset."); renderDashboard(); } }
@@ -520,47 +718,50 @@
         function showConfirm(message) { return new Promise(resolve => { const modal = document.getElementById('confirm-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center">${message}</p><div class="flex justify-end space-x-4"><button id="confirm-no-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">No</button><button id="confirm-yes-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Yes</button></div></div>`; modal.classList.remove('hidden'); modal.querySelector('#confirm-yes-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(true); }); modal.querySelector('#confirm-no-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(false); }); }); }
         function showPrompt(text) { return new Promise(resolve => { const modal = document.getElementById('prompt-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96"><p class="mb-4 text-center">${text}</p><input id="prompt-input" class="w-full p-2 border rounded mb-4"><div class="flex justify-end space-x-2"><button id="prompt-cancel" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Cancel</button><button id="prompt-ok" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div></div>`; modal.classList.remove('hidden'); const input = modal.querySelector('#prompt-input'); input.focus(); modal.querySelector('#prompt-ok').addEventListener('click', () => { modal.classList.add('hidden'); resolve(input.value); }); modal.querySelector('#prompt-cancel').addEventListener('click', () => { modal.classList.add('hidden'); resolve(null); }); input.addEventListener('keyup', (e) => { if (e.key === 'Enter') modal.querySelector('#prompt-ok').click(); }); }); }
         
-        await initDB();
-        await seedDatabase();
-        await renderDashboard();
-        
-        document.getElementById('exit-game-btn').addEventListener('click', exitGame);
-        document.getElementById('speed-match-btn').addEventListener('click', startSpeedMatchGame);
-        document.getElementById('memory-grid-btn').addEventListener('click', startMemoryGridGame);
-        
-        flashcardCanvas.addEventListener('click', () => { isFlipped = !isFlipped; const phrase = currentModule.lessonPhrases[currentPhraseIndex-1]; drawFlashcard(phrase, isFlipped); if (isFlipped) speak(phrase); });
-        document.getElementById('flashcard-right').addEventListener('click', () => { updateProgress(true, currentModule.lessonPhrases[currentPhraseIndex-1].id); nextActivity(); });
-        document.getElementById('flashcard-wrong').addEventListener('click', () => { updateProgress(false, currentModule.lessonPhrases[currentPhraseIndex-1].id); nextActivity(); });
-        
-        gameCanvas.addEventListener('click', (e) => { if (activeGame === 'SpeedMatch') handleSpeedMatchClick(e); else if (activeGame === 'MemoryGrid') handleMemoryGridClick(e); });
+        async function initApp() {
+            await initDB();
+            await seedDatabase();
+            await renderDashboard();
+            
+            document.getElementById('exit-game-btn').addEventListener('click', exitGame);
+            document.getElementById('speed-match-btn').addEventListener('click', startSpeedMatchGame);
+            document.getElementById('memory-grid-btn').addEventListener('click', startMemoryGridGame);
+            document.getElementById('trivia-game-btn').addEventListener('click', startTriviaGame);
+            
+            flashcardCanvas.addEventListener('click', () => { isFlipped = !isFlipped; const phrase = currentModule.lessonPhrases[currentPhraseIndex-1]; drawFlashcard(phrase, isFlipped); if (isFlipped) speak(phrase); });
+            document.getElementById('flashcard-right').addEventListener('click', () => { updateProgress(true, currentModule.lessonPhrases[currentPhraseIndex-1].id); nextActivity(); });
+            document.getElementById('flashcard-wrong').addEventListener('click', () => { updateProgress(false, currentModule.lessonPhrases[currentPhraseIndex-1].id); nextActivity(); });
+            
+            document.getElementById('author-mode-btn').addEventListener('click', () => {
+                const modal = document.getElementById('passcode-modal');
+                modal.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-xl w-80"><h3 class="text-xl font-bold mb-4 text-center">Enter Passcode</h3><input type="password" id="passcode-input" maxlength="4" class="w-full p-3 text-center text-2xl tracking-[1em] border-2 rounded-lg mb-2"><p id="passcode-error" class="text-red-500 h-5 text-center mb-4"></p><button id="passcode-submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">Enter</button><button id="passcode-close" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg mt-2">Cancel</button></div>`;
+                modal.classList.remove('hidden');
+                const input = modal.querySelector('#passcode-input');
+                input.focus();
+                modal.querySelector('#passcode-close').addEventListener('click', () => modal.classList.add('hidden'));
+                modal.querySelector('#passcode-submit').addEventListener('click', () => { if (input.value === '1104') { modal.classList.add('hidden'); showView('authorMode'); renderAuthorEditor(); } else { modal.querySelector('#passcode-error').textContent = 'Incorrect passcode.'; } });
+                input.addEventListener('keyup', (e) => { if (e.key === 'Enter') modal.querySelector('#passcode-submit').click(); });
+            });
+            
+            const profilePic = document.getElementById('profile-pic');
+            const profilePicInput = document.getElementById('profile-pic-input');
+            document.getElementById('user-profile').addEventListener('click', async (e) => {
+                if (e.target.id === 'username-display') {
+                    const newName = await showPrompt("What's your name?");
+                    if (newName) { const profile = await getData('userData', 'profile'); profile.name = newName; await addOrUpdate('userData', profile); document.getElementById('username-display').textContent = newName; }
+                } else {
+                    profilePicInput.click();
+                }
+            });
+            profilePicInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) { const reader = new FileReader(); reader.onload = (re) => { const imageData = re.target.result; localStorage.setItem('profilePic', imageData); profilePic.src = imageData; }; reader.readAsDataURL(file); }
+            });
+            const savedPic = localStorage.getItem('profilePic');
+            if (savedPic) profilePic.src = savedPic;
+        }
 
-        document.getElementById('author-mode-btn').addEventListener('click', () => {
-            const modal = document.getElementById('passcode-modal');
-            modal.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-xl w-80"><h3 class="text-xl font-bold mb-4 text-center">Enter Passcode</h3><input type="password" id="passcode-input" maxlength="4" class="w-full p-3 text-center text-2xl tracking-[1em] border-2 rounded-lg mb-2"><p id="passcode-error" class="text-red-500 h-5 text-center mb-4"></p><button id="passcode-submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">Enter</button><button id="passcode-close" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg mt-2">Cancel</button></div>`;
-            modal.classList.remove('hidden');
-            const input = modal.querySelector('#passcode-input');
-            input.focus();
-            modal.querySelector('#passcode-close').addEventListener('click', () => modal.classList.add('hidden'));
-            modal.querySelector('#passcode-submit').addEventListener('click', () => { if (input.value === '1104') { modal.classList.add('hidden'); showView('authorMode'); renderAuthorEditor(); } else { modal.querySelector('#passcode-error').textContent = 'Incorrect passcode.'; } });
-            input.addEventListener('keyup', (e) => { if (e.key === 'Enter') modal.querySelector('#passcode-submit').click(); });
-        });
-        
-        const profilePic = document.getElementById('profile-pic');
-        const profilePicInput = document.getElementById('profile-pic-input');
-        document.getElementById('user-profile').addEventListener('click', async (e) => {
-            if (e.target.id === 'username-display') {
-                const newName = await showPrompt("What's your name?");
-                if (newName) { const profile = await getData('userData', 'profile'); profile.name = newName; await addOrUpdate('userData', profile); document.getElementById('username-display').textContent = newName; }
-            } else {
-                profilePicInput.click();
-            }
-        });
-        profilePicInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) { const reader = new FileReader(); reader.onload = (re) => { const imageData = re.target.result; localStorage.setItem('profilePic', imageData); profilePic.src = imageData; }; reader.readAsDataURL(file); }
-        });
-        const savedPic = localStorage.getItem('profilePic');
-        if (savedPic) profilePic.src = savedPic;
+        initApp();
     });
     </script>
 </body>
