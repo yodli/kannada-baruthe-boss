@@ -21,6 +21,14 @@
         }
         .correct-answer { background-color: #A7F3D0 !important; }
         .incorrect-answer { background-color: #FECACA !important; }
+        /* Styles for the TTS Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #10B981;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #10B981;
+        }
     </style>
     <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
@@ -141,7 +149,7 @@
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
         // --- GOOGLE CLOUD TTS CONFIG ---
-        const GOOGLE_API_KEY = "AIzaSyASuitUOpDtMmaC-5YyWG2AjN5VGkOr-IM"; // <-- PASTE YOUR KEY HERE
+        const GOOGLE_API_KEY = "PASTE_YOUR_API_KEY_HERE";
 
         // --- SERVICE WORKER ---
         if ('serviceWorker' in navigator) {
@@ -210,14 +218,14 @@
         // --- SEED DATA & CONFIG ---
         const moduleOrder = ["greetings", "numbers", "directions", "eating", "shopping", "home", "smalltalk", "family"];
         const seedModules = [
-            {"id":"greetings","title":"Greetings & Introductions","icon":"👋","phrases":[{"id":1,"en":"Hello","kn":"ನಮಸ್ಕಾರ","translit":"na-mas-ka-ra"}]},
-            {"id":"numbers","title":"Numbers & Time","icon":"🔢","phrases":[{"id":51,"en":"One","kn":"ಒಂದು","translit":"on-du"}]},
-            {"id":"directions","title":"Directions & Transport","icon":"🚃","phrases":[{"id":101,"en":"Where is...?","kn":"... ಎಲ್ಲಿದೆ?","translit":"el-li-de"}]},
-            {"id":"eating","title":"Eating Out","icon":"🍽️","phrases":[{"id":151,"en":"Restaurant","kn":"ಉಪಾಹಾರ ಗೃಹ","translit":"u-pa-haa-ra gru-ha"}]},
-            {"id":"shopping","title":"Shopping & Money","icon":"🛍️","phrases":[{"id":201,"en":"How much is this?","kn":"ಇದರ ಬೆಲೆ ಎಷ್ಟು?","translit":"i-da-ra be-le esh-tu"}]},
-            {"id":"home","title":"At Home & Chores","icon":"🏠","phrases":[{"id":251,"en":"House","kn":"ಮನೆ","translit":"ma-ne"}]},
-            {"id":"smalltalk","title":"Social Small Talk","icon":"💬","phrases":[{"id":301,"en":"How was your day?","kn":"ನಿಮ್ಮ ದಿನ ಹೇಗಿತ್ತು?","translit":"nim-ma di-na he-git-tu"}]},
-            {"id":"family","title":"Family & Relationships","icon":"👨‍👩‍👧‍👦","phrases":[{"id":351,"en":"Family","kn":"ಕುಟುಂಬ","translit":"ku-tum-ba"}]}
+            {"id":"greetings","title":"Greetings & Introductions","icon":"👋","phrases":[{"id":1,"en":"Hello","kn":"Namaskara","translit":"na-mas-ka-ra"}]},
+            {"id":"numbers","title":"Numbers & Time","icon":"🔢","phrases":[{"id":51,"en":"One","kn":"Ondu","translit":"on-du"}]},
+            {"id":"directions","title":"Directions & Transport","icon":"🚃","phrases":[{"id":101,"en":"Where is...?","kn":"... ellide?","translit":"el-li-de"}]},
+            {"id":"eating","title":"Eating Out","icon":"🍽️","phrases":[{"id":151,"en":"Restaurant","kn":"Upahara gruha","translit":"u-pa-haa-ra gru-ha"}]},
+            {"id":"shopping","title":"Shopping & Money","icon":"🛍️","phrases":[{"id":201,"en":"How much is this?","kn":"Idara bele eshtu?","translit":"i-da-ra be-le esh-tu"}]},
+            {"id":"home","title":"At Home & Chores","icon":"🏠","phrases":[{"id":251,"en":"House","kn":"Mane","translit":"ma-ne"}]},
+            {"id":"smalltalk","title":"Social Small Talk","icon":"💬","phrases":[{"id":301,"en":"How was your day?","kn":"Nimma dina hegittu?","translit":"nim-ma di-na he-git-tu"}]},
+            {"id":"family","title":"Family & Relationships","icon":"👨‍👩‍👧‍👦","phrases":[{"id":351,"en":"Family","kn":"Kutumba","translit":"ku-tum-ba"}]}
         ];
         const karnatakaTrivia = [
             { q: "What is the capital city of Karnataka?", options: ["Mysuru", "Bengaluru", "Mangaluru", "Hubballi"], answer: "Bengaluru" },
@@ -271,7 +279,7 @@
             { q: "The founder of the Vijayanagara Empire, Harihara I, belonged to which dynasty?", options: ["Sangama", "Saluva", "Tuluva", "Aravidu"], answer: "Sangama" },
             { q: "What is 'Bisi Bele Bath'?", options: ["A sweet dish", "A type of bread", "A spicy lentil rice dish", "A yogurt-based curry"], answer: "A spicy lentil rice dish" }
         ];
-
+        
         async function seedDatabase() {
             const modulesInDB = await getAllData('modules');
             if (modulesInDB.length === 0) {
@@ -287,7 +295,7 @@
                 }
             }
             if (!await getData('userData', 'profile')) {
-                await addOrUpdate('userData', { key: 'profile', name: 'Cara', streak: 0, wordsLearned: [], accuracy: { correct: 0, total: 0 } });
+                await addOrUpdate('userData', { key: 'profile', name: 'Cara', streak: 0, wordsLearned: [], accuracy: { correct: 0, total: 0 }, useGoogleTTS: false });
             }
         }
 
@@ -466,8 +474,9 @@
         function showFlashcard() { flashcardActivity.classList.remove('hidden'); isFlipped = false; const phrase = currentModule.lessonPhrases[currentPhraseIndex]; drawFlashcard(phrase, isFlipped); }
         
         async function speakTTS(phrase) {
-            if (!GOOGLE_API_KEY || GOOGLE_API_KEY === "PASTE_YOUR_API_KEY_HERE") {
-                console.warn("Google API Key not set. Using browser's default TTS.");
+            const profile = await getData('userData', 'profile');
+            if (!profile.useGoogleTTS || !GOOGLE_API_KEY || GOOGLE_API_KEY === "PASTE_YOUR_API_KEY_HERE") {
+                if (profile.useGoogleTTS) console.warn("Google API Key not set. Using browser's default TTS.");
                 const utterance = new SpeechSynthesisUtterance(phrase.kn);
                 utterance.lang = 'kn-IN';
                 window.speechSynthesis.speak(utterance);
@@ -636,7 +645,22 @@
 
         async function renderAuthorEditor() { 
             const editor = document.getElementById('author-mode-view'); 
-            editor.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Author Mode</h2><button id="exit-author-mode-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Exit</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><button id="import-json-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Import JSON</button><input type="file" id="json-file-input" class="hidden" accept=".json"><button id="export-json-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Export JSON</button></div><h3 class="text-xl font-bold mb-2">Edit Modules & Phrases</h3><div id="author-content-editor" class="space-y-4"></div><button id="add-module-btn" class="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">Add New Module</button><div class="mt-6 border-t pt-4"><h3 class="text-xl font-bold mb-2 text-red-600">Danger Zone</h3><button id="reset-progress-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Reset All Progress</button></div>`; 
+            const profile = await getData('userData', 'profile');
+            const isTtsEnabled = profile.useGoogleTTS || false;
+
+            editor.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Author Mode</h2><button id="exit-author-mode-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Exit</button></div>
+                                <div class="mb-6 border-b pb-4">
+                                    <h3 class="text-xl font-bold mb-2">Settings</h3>
+                                    <div class="flex items-center justify-between">
+                                        <label for="google-tts-toggle" class="font-semibold">Enable Google TTS</label>
+                                        <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                            <input type="checkbox" name="google-tts-toggle" id="google-tts-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" ${isTtsEnabled ? 'checked' : ''}/>
+                                            <label for="google-tts-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><button id="import-json-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Import JSON</button><input type="file" id="json-file-input" class="hidden" accept=".json"><button id="export-json-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Export JSON</button></div><h3 class="text-xl font-bold mb-2">Edit Modules & Phrases</h3><div id="author-content-editor" class="space-y-4"></div><button id="add-module-btn" class="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">Add New Module</button><div class="mt-6 border-t pt-4"><h3 class="text-xl font-bold mb-2 text-red-600">Danger Zone</h3><button id="reset-progress-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Reset All Progress</button></div>`; 
+            
             const contentEditor = document.getElementById('author-content-editor'); 
             const modules = await getAllData('modules'); 
             modules.sort((a, b) => moduleOrder.indexOf(a.id) - moduleOrder.indexOf(b.id));
@@ -659,6 +683,12 @@
             document.getElementById('import-json-btn').addEventListener('click', () => jsonFileInput.click()); 
             jsonFileInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async (re) => { try { const data = JSON.parse(re.target.result); if (data.modules && Array.isArray(data.modules)) { for (const module of data.modules) await addOrUpdate('modules', module); } if (data.userData) await addOrUpdate('userData', data.userData); showMessage('Data imported successfully!'); renderAuthorEditor(); } catch (err) { showMessage('Error importing JSON: ' + err.message); } }; reader.readAsText(file); }); 
             document.getElementById('reset-progress-btn').addEventListener('click', resetAllProgress); 
+            document.getElementById('google-tts-toggle').addEventListener('change', async (e) => {
+                const profile = await getData('userData', 'profile');
+                profile.useGoogleTTS = e.target.checked;
+                await addOrUpdate('userData', profile);
+                showMessage(`Google TTS ${e.target.checked ? 'Enabled' : 'Disabled'}.`);
+            });
         }
 
         async function toggleRecording(button, moduleId, phraseIndex) {
@@ -713,7 +743,7 @@
         async function addPhrase(moduleId) { const module = await getData('modules',moduleId); const newId = module.phrases.length > 0 ? Math.max(...module.phrases.map(p => p.id)) + 1 : Date.now(); module.phrases.push({ id: newId, en: '', kn: '', translit: '' }); await addOrUpdate('modules', module); renderAuthorEditor(); }
         async function deletePhrase(moduleId, phraseIndex) { const confirmed = await showConfirm('Are you sure?'); if (confirmed) { const module = await getData('modules', moduleId); module.phrases.splice(phraseIndex, 1); await addOrUpdate('modules', module); renderAuthorEditor(); } }
         async function exportToJson() { const exportData = { modules: await getAllData('modules'), userData: await getData('userData', 'profile') }; const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2)); const a = document.createElement('a'); a.href = dataStr; a.download = "kbb_export.json"; a.click(); }
-        async function resetAllProgress() { const confirmed = await showConfirm("Are you sure you want to reset ALL progress? This cannot be undone."); if (confirmed) { await clearStore('userData'); await clearStore('srs'); await clearStore('progressLog'); await addOrUpdate('userData', { key: 'profile', name: 'Cara', streak: 0, wordsLearned: [], accuracy: { correct: 0, total: 0 } }); showMessage("All progress has been reset."); renderDashboard(); } }
+        async function resetAllProgress() { const confirmed = await showConfirm("Are you sure you want to reset ALL progress? This cannot be undone."); if (confirmed) { await clearStore('userData'); await clearStore('srs'); await clearStore('progressLog'); await addOrUpdate('userData', { key: 'profile', name: 'Cara', streak: 0, wordsLearned: [], accuracy: { correct: 0, total: 0 }, useGoogleTTS: false }); showMessage("All progress has been reset."); renderDashboard(); } }
         function showMessage(text) { const modal = document.getElementById('message-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center">${text}</p><button class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div>`; modal.classList.remove('hidden'); modal.querySelector('button').addEventListener('click', () => modal.classList.add('hidden')); }
         function showConfirm(message) { return new Promise(resolve => { const modal = document.getElementById('confirm-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center">${message}</p><div class="flex justify-end space-x-4"><button id="confirm-no-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">No</button><button id="confirm-yes-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Yes</button></div></div>`; modal.classList.remove('hidden'); modal.querySelector('#confirm-yes-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(true); }); modal.querySelector('#confirm-no-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(false); }); }); }
         function showPrompt(text) { return new Promise(resolve => { const modal = document.getElementById('prompt-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96"><p class="mb-4 text-center">${text}</p><input id="prompt-input" class="w-full p-2 border rounded mb-4"><div class="flex justify-end space-x-2"><button id="prompt-cancel" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Cancel</button><button id="prompt-ok" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div></div>`; modal.classList.remove('hidden'); const input = modal.querySelector('#prompt-input'); input.focus(); modal.querySelector('#prompt-ok').addEventListener('click', () => { modal.classList.add('hidden'); resolve(input.value); }); modal.querySelector('#prompt-cancel').addEventListener('click', () => { modal.classList.add('hidden'); resolve(null); }); input.addEventListener('keyup', (e) => { if (e.key === 'Enter') modal.querySelector('#prompt-ok').click(); }); }); }
