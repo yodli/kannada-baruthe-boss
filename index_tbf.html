@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kannada Baruthe, Boss</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-scale@4"></script>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#34D399"/>
     <style>
         body { font-family: 'Inter', sans-serif; }
+        .heatmap-day { transition: all 0.2s ease-in-out; }
+        .heatmap-day:hover { transform: scale(1.2); }
         .recording { animation: pulse 1.5s infinite; }
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
@@ -17,6 +21,7 @@
         }
         .correct-answer { background-color: #A7F3D0 !important; }
         .incorrect-answer { background-color: #FECACA !important; }
+        /* Styles for the TTS Toggle Switch */
         .toggle-checkbox:checked {
             right: 0;
             border-color: #10B981;
@@ -1018,7 +1023,7 @@
             if (savedPic) profilePic.src = savedPic;
         }
 
-        initApp();;
+        initApp();
     </script>
 </body>
 </html>
