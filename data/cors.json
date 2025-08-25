@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://yodli.github.io/kannada-baruthe-boss/", "http://localhost:5000"],
+    "method": ["GET", "POST", "PUT", "OPTIONS"],
+    "responseHeader": ["Content-Type", "Authorization"],
+    "maxAgeSeconds": 3600
+  }
+]
