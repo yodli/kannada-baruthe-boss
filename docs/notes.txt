@@ -1,29 +1,14 @@
-Below is the index.html code for a Kannada language learning app. please review the complete code and help me fix the issues.
+Below is the index.html code for a Kannada language learning app. please review the complete code and help me fix the below issues.
 
 
-Let me know if you have any questions before making the changes. after the fix is made, make sure the code is tested well and no functionality breaks.
-Generate the entire index.html code wit the changes.
+Let me know if you have any questions before making the changes. After the fix is made, make sure the code is tested well and no functionality breaks.
+Generate the entire index.html code with the changes.
 
 Before implementing the changes, share your detailed approach of the changes.
 Ask me any questions to get any clarifications. Let me know if you have any questions before making the changes.
-
-i have one issue that needs to be fixed in the index.html. in mobile mode, i notice some flashcards with long phrases do not word wrap so because of this the phrase is not completely visible in the screen. can you enable word wrap in the app for modules and the games so that the longer phrases are more mobile friendly. make changes to the index.html and share the entire code here. ensure no functionality is broken and the app is bug free.
 
 To be tested:
 
 Known bugs:
 1) Hide firebase and gogle tts api.
-2) The audio still plays when i exit out of author mode.
-
-
-Summary of All Fixed Issues:
-✅ Critical Audio Management Bug: Implemented comprehensive stopCurrentAudio() function with promise tracking and proper cleanup
-✅ Memory Leak in MediaRecorder: Added proper MediaRecorder cleanup with stream management and audio chunks reset
-✅ Race Condition in Audio Playbook: Implemented audio promise tracking and proper cancellation
-✅ Firebase Storage CORS Issue: Added comprehensive error handling with specific CORS error messages and retry logic
-✅ IndexedDB Transaction Deadlock Risk: Implemented transaction queuing system with proper error handling
-✅ Canvas Rendering Performance: Added dirty flag pattern for both flashcard and game canvases
-✅ Missing Error Handling for TTS API: Added comprehensive error handling with fallbacks, timeout, and quota management
-✅ Profile Picture Storage Inconsistency: Moved profile pictures from localStorage to IndexedDB
-✅ Game State Cleanup Bug: Implemented comprehensive cleanup in exitGame() with proper timer and animation frame management
-✅ Responsive Design Issues: Added responsive CSS and canvas resizing with device pixel ratio support
+2) 

@@ -51,7 +51,7 @@
             opacity: 1;
         }
         
-        /* Word wrapping styles for better mobile experience */
+        /* Enhanced word wrapping styles for better mobile experience */
         .game-option, .trivia-option {
             word-wrap: break-word;
             word-break: break-word;
@@ -68,6 +68,12 @@
             white-space: normal;
         }
         
+        /* Mobile-specific flashcard styling */
+        #flashcard-canvas {
+            min-height: 250px;
+            touch-action: manipulation;
+        }
+        
         /* Mobile-friendly text wrapping for all interactive elements */
         @media (max-width: 768px) {
             .game-option, .trivia-option, .word-tile {
@@ -75,12 +81,33 @@
                 line-height: 1.4;
                 padding: 12px;
                 text-align: center;
+                min-height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
             
-            /* Ensure canvas text wrapping is handled in JavaScript */
             #flashcard-canvas {
-                min-height: 200px;
+                min-height: 300px;
             }
+            
+            /* Ensure proper text sizing in flashcards on mobile */
+            .flashcard-text-large {
+                font-size: clamp(20px, 5vw, 28px);
+                line-height: 1.2;
+            }
+            
+            .flashcard-text-small {
+                font-size: clamp(14px, 3.5vw, 18px);
+                line-height: 1.3;
+            }
+        }
+        
+        /* Prevent text overflow in all containers */
+        .text-container {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
         }
     </style>
     <link rel="preconnect" href="https://rsms.me/">
@@ -605,25 +632,30 @@
         const flashcardCanvas = document.getElementById('flashcard-canvas');
         const flashcardCtx = flashcardCanvas.getContext('2d');
         
-        // Enhanced text wrapping function for canvas
-        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+        // Enhanced text wrapping function for canvas with better mobile support
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight, isMobile = false) {
             const words = text.split(' ');
             let line = '';
             let lines = [];
+            
+            // Adjust max width for mobile to prevent overlap
+            const adjustedMaxWidth = isMobile ? maxWidth * 0.9 : maxWidth;
             
             for (let n = 0; n < words.length; n++) {
                 const testLine = line + words[n] + ' ';
                 const metrics = ctx.measureText(testLine);
                 const testWidth = metrics.width;
                 
-                if (testWidth > maxWidth && n > 0) {
-                    lines.push(line);
+                if (testWidth > adjustedMaxWidth && n > 0) {
+                    lines.push(line.trim());
                     line = words[n] + ' ';
                 } else {
                     line = testLine;
                 }
             }
-            lines.push(line);
+            if (line.trim()) {
+                lines.push(line.trim());
+            }
             
             // Calculate starting Y position to center text vertically
             const totalHeight = lines.length * lineHeight;
@@ -631,8 +663,10 @@
             
             // Draw each line
             for (let i = 0; i < lines.length; i++) {
-                ctx.fillText(lines[i].trim(), x, startY + (i * lineHeight));
+                ctx.fillText(lines[i], x, startY + (i * lineHeight));
             }
+            
+            return lines.length; // Return number of lines for better spacing
         }
         
         function drawFlashcard(phrase, showKannada) {
@@ -648,29 +682,41 @@
             
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
-            const maxWidth = canvas.width - 40; // 20px padding on each side
+            const isMobile = window.innerWidth <= 768;
+            const padding = isMobile ? 30 : 40; // Increased padding for mobile
+            const maxWidth = canvas.width - (padding * 2);
             
             if (showKannada) { 
-                // Kannada text
-                ctx.font = 'bold 28px Inter';
-                ctx.fillStyle = '#10B981'; 
-                wrapText(ctx, phrase.kn, centerX, centerY - 15, maxWidth, 35);
+                // Kannada text - responsive font size
+                const kannadaFontSize = isMobile ? Math.min(24, canvas.width / 15) : 28;
+                const translitFontSize = isMobile ? Math.min(16, canvas.width / 25) : 18;
+                const kannadaLineHeight = kannadaFontSize * 1.4;
+                const translitLineHeight = translitFontSize * 1.4;
                 
-                // Transliteration
-                ctx.font = '18px Inter'; 
-                ctx.fillStyle = '#6B7280'; 
-                wrapText(ctx, phrase.translit, centerX, centerY + 25, maxWidth, 25);
-            } else { 
-                // English text
-                ctx.font = 'bold 28px Inter'; 
+                ctx.font = `bold ${kannadaFontSize}px Inter`;
                 ctx.fillStyle = '#10B981'; 
-                wrapText(ctx, phrase.en, centerX, centerY, maxWidth, 35);
+                const kannadaLines = wrapText(ctx, phrase.kn, centerX, centerY - 20, maxWidth, kannadaLineHeight, isMobile);
+                
+                // Transliteration - adjust position based on Kannada text lines
+                ctx.font = `${translitFontSize}px Inter`; 
+                ctx.fillStyle = '#6B7280'; 
+                const translitY = centerY + (kannadaLines * kannadaLineHeight / 2) + 15;
+                wrapText(ctx, phrase.translit, centerX, translitY, maxWidth, translitLineHeight, isMobile);
+            } else { 
+                // English text - responsive font size
+                const englishFontSize = isMobile ? Math.min(24, canvas.width / 12) : 28;
+                const englishLineHeight = englishFontSize * 1.4;
+                
+                ctx.font = `bold ${englishFontSize}px Inter`; 
+                ctx.fillStyle = '#10B981'; 
+                wrapText(ctx, phrase.en, centerX, centerY, maxWidth, englishLineHeight, isMobile);
             }
             
-            // "Tap to flip" instruction
-            ctx.font = '14px Inter'; 
+            // "Tap to flip" instruction - responsive size and position
+            const instructionFontSize = isMobile ? 12 : 14;
+            ctx.font = `${instructionFontSize}px Inter`; 
             ctx.fillStyle = '#9CA3AF'; 
-            ctx.fillText('Tap to flip', centerX, canvas.height - 20);
+            ctx.fillText('Tap to flip', centerX, canvas.height - (isMobile ? 15 : 20));
         }
 
         function showFlashcard() { 
@@ -719,21 +765,46 @@
             }
         }
 
-        function speak(phrase) {
+        async function speak(phrase) {
             stopCurrentAudio(); // Stop any existing audio first
             
+            const profile = await getData('userData', 'profile');
+            
+            // Check if custom audio exists and is available
             if (phrase && phrase.audioData) {
-                currentAudio = new Audio(phrase.audioData);
-                currentAudio.play().catch(e => {
-                    console.error("Audio playback failed:", e.name, e.message);
+                try {
+                    currentAudio = new Audio(phrase.audioData);
+                    await currentAudio.play();
+                    return; // Successfully played custom audio
+                } catch (e) {
+                    console.error("Custom audio playback failed:", e.name, e.message);
                     if (e.name === 'NotSupportedError') {
                         console.warn("Recorded audio format not supported, falling back to TTS.");
-                        showMessage("Couldn't play recording, using default voice.");
-                        speakTTS(phrase);
+                        showMessage("Couldn't play recording, using voice synthesis.");
                     }
-                });
-            } else {
-                speakTTS(phrase);
+                    // Fall through to TTS
+                }
+            }
+            
+            // If Google TTS is enabled, use it
+            if (profile.useGoogleTTS && GOOGLE_API_KEY) {
+                try {
+                    await speakTTS(phrase);
+                    return; // Successfully used Google TTS
+                } catch (error) {
+                    console.error("Google TTS failed, falling back to browser TTS:", error);
+                    // Fall through to browser TTS
+                }
+            }
+            
+            // Fallback to browser's built-in TTS (this should always work)
+            try {
+                const utterance = new SpeechSynthesisUtterance(phrase.kn);
+                utterance.lang = 'kn-IN';
+                window.speechSynthesis.speak(utterance);
+            } catch (error) {
+                console.error("Browser TTS also failed:", error);
+                showMessage("Audio playback is not available on this device.");
             }
         }
         
@@ -776,6 +847,7 @@
             } 
             
             draw(ctx) { 
+                const isMobile = window.innerWidth <= 768;
                 ctx.strokeStyle = this.selected ? '#4F46E5' : '#34D399'; 
                 ctx.lineWidth = this.selected ? 5 : 3; 
                 ctx.fillStyle = this.state === 'matched' ? '#A7F3D0' : (this.state === 'revealed' ? '#FFFBEB' : '#10B981'); 
@@ -794,21 +866,39 @@
                     ctx.fillStyle = '#1F2937'; 
                     ctx.textAlign = 'center'; 
                     ctx.textBaseline = 'middle'; 
-                    ctx.font = 'bold 14px Inter'; 
                     
-                    // Use text wrapping for cards too
+                    // Responsive font size for cards
+                    const fontSize = isMobile ? Math.min(12, this.width / 8) : 14;
+                    ctx.font = `bold ${fontSize}px Inter`; 
+                    
                     const maxWidth = this.width - 10;
                     const centerX = this.x + this.width / 2;
                     const centerY = this.y + this.height / 2;
                     
-                    // Simple text wrapping for cards
+                    // Enhanced text wrapping for cards
                     const words = this.text.split(' ');
                     if (words.length > 1 && this.text.length > 15) {
                         const firstLine = words.slice(0, Math.ceil(words.length / 2)).join(' ');
                         const secondLine = words.slice(Math.ceil(words.length / 2)).join(' ');
-                        ctx.fillText(firstLine, centerX, centerY - 8);
-                        ctx.fillText(secondLine, centerX, centerY + 8);
+                        
+                        // Check if text fits, if not, make font smaller
+                        const firstMetrics = ctx.measureText(firstLine);
+                        const secondMetrics = ctx.measureText(secondLine);
+                        
+                        if (firstMetrics.width > maxWidth || secondMetrics.width > maxWidth) {
+                            const smallerFontSize = Math.max(8, fontSize - 2);
+                            ctx.font = `bold ${smallerFontSize}px Inter`;
+                        }
+                        
+                        ctx.fillText(firstLine, centerX, centerY - (fontSize / 2));
+                        ctx.fillText(secondLine, centerX, centerY + (fontSize / 2));
                     } else {
+                        // Single line text
+                        const metrics = ctx.measureText(this.text);
+                        if (metrics.width > maxWidth) {
+                            const smallerFontSize = Math.max(8, fontSize - 2);
+                            ctx.font = `bold ${smallerFontSize}px Inter`;
+                        }
                         ctx.fillText(this.text, centerX, centerY);
                     }
                 } 
@@ -896,7 +986,7 @@
             const allPhrases = await getLearnedPhrases(); 
             const wrongWords = [...new Set(allPhrases.flatMap(p => p.kn.split(' ')))].filter(w => w !== correctWord).sort(() => 0.5 - Math.random()).slice(0, 3); 
             const options = [correctWord, ...wrongWords].sort(() => 0.5 - Math.random()); 
-            gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg text-gray-600 break-words">${questionData.en}</p><p class="text-2xl font-semibold my-4 break-words">${questionText}</p></div><div id="fill-options" class="grid grid-cols-2 gap-3">${options.map(opt => `<button class="game-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; 
+            gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg text-gray-600 break-words text-container">${questionData.en}</p><p class="text-2xl font-semibold my-4 break-words text-container">${questionText}</p></div><div id="fill-options" class="grid grid-cols-2 gap-3">${options.map(opt => `<button class="game-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; 
             document.querySelectorAll('.game-option').forEach(btn => btn.onclick = (e) => handleFillBlanksAnswer(e, correctWord)); 
         }
         
@@ -927,7 +1017,7 @@
             const allPhrases = await getLearnedPhrases(); 
             const wrongOptions = allPhrases.filter(p => p.id !== correctPhrase.id).sort(() => 0.5 - Math.random()).slice(0, 3); 
             const options = [correctPhrase, ...wrongOptions].sort(() => 0.5 - Math.random()); 
-            gameContainer.innerHTML = `<div class="text-center mb-6"><button id="play-audio-btn" class="p-4 bg-blue-500 text-white rounded-full shadow-lg text-3xl">▶️</button><p class="mt-2 text-gray-600">Tap to hear the phrase</p></div><div id="listen-options" class="grid grid-cols-1 gap-3">${options.map(opt => `<button class="game-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt.en}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; 
+            gameContainer.innerHTML = `<div class="text-center mb-6"><button id="play-audio-btn" class="p-4 bg-blue-500 text-white rounded-full shadow-lg text-3xl">▶️</button><p class="mt-2 text-gray-600">Tap to hear the phrase</p></div><div id="listen-options" class="grid grid-cols-1 gap-3">${options.map(opt => `<button class="game-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg text-container">${opt.en}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; 
             document.getElementById('play-audio-btn').onclick = () => speak(correctPhrase); 
             document.querySelectorAll('.game-option').forEach(btn => btn.onclick = (e) => handleListenTapAnswer(e, correctPhrase)); 
         }
@@ -963,7 +1053,7 @@
             const phrase = newGameState.questions[newGameState.currentQuestionIndex]; 
             const words = phrase.translit.split('-'); 
             const shuffledWords = [...words].sort(() => 0.5 - Math.random()); 
-            gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg text-gray-600">Translate this sentence:</p><p class="text-2xl font-semibold my-2 break-words">"${phrase.en}"</p></div><div id="sentence-answer" class="p-4 bg-gray-200 rounded-lg min-h-[50px] mb-4 text-center text-xl font-semibold break-words"></div><div id="word-bank" class="flex flex-wrap justify-center gap-2">${shuffledWords.map(word => `<button class="word-tile p-2 bg-indigo-100 rounded-md shadow-sm">${word}</button>`).join('')}</div><div class="mt-6 flex justify-center gap-4"><button id="check-sentence-btn" class="bg-green-500 text-white font-bold py-2 px-6 rounded-lg">Check</button><button id="clear-sentence-btn" class="bg-gray-400 text-white font-bold py-2 px-6 rounded-lg">Clear</button></div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; 
+            gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg text-gray-600 text-container">Translate this sentence:</p><p class="text-2xl font-semibold my-2 break-words text-container">"${phrase.en}"</p></div><div id="sentence-answer" class="p-4 bg-gray-200 rounded-lg min-h-[50px] mb-4 text-center text-xl font-semibold break-words text-container"></div><div id="word-bank" class="flex flex-wrap justify-center gap-2">${shuffledWords.map(word => `<button class="word-tile p-2 bg-indigo-100 rounded-md shadow-sm">${word}</button>`).join('')}</div><div class="mt-6 flex justify-center gap-4"><button id="check-sentence-btn" class="bg-green-500 text-white font-bold py-2 px-6 rounded-lg">Check</button><button id="clear-sentence-btn" class="bg-gray-400 text-white font-bold py-2 px-6 rounded-lg">Clear</button></div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; 
             const answerArea = document.getElementById('sentence-answer'); 
             const wordBank = document.getElementById('word-bank'); 
             wordBank.addEventListener('click', (e) => { 
@@ -993,7 +1083,7 @@
                 return; 
             } 
             const questionData = triviaState.questions[triviaState.currentQuestionIndex]; 
-            gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg font-semibold break-words">${questionData.q}</p></div><div id="trivia-options" class="grid grid-cols-1 md:grid-cols-2 gap-3">${questionData.options.map(opt => `<button class="trivia-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${triviaState.score}</div>`; 
+            gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg font-semibold break-words text-container">${questionData.q}</p></div><div id="trivia-options" class="grid grid-cols-1 md:grid-cols-2 gap-3">${questionData.options.map(opt => `<button class="trivia-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg text-container">${opt}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${triviaState.score}</div>`; 
             document.querySelectorAll('.trivia-option').forEach(button => { 
                 button.addEventListener('click', handleTriviaAnswer); 
             }); 
@@ -1241,15 +1331,15 @@
         }
         function showMessage(text) { 
             stopCurrentAudio(); // Stop audio when showing message
-            const modal = document.getElementById('message-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center break-words">${text}</p><button class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div>`; modal.classList.remove('hidden'); modal.querySelector('button').addEventListener('click', () => modal.classList.add('hidden')); 
+            const modal = document.getElementById('message-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center break-words text-container">${text}</p><button class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div>`; modal.classList.remove('hidden'); modal.querySelector('button').addEventListener('click', () => modal.classList.add('hidden')); 
         }
         function showConfirm(message) { 
             stopCurrentAudio(); // Stop audio when showing confirm
-            return new Promise(resolve => { const modal = document.getElementById('confirm-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center break-words">${message}</p><div class="flex justify-end space-x-4"><button id="confirm-no-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">No</button><button id="confirm-yes-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Yes</button></div></div>`; modal.classList.remove('hidden'); modal.querySelector('#confirm-yes-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(true); }); modal.querySelector('#confirm-no-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(false); }); }); 
+            return new Promise(resolve => { const modal = document.getElementById('confirm-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center break-words text-container">${message}</p><div class="flex justify-end space-x-4"><button id="confirm-no-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">No</button><button id="confirm-yes-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Yes</button></div></div>`; modal.classList.remove('hidden'); modal.querySelector('#confirm-yes-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(true); }); modal.querySelector('#confirm-no-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(false); }); }); 
         }
         function showPrompt(text) { 
             stopCurrentAudio(); // Stop audio when showing prompt
-            return new Promise(resolve => { const modal = document.getElementById('prompt-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96"><p class="mb-4 text-center break-words">${text}</p><input id="prompt-input" class="w-full p-2 border rounded mb-4"><div class="flex justify-end space-x-2"><button id="prompt-cancel" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Cancel</button><button id="prompt-ok" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div></div>`; modal.classList.remove('hidden'); const input = modal.querySelector('#prompt-input'); input.focus(); modal.querySelector('#prompt-ok').addEventListener('click', () => { modal.classList.add('hidden'); resolve(input.value); }); modal.querySelector('#prompt-cancel').addEventListener('click', () => { modal.classList.add('hidden'); resolve(null); }); input.addEventListener('keyup', (e) => { if (e.key === 'Enter') modal.querySelector('#prompt-ok').click(); }); }); 
+            return new Promise(resolve => { const modal = document.getElementById('prompt-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96"><p class="mb-4 text-center break-words text-container">${text}</p><input id="prompt-input" class="w-full p-2 border rounded mb-4"><div class="flex justify-end space-x-2"><button id="prompt-cancel" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Cancel</button><button id="prompt-ok" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div></div>`; modal.classList.remove('hidden'); const input = modal.querySelector('#prompt-input'); input.focus(); modal.querySelector('#prompt-ok').addEventListener('click', () => { modal.classList.add('hidden'); resolve(input.value); }); modal.querySelector('#prompt-cancel').addEventListener('click', () => { modal.classList.add('hidden'); resolve(null); }); input.addEventListener('keyup', (e) => { if (e.key === 'Enter') modal.querySelector('#prompt-ok').click(); }); }); 
         }
 
         async function initApp() {
@@ -1286,7 +1376,7 @@
                     // Show replay button when flipped to Kannada side
                     document.getElementById('replay-audio-btn').classList.remove('hidden');
                 } else {
-                    // Hide replay button when flipped back to English side
+                    // Hide replay button when flipped to English side
                     stopCurrentAudio(); // Stop audio when flipping back to English
                     document.getElementById('replay-audio-btn').classList.add('hidden');
                 }
