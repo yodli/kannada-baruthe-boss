@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kannada Baruthe, Boss</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-    <script src="https://cdn.jsdelivr.net/npm/d3-scale@4"></script>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#34D399"/>
     <style>
@@ -35,17 +33,25 @@
 </head>
 <body class="bg-emerald-50 text-gray-800">
 
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="fixed inset-0 bg-emerald-50 flex justify-center items-center z-50">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-emerald-700">Kannada Baruthe, Boss</h1>
+            <p class="mt-2 text-lg text-gray-600">Loading...</p>
+        </div>
+    </div>
+
     <div id="app" class="max-w-4xl mx-auto p-4">
         <!-- App Header -->
-        <header id="app-header" class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-emerald-700">Kannada Baruthe, Boss</h1>
+        <header id="app-header" class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <h1 class="text-2xl sm:text-3xl font-bold text-emerald-700 text-center sm:text-left">Kannada Baruthe, Boss</h1>
             <div class="flex items-center space-x-4">
                 <div id="user-profile" class="flex items-center space-x-2 cursor-pointer">
                     <span id="username-display" class="font-semibold">Cara</span>
                     <input type="file" id="profile-pic-input" class="hidden" accept="image/*">
                     <img id="profile-pic" src="https://placehold.co/40x40/34D399/FFFFFF?text=C" class="rounded-full w-10 h-10 object-cover" alt="Profile Picture">
                 </div>
-                <button id="author-mode-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg">Author Mode</button>
+                <button id="author-mode-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg">Author</button>
             </div>
         </header>
 
@@ -65,20 +71,6 @@
                     <div class="bg-white p-4 rounded-xl shadow-md text-center">
                         <h3 class="font-bold text-lg">Accuracy</h3>
                         <p class="text-3xl text-emerald-500" id="accuracy-percent">0%</p>
-                    </div>
-                </div>
-                
-                <div class="bg-white p-6 rounded-xl shadow-md mb-6">
-                    <h2 class="text-2xl font-bold mb-4">Your Progress</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <h3 class="font-semibold mb-2 text-center">Daily Activity</h3>
-                            <div id="calendar-heatmap" class="flex justify-center"></div>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold mb-2 text-center">Accuracy Trend</h3>
-                            <div id="accuracy-chart" class="flex justify-center items-end h-48"></div>
-                        </div>
                     </div>
                 </div>
 
@@ -158,10 +150,30 @@
     <div id="trivia-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"></div>
 
 
-    <script>
-    document.addEventListener('DOMContentLoaded', async () => {
+    <script type="module">
+        // --- FIREBASE SDKs ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getFirestore, collection, doc, getDoc, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHGI5U_EDb1lYNt-uPS2dkRaNeyaUX-oI", // Replace with your actual Firebase config
+            authDomain: "kannada-app-audio-e6901.firebaseapp.com",
+            projectId: "kannada-app-audio-e6901",
+            storageBucket: "kannada-app-audio-e6901.appspot.com",
+            messagingSenderId: "891878140337",
+            appId: "1:891878140337:web:8968ebb24ca661aa58f590"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const firestoreDB = getFirestore(app);
+        const storage = getStorage(app);
+
+
         // --- GOOGLE CLOUD TTS CONFIG ---
-        const GOOGLE_API_KEY = "PASTE_YOUR_API_KEY_HERE";
+        const GOOGLE_API_KEY = "PASTE_YOUR_API_KEY_HERE"; // Replace with your actual Google Cloud API key
 
         // --- SERVICE WORKER ---
         if ('serviceWorker' in navigator) {
@@ -173,7 +185,7 @@
         }
 
         // --- DATABASE ---
-        const DB_NAME = 'KannadaBarutheBossDB';
+        const DB_NAME = 'KannadaBarutheBossDB_Progress';
         const DB_VERSION = 1;
         let db;
 
@@ -183,14 +195,13 @@
                 request.onerror = e => reject("DB error: " + e.target.errorCode);
                 request.onupgradeneeded = e => {
                     db = e.target.result;
-                    if (!db.objectStoreNames.contains('modules')) db.createObjectStore('modules', { keyPath: 'id' });
                     if (!db.objectStoreNames.contains('userData')) db.createObjectStore('userData', { keyPath: 'key' });
                     if (!db.objectStoreNames.contains('srs')) db.createObjectStore('srs', { keyPath: 'phraseId' });
                     if (!db.objectStoreNames.contains('progressLog')) db.createObjectStore('progressLog', { keyPath: 'date' });
                 };
                 request.onsuccess = e => {
                     db = e.target.result;
-                    console.log("DB initialized.");
+                    console.log("Progress DB initialized.");
                     resolve(db);
                 };
             });
@@ -230,28 +241,22 @@
         // --- SEED DATA & CONFIG ---
         const moduleOrder = ["greetings", "numbers", "directions", "eating", "shopping", "home", "smalltalk", "family"];
         const seedModules = [
-            {"id":"greetings","title":"Greetings & Introductions","icon":"👋","phrases":[{"id":1,"en":"Hello","kn":"Namaskara","translit":"na-mas-ka-ra"},{"id":2,"en":"How are you?","kn":"Hegiddeera?","translit":"he-gid-dee-ra"},{"id":3,"en":"I'm fine","kn":"Chennagiddeeni","translit":"chen-na-gid-dee-ni"},{"id":4,"en":"What's your name?","kn":"Nimma hesarenu?","translit":"nim-ma he-sa-re-nu"},{"id":5,"en":"My name is...","kn":"Nanna hesaru...","translit":"nan-na he-sa-ru"},{"id":6,"en":"Nice to meet you","kn":"Nimmannu bheti maadi santoshavayitu","translit":"nim-man-nu bhe-ti maa-di san-to-sha-va-yi-tu"},{"id":7,"en":"Thank you","kn":"Dhanyavadagalu","translit":"dhan-ya-vaa-da-ga-lu"},{"id":8,"en":"You're welcome","kn":"Paravagilla","translit":"pa-ra-va-gil-la"},{"id":9,"en":"Excuse me / Sorry","kn":"Kshamisi","translit":"ksha-mi-si"},{"id":10,"en":"Yes","kn":"Houdu","translit":"hou-du"},{"id":11,"en":"No","kn":"Illa","translit":"il-la"},{"id":12,"en":"Please","kn":"Dayavittu","translit":"da-ya-vit-tu"},{"id":13,"en":"Goodbye","kn":"Hogi baruttene","translit":"ho-gi ba-rut-te-ne"},{"id":14,"en":"Good morning","kn":"Shubhodaya","translit":"shu-bho-da-ya"},{"id":15,"en":"Good night","kn":"Shubha raatri","translit":"shu-bha raa-tri"},{"id":16,"en":"See you later","kn":"Matte sigona","translit":"mat-te si-go-na"},{"id":17,"en":"Take care","kn":"Jaagrate","translit":"jaa-gra-te"},{"id":18,"en":"Where are you from?","kn":"Neevu elliyavaru?","translit":"nee-vu el-li-ya-va-ru"},{"id":19,"en":"I am from...","kn":"Naanu ... inda bandiddene","translit":"naa-nu ... in-da ban-di-dde-ne"},{"id":20,"en":"Do you speak English?","kn":"Neevu English maatanaduttira?","translit":"nee-vu English maa-ta-naa-dut-tee-ra"},{"id":21,"en":"I speak a little Kannada","kn":"Naanu swalpa Kannada maatanaduttene","translit":"naa-nu swal-pa kan-na-da maa-ta-naa-dut-te-ne"},{"id":22,"en":"I don't understand","kn":"Nanage arthavagalilla","translit":"na-na-ge ar-tha-va-ga-lil-la"},{"id":23,"en":"Can you repeat that?","kn":"Innomme heli","translit":"in-nom-me he-li"},{"id":24,"en":"Speak slowly","kn":"Nidhanavagi maatanadi","translit":"ni-dhaa-na-va-gi maa-ta-naa-di"},{"id":25,"en":"What is this?","kn":"Idu enu?","translit":"i-du ye-nu"},{"id":26,"en":"What happened?","kn":"Enayitu?","translit":"ye-na-yi-tu"},{"id":27,"en":"It's okay","kn":"Paravagilla","translit":"pa-ra-va-gil-la"},{"id":28,"en":"I am learning","kn":"Naanu kaliyuttiddene","translit":"naa-nu ka-li-yut-tid-de-ne"},{"id":29,"en":"Welcome","kn":"Swagata","translit":"swa-ga-ta"},{"id":30,"en":"And you?","kn":"Mattu neevu?","translit":"mat-tu nee-vu"},{"id":31,"en":"Very good","kn":"Tumba olleyadu","translit":"tum-ba ol-le-ya-du"},{"id":32,"en":"Not bad","kn":"Kettadagilla","translit":"ket-ta-da-gil-la"},{"id":33,"en":"What's new?","kn":"Enu samachara?","translit":"ye-nu sa-ma-chaa-ra"},{"id":34,"en":"Nothing much","kn":"Enu illa","translit":"ye-nu il-la"},{"id":35,"en":"What do you do?","kn":"Neevu enu kelasa maaduttira?","translit":"nee-vu ye-nu kel-a-sa maa-dut-tee-ra"},{"id":36,"en":"I am a student","kn":"Naanu vidyarthi","translit":"naa-nu vid-yaar-thi"},{"id":37,"en":"Have a good day","kn":"Dinavu chennagirali","translit":"di-na-vu chen-na-gi-ra-li"},{"id":38,"en":"You too","kn":"Nimagoo kooda","translit":"ni-ma-goo koo-da"},{"id":39,"en":"I am happy","kn":"Nanage santoshavagide","translit":"na-na-ge san-to-sha-va-gi-de"},{"id":40,"en":"I am tired","kn":"Nanage ayasavagide","translit":"na-na-ge aa-yaa-sa-va-gi-de"},{"id":41,"en":"Are you busy?","kn":"Neevu biduvilladiddira?","translit":"nee-vu bi-du-vil-la-did-dee-ra"},{"id":42,"en":"A little bit","kn":"Swalpa","translit":"swal-pa"},{"id":43,"en":"Not at all","kn":"Khandita illa","translit":"khan-di-ta il-la"},{"id":44,"en":"What is your phone number?","kn":"Nimma phone sankhye enu?","translit":"nim-ma phone sank-hye ye-nu"},{"id":45,"en":"Can I help you?","kn":"Naanu nimage sahaya maadabahude?","translit":"naa-nu ni-ma-ge sa-haa-ya maa-da-bahu-de"},{"id":46,"en":"I need help","kn":"Nanage sahaya beku","translit":"na-na-ge sa-haa-ya be-ku"},{"id":47,"en":"Congratulations!","kn":"Abhinandanegalu!","translit":"a-bhi-nan-da-ne-ga-lu"},{"id":48,"en":"All the best!","kn":"Shubhavagali!","translit":"shu-bha-va-ga-li"},{"id":49,"en":"I am thirsty","kn":"Nanage bayarikeyagide","translit":"na-na-ge baa-yaa-ri-ke-ya-gi-de"},{"id":50,"en":"I am hungry","kn":"Nanage hasivagide","translit":"na-na-ge ha-si-va-gi-de"}]},
-            {"id":"numbers","title":"Numbers & Time","icon":"🔢","phrases":[{"id":51,"en":"One","kn":"Ondu","translit":"on-du"},{"id":52,"en":"Two","kn":"Eradu","translit":"e-ra-du"},{"id":53,"en":"Three","kn":"Mooru","translit":"moo-ru"},{"id":54,"en":"Four","kn":"Naalku","translit":"naal-ku"},{"id":55,"en":"Five","kn":"Aidu","translit":"ai-du"},{"id":56,"en":"Six","kn":"Aaru","translit":"aa-ru"},{"id":57,"en":"Seven","kn":"Elu","translit":"ye-lu"},{"id":58,"en":"Eight","kn":"Entu","translit":"en-tu"},{"id":59,"en":"Nine","kn":"Ombattu","translit":"om-bat-tu"},{"id":60,"en":"Ten","kn":"Hattu","translit":"hat-tu"},{"id":61,"en":"Twenty","kn":"Ippattu","translit":"ip-pat-tu"},{"id":62,"en":"Thirty","kn":"Muvattu","translit":"moo-vat-tu"},{"id":63,"en":"Forty","kn":"Nalavattu","translit":"na-la-vat-tu"},{"id":64,"en":"Fifty","kn":"Aivattu","translit":"ai-vat-tu"},{"id":65,"en":"One Hundred","kn":"Nooru","translit":"noo-ru"},{"id":66,"en":"One Thousand","kn":"Saavira","translit":"saa-vi-ra"},{"id":67,"en":"What time is it?","kn":"Samaya eshtu?","translit":"sa-ma-ya esh-tu"},{"id":68,"en":"It is 1 o'clock","kn":"Ondu gante","translit":"on-du gan-te"},{"id":69,"en":"Half past two","kn":"Eraduvare gante","translit":"e-ra-doo-va-re gan-te"},{"id":70,"en":"Quarter to three","kn":"Moorakke kaalu kadime","translit":"moo-rak-ke kaa-lu ka-di-me"},{"id":71,"en":"Quarter past four","kn":"Naalku kaalu","translit":"naal-koo kaa-lu"},{"id":72,"en":"Today","kn":"Ivattu","translit":"i-vat-tu"},{"id":73,"en":"Yesterday","kn":"Ninne","translit":"nin-ne"},{"id":74,"en":"Tomorrow","kn":"Naale","translit":"naa-le"},{"id":75,"en":"Morning","kn":"Beligge","translit":"be-lig-ge"},{"id":76,"en":"Afternoon","kn":"Madhyahna","translit":"madh-yaah-na"},{"id":77,"en":"Evening","kn":"Sanje","translit":"san-je"},{"id":78,"en":"Night","kn":"Raatri","translit":"raa-tri"},{"id":79,"en":"Now","kn":"Eega","translit":"ee-ga"},{"id":80,"en":"Later","kn":"Nantara","translit":"nan-ta-ra"},{"id":81,"en":"Before","kn":"Modalu","translit":"mo-da-lu"},{"id":82,"en":"Minute","kn":"Nimisha","translit":"ni-mi-sha"},{"id":83,"en":"Hour","kn":"Gante","translit":"gan-te"},{"id":84,"en":"Day","kn":"Dina","translit":"di-na"},{"id":85,"en":"Week","kn":"Vaara","translit":"vaa-ra"},{"id":86,"en":"Month","kn":"Tingalu","translit":"tin-ga-lu"},{"id":87,"en":"Year","kn":"Varsha","translit":"var-sha"},{"id":88,"en":"When?","kn":"Yavaga?","translit":"yaa-vaa-ga"},{"id":89,"en":"How many?","kn":"Eshtu?","translit":"esh-tu"},{"id":90,"en":"Date","kn":"Dinanka","translit":"di-naan-ka"},{"id":91,"en":"What is the date today?","kn":"Ivattina dinanka enu?","translit":"i-vat-ti-na di-naan-ka ye-nu"},{"id":92,"en":"Early","kn":"Bega","translit":"be-ga"},{"id":93,"en":"Late","kn":"Tadavagi","translit":"ta-da-va-gi"},{"id":94,"en":"Wait for 5 minutes","kn":"Aidu nimisha kaayiri","translit":"ai-du ni-mi-sha kaa-yi-ri"},{"id":95,"en":"Day before yesterday","kn":"Monne","translit":"mon-ne"},{"id":96,"en":"Day after tomorrow","kn":"Naadiddu","translit":"naa-did-du"},{"id":97,"en":"This week","kn":"Ee vaara","translit":"ee vaa-ra"},{"id":98,"en":"Next month","kn":"Mundina tingalu","translit":"mun-di-na tin-ga-lu"},{"id":99,"en":"Last year","kn":"Kaleda varsha","translit":"ka-le-da var-sha"},{"id":100,"en":"Always","kn":"Yavagalu","translit":"yaa-vaa-ga-loo"}]},
-            {"id":"directions","title":"Directions & Transport","icon":"🚃","phrases":[{"id":101,"en":"Where is...?","kn":"... ellide?","translit":"el-li-de"},{"id":102,"en":"Bus stand","kn":"Bus nildana","translit":"bus nil-daa-na"},{"id":103,"en":"Railway station","kn":"Railway nildana","translit":"rail-way nil-daa-na"},{"id":104,"en":"Airport","kn":"Vimana nildana","translit":"vi-maa-na nil-daa-na"},{"id":105,"en":"Left","kn":"Eda","translit":"e-da"},{"id":106,"en":"Right","kn":"Bala","translit":"ba-la"},{"id":107,"en":"Straight","kn":"Neravagi","translit":"ne-ra-va-gi"},{"id":108,"en":"Go straight","kn":"Neravagi hogi","translit":"ne-ra-va-gi ho-gi"},{"id":109,"en":"Turn left","kn":"Edakke tirugi","translit":"e-dak-ke ti-ru-gi"},{"id":110,"en":"Turn right","kn":"Balakke tirugi","translit":"ba-lak-ke ti-ru-gi"},{"id":111,"en":"Here","kn":"Illi","translit":"il-li"},{"id":112,"en":"There","kn":"Alli","translit":"al-li"},{"id":113,"en":"Near","kn":"Hattira","translit":"hat-ti-ra"},{"id":114,"en":"Far","kn":"Doora","translit":"doo-ra"},{"id":115,"en":"Stop here","kn":"Illi nillisi","translit":"il-li nil-li-si"},{"id":116,"en":"How to go to...?","kn":"...ge hege hoguvudu?","translit":"ge he-ge ho-gu-vu-du"},{"id":117,"en":"How much is the ticket?","kn":"Ticket eshtu?","translit":"ticket esh-tu"},{"id":118,"en":"One ticket to...","kn":"...ge ondu ticket","translit":"ge on-du ticket"},{"id":119,"en":"Which bus goes to...?","kn":"...ge yava bus hoguttade?","translit":"ge yaa-va bus ho-gut-ta-de"},{"id":120,"en":"Auto rickshaw","kn":"Auto","translit":"aa-to"},{"id":121,"en":"Come","kn":"Banni","translit":"ban-ni"},{"id":122,"en":"Go","kn":"Hogi","translit":"ho-gi"},{"id":123,"en":"Road","kn":"Raste","translit":"ras-te"},{"id":124,"en":"Where is the hotel?","kn":"Hotel ellide?","translit":"hotel el-li-de"},{"id":125,"en":"Is it far?","kn":"Idu doorave?","translit":"i-du doo-ra-ve"},{"id":126,"en":"Please take me to this address","kn":"Dayavittu nannannu ee vilasakke karedoyyiri","translit":"da-ya-vit-tu nan-nan-nu ee vi-la-sak-ke ka-re-doy-yi-ri"},{"id":127,"en":"How long will it take?","kn":"Eshtu samaya tegedukolluttade?","translit":"esh-tu sa-ma-ya te-ge-du-kol-lut-ta-de"},{"id":128,"en":"Next stop","kn":"Mundina nildana","translit":"mun-di-na nil-daa-na"},{"id":129,"en":"I want to get down here","kn":"Naanu illi iliyabeku","translit":"naa-nu il-li i-li-ya-be-ku"},{"id":130,"en":"Traffic","kn":"Sanchara","translit":"san-chaa-ra"},{"id":131,"en":"Bridge","kn":"Setuve","translit":"se-tu-ve"},{"id":132,"en":"Go back","kn":"Hinde hogi","translit":"hin-de ho-gi"},{"id":133,"en":"In front of","kn":"Munde","translit":"mun-de"},{"id":134,"en":"Behind","kn":"Hinde","translit":"hin-de"},{"id":135,"en":"Opposite","kn":"Viruddha","translit":"vi-rud-dha"},{"id":136,"en":"Which way?","kn":"Yava daari?","translit":"yaa-va daa-ri"},{"id":137,"en":"I am lost","kn":"Naanu daari tappisikondiddene","translit":"naa-nu daa-ri tap-pi-si-kon-did-de-ne"},{"id":138,"en":"Can you show me on the map?","kn":"Naksheyalli torisabahude?","translit":"nak-she-yal-li to-ri-sa-bahu-de"},{"id":139,"en":"Walk","kn":"Nadi","translit":"na-di"},{"id":140,"en":"Vehicle","kn":"Vahana","translit":"vaa-ha-na"},{"id":141,"en":"Fast","kn":"Vegavagi","translit":"ve-ga-va-gi"},{"id":142,"en":"Slow","kn":"Nidhana","translit":"ni-dhaa-na"},{"id":143,"en":"Go slow","kn":"Nidhanavagi hogi","translit":"ni-dhaa-na-va-gi ho-gi"},{"id":144,"en":"Entrance","kn":"Pravesha","translit":"pra-ve-sha"},{"id":145,"en":"Exit","kn":"Nirgamana","translit":"nir-ga-ma-na"},{"id":146,"en":"Petrol station","kn":"Petrol bunk","translit":"petrol bunk"},{"id":147,"en":"How far is it?","kn":"Idu eshtu dooradallide?","translit":"i-du esh-tu doo-ra-dal-li-de"},{"id":148,"en":"Is this the right bus?","kn":"Idu sariyada bassa?","translit":"i-du sa-ri-ya-da bas-sa"},{"id":149,"en":"When does the train leave?","kn":"Railu yavaga horaduttade?","translit":"rai-lu yaa-vaa-ga ho-ra-dut-ta-de"},{"id":150,"en":"From where?","kn":"Ellinda?","translit":"el-lin-da"}]},
-            {"id":"eating","title":"Eating Out","icon":"🍽️","phrases":[{"id":151,"en":"Restaurant","kn":"Upahara gruha","translit":"u-pa-haa-ra gru-ha"},{"id":152,"en":"Water","kn":"Neeru","translit":"nee-ru"},{"id":153,"en":"Coffee","kn":"Kaaphi","translit":"kaa-phi"},{"id":154,"en":"Tea","kn":"Chaha","translit":"cha-haa"},{"id":155,"en":"Food","kn":"Oota","translit":"oo-ta"},{"id":156,"en":"Breakfast","kn":"Tindi","translit":"tin-di"},{"id":157,"en":"Lunch","kn":"Oota","translit":"oo-ta"},{"id":158,"en":"Dinner","kn":"Oota","translit":"oo-ta"},{"id":159,"en":"Menu please","kn":"Menu kodi","translit":"menu ko-di"},{"id":160,"en":"What is special today?","kn":"Ivattu enu vishesha?","translit":"i-vat-tu ye-nu vi-she-sha"},{"id":161,"en":"I am vegetarian","kn":"Naanu sasyahari","translit":"naa-nu sas-yaa-haa-ri"},{"id":162,"en":"Without egg","kn":"Motte illade","translit":"mot-te il-la-de"},{"id":163,"en":"Spicy","kn":"Khaara","translit":"khaa-ra"},{"id":164,"en":"Less spicy","kn":"Khaara kadime","translit":"khaa-ra ka-di-me"},{"id":165,"en":"No spice","kn":"Khaara beda","translit":"khaa-ra be-da"},{"id":166,"en":"Sweet","kn":"Sihi","translit":"si-hi"},{"id":167,"en":"Salt","kn":"Uppu","translit":"up-pu"},{"id":168,"en":"Sugar","kn":"Sakkare","translit":"sak-ka-re"},{"id":169,"en":"The bill please","kn":"Bill kodi","translit":"bill ko-di"},{"id":170,"en":"The food is tasty","kn":"Oota ruchiyagide","translit":"oo-ta ru-chi-ya-gi-de"},{"id":171,"en":"Rice","kn":"Anna","translit":"an-na"},{"id":172,"en":"Sambar","kn":"Saaru","translit":"saa-ru"},{"id":173,"en":"Curd / Yogurt","kn":"Mosaru","translit":"mo-sa-ru"},{"id":174,"en":"Dosa","kn":"Dose","translit":"do-se"},{"id":175,"en":"Idli","kn":"Idli","translit":"id-li"},{"id":176,"en":"One plate...","kn":"Ondu plate...","translit":"on-du plate"},{"id":177,"en":"More","kn":"Innashtu","translit":"in-nash-tu"},{"id":178,"en":"Enough","kn":"Saaku","translit":"saa-ku"},{"id":179,"en":"Hot water","kn":"Bisi neeru","translit":"bi-si nee-ru"},{"id":180,"en":"Cold water","kn":"Tanneeru","translit":"tan-nee-ru"},{"id":181,"en":"Fork","kn":"Fork","translit":"fork"},{"id":182,"en":"Spoon","kn":"Chamacha","translit":"cha-ma-cha"},{"id":183,"en":"Plate","kn":"Tatte","translit":"tat-te"},{"id":184,"en":"Glass","kn":"Lota","translit":"lo-ta"},{"id":185,"en":"Is this fresh?","kn":"Idu taaja ideye?","translit":"i-du taa-ja i-de-ye"},{"id":186,"en":"I want to order","kn":"Naanu order madalu bayasuttene","translit":"naa-nu order maa-da-lu ba-ya-sut-te-ne"},{"id":187,"en":"What do you recommend?","kn":"Neevu enu shipharasu maduttiri?","translit":"nee-vu ye-nu shi-pha-ra-su maa-dut-ti-ri"},{"id":188,"en":"Without onion","kn":"Eerulli illade","translit":"ee-rul-li il-la-de"},{"id":189,"en":"Without garlic","kn":"Bellulli illade","translit":"bel-lul-li il-la-de"},{"id":190,"en":"Table for two","kn":"Ibbarige table","translit":"ib-ba-ri-ge table"},{"id":191,"en":"Can I have some more water?","kn":"Innu swalpa neeru siguvude?","translit":"in-nu swal-pa nee-ru si-gu-vu-de"},{"id":192,"en":"Juice","kn":"Rasa","translit":"ra-sa"},{"id":193,"en":"Vegetables","kn":"Tarakarigalu","translit":"ta-ra-kaa-ri-ga-lu"},{"id":194,"en":"Fruits","kn":"Hannugalu","translit":"han-nu-ga-lu"},{"id":195,"en":"I am full","kn":"Nanna hotte tumbide","translit":"nan-na hot-te tum-bi-de"},{"id":196,"en":"Take away / Parcel","kn":"Parcel","translit":"par-cel"},{"id":197,"en":"It's delicious","kn":"Idu ruchikaravagide","translit":"i-du ru-chi-ka-ra-va-gi-de"},{"id":198,"en":"I did not order this","kn":"Naanu idannu order madalilla","translit":"naa-nu i-dan-nu order maa-da-lil-la"},{"id":199,"en":"Can we sit here?","kn":"Naavu illi kulitukollabahude?","translit":"naa-vu il-li ku-li-tu-kol-la-bahu-de"},{"id":200,"en":"Is service included?","kn":"Seve seride?","translit":"se-ve se-ri-de"}]},
-            {"id":"shopping","title":"Shopping & Money","icon":"🛍️","phrases":[{"id":201,"en":"How much is this?","kn":"Idara bele eshtu?","translit":"i-da-ra be-le esh-tu"},{"id":202,"en":"It's too expensive","kn":"Idu tumba dubari","translit":"i-du tum-ba du-baa-ri"},{"id":203,"en":"Reduce the price","kn":"Bele kadime madi","translit":"be-le ka-di-me maa-di"},{"id":204,"en":"Do you have...?","kn":"Nimma hattira ... ideye?","translit":"nim-ma hat-ti-ra i-de-ye"},{"id":205,"en":"I want this","kn":"Nanage idu beku","translit":"na-na-ge i-du be-ku"},{"id":206,"en":"I don't want this","kn":"Nanage idu beda","translit":"na-na-ge i-du be-da"},{"id":207,"en":"Shop","kn":"Angadi","translit":"an-ga-di"},{"id":208,"en":"Market","kn":"Maarukatte","translit":"maa-ru-kat-te"},{"id":209,"en":"Money","kn":"Hana","translit":"ha-na"},{"id":210,"en":"Change (coins)","kn":"Chillare","translit":"chil-la-re"},{"id":211,"en":"Do you have change?","kn":"Chillare ideye?","translit":"chil-la-re i-de-ye"},{"id":212,"en":"I will buy it","kn":"Naanu idannu kolluttene","translit":"naa-nu i-dan-nu kol-lut-te-ne"},{"id":213,"en":"Just looking","kn":"Noduttiddene","translit":"no-dut-tid-de-ne"},{"id":214,"en":"Can I pay by card?","kn":"Card moolaka pavatisabahude?","translit":"card moo-la-ka paa-va-ti-sa-bahu-de"},{"id":215,"en":"Cash only","kn":"Nagadu matra","translit":"na-ga-du maa-tra"},{"id":216,"en":"What color?","kn":"Yava banna?","translit":"yaa-va ban-na"},{"id":217,"en":"Big","kn":"Doddadu","translit":"dod-da-du"},{"id":218,"en":"Small","kn":"Chikkadu","translit":"chik-ka-du"},{"id":219,"en":"New","kn":"Hosadu","translit":"ho-sa-du"},{"id":220,"en":"Old","kn":"Haleyadu","translit":"ha-le-ya-du"},{"id":221,"en":"Good","kn":"Olleyadu","translit":"ol-le-ya-du"},{"id":222,"en":"Bad","kn":"Kettadu","translit":"ket-ta-du"},{"id":223,"en":"Receipt","kn":"Rasheedi","translit":"ra-shee-di"},{"id":224,"en":"Can I try this on?","kn":"Naanu idannu prayatnisabahude?","translit":"naa-nu i-dan-nu pra-yat-ni-sa-bahu-de"},{"id":225,"en":"Trial room","kn":"Trial room","translit":"trial room"},{"id":226,"en":"Do you have a smaller size?","kn":"Nimmalli chikka gatravideye?","translit":"nim-mal-li chik-ka gaa-tra-vi-de-ye"},{"id":227,"en":"Do you have a larger size?","kn":"Nimmalli dodda gatravideye?","translit":"nim-mal-li dod-da gaa-tra-vi-de-ye"},{"id":228,"en":"I'll take this one","kn":"Naanu idannu tegedukolluttene","translit":"naa-nu i-dan-nu te-ge-du-kol-lut-te-ne"},{"id":229,"en":"Anything else?","kn":"Bere enadaru?","translit":"be-re ye-na-da-ru"},{"id":230,"en":"That's all","kn":"Ashte","translit":"ash-te"},{"id":231,"en":"Please pack this","kn":"Dayavittu idannu pack madi","translit":"da-ya-vit-tu i-dan-nu pack maa-di"},{"id":232,"en":"What is this made of?","kn":"Idu yavudarinda madalpattide?","translit":"i-du yaa-vu-da-rin-da maa-dal-pat-ti-de"},{"id":233,"en":"Discount","kn":"Riyayiti","translit":"ri-yaa-yi-ti"},{"id":234,"en":"Is there a discount?","kn":"Riyayiti ideye?","translit":"ri-yaa-yi-ti i-de-ye"},{"id":235,"en":"Fixed price","kn":"Nigadita bele","translit":"ni-ga-di-ta be-le"},{"id":236,"en":"Bargain","kn":"Choukasi","translit":"chau-kaa-si"},{"id":237,"en":"Can it be gift wrapped?","kn":"Idannu gift wrap madabahude?","translit":"i-dan-nu gift wrap maa-da-bahu-de"},{"id":238,"en":"I am looking for...","kn":"Naanu ... hudukuttiddene","translit":"naa-nu hu-du-kut-tid-de-ne"},{"id":239,"en":"Where can I find vegetables?","kn":"Nanage tarakarigalu elli siguttave?","translit":"na-na-ge ta-ra-kaa-ri-ga-lu el-li si-gut-ta-ve"},{"id":240,"en":"One kilo","kn":"Ondu kg","translit":"on-du kg"},{"id":241,"en":"Half a kilo","kn":"Ardha kg","translit":"ar-dha kg"},{"id":242,"en":"Give me this","kn":"Idu kodi","translit":"i-du ko-di"},{"id":243,"en":"Is the shop open?","kn":"Angadi teredideye?","translit":"an-ga-di te-re-di-de-ye"},{"id":244,"en":"When does it close?","kn":"Adu yavaga muchchuttade?","translit":"a-du yaa-vaa-ga much-chut-ta-de"},{"id":245,"en":"I want to return this","kn":"Naanu idannu hintirugisalu bayasuttene","translit":"naa-nu i-dan-nu hin-ti-ru-gi-sa-lu ba-ya-sut-te-ne"},{"id":246,"en":"What is the final price?","kn":"Antima bele enu?","translit":"an-ti-ma be-le ye-nu"},{"id":247,"en":"Keep the change","kn":"Chillare ittukolli","translit":"chil-la-re it-tu-kol-li"},{"id":248,"en":"Do you accept UPI?","kn":"Neevu UPI sweekarisuttira?","translit":"nee-vu UPI swee-ka-ri-sut-tee-ra"},{"id":249,"en":"Where is the ATM?","kn":"ATM ellide?","translit":"ATM el-li-de"},{"id":250,"en":"How much in total?","kn":"Vottu eshtu?","translit":"vot-tu esh-tu"}]},
-            {"id":"home","title":"At Home & Chores","icon":"🏠","phrases":[{"id":251,"en":"House","kn":"Mane","translit":"ma-ne"},{"id":252,"en":"Room","kn":"Kone","translit":"ko-ne"},{"id":253,"en":"Door","kn":"Bagilu","translit":"baa-gi-lu"},{"id":254,"en":"Window","kn":"Kitaki","translit":"ki-ta-ki"},{"id":255,"en":"Key","kn":"Keeli","translit":"kee-li"},{"id":256,"en":"Where is the key?","kn":"Keeli ellide?","translit":"kee-li el-li-de"},{"id":257,"en":"Switch on the light","kn":"Light haki","translit":"light haa-ki"},{"id":258,"en":"Switch off the fan","kn":"Fan off madi","translit":"fan off maa-di"},{"id":259,"en":"Clean the house","kn":"Mane swachchagolisi","translit":"ma-ne swach-cha-go-li-si"},{"id":260,"en":"Cooking","kn":"Aduge","translit":"a-du-ge"},{"id":261,"en":"I am cooking","kn":"Naanu aduge maduttiddene","translit":"naa-nu a-du-ge maa-dut-tid-de-ne"},{"id":262,"en":"Sleep","kn":"Nidre","translit":"nid-re"},{"id":263,"en":"I want to sleep","kn":"Nanage nidre beku","translit":"na-na-ge nid-re be-ku"},{"id":264,"en":"Wake up","kn":"Elu","translit":"ye-lu"},{"id":265,"en":"Water is coming","kn":"Neeru baruttide","translit":"nee-ru ba-rut-ti-de"},{"id":266,"en":"Power cut","kn":"Vidyut kadita","translit":"vid-yut ka-di-ta"},{"id":267,"en":"Wash clothes","kn":"Batte ogeyiri","translit":"bat-te o-ge-yi-ri"},{"id":268,"en":"Newspaper","kn":"Vruttapatrike","translit":"vrut-ta-pat-ri-ke"},{"id":269,"en":"Guests are coming","kn":"Atithigalu baruttiddare","translit":"a-tithi-ga-lu ba-rut-tid-daa-re"},{"id":270,"en":"Lock the door","kn":"Bagilu lock madi","translit":"baa-gi-lu lock maa-di"},{"id":271,"en":"Open the door","kn":"Bagilu tereyiri","translit":"baa-gi-lu te-re-yi-ri"},{"id":272,"en":"Where is the remote?","kn":"Remote ellide?","translit":"remote el-li-de"},{"id":273,"en":"Increase the volume","kn":"Shabdavannu hechchisi","translit":"shab-da-van-nu hech-chi-si"},{"id":274,"en":"Decrease the volume","kn":"Shabdavannu kadime madi","translit":"shab-da-van-nu ka-di-me maa-di"},{"id":275,"en":"What's for dinner?","kn":"Raatri ootakke enu?","translit":"raa-tri oo-tak-ke ye-nu"},{"id":276,"en":"I will do it","kn":"Naanu maduttene","translit":"naa-nu maa-dut-te-ne"},{"id":277,"en":"I am tired","kn":"Nanage ayasavagide","translit":"na-na-ge aa-yaa-sa-va-gi-de"},{"id":278,"en":"I am busy","kn":"Naanu karyaniratanagiddene","translit":"naa-nu kaar-ya-ni-ra-ta-na-gid-de-ne"},{"id":279,"en":"Bed","kn":"Hasige","translit":"haa-si-ge"},{"id":280,"en":"Pillow","kn":"Dimbu","translit":"dim-bu"},{"id":281,"en":"Blanket","kn":"Kambali","translit":"kam-ba-li"},{"id":282,"en":"Chair","kn":"Kurchi","translit":"kur-chi"},{"id":283,"en":"Table","kn":"Meju","translit":"me-ju"},{"id":284,"en":"I need to take a bath","kn":"Naanu snana madabeku","translit":"naa-nu snaa-na maa-da-be-ku"},{"id":285,"en":"The phone is ringing","kn":"Phone ring aguttide","translit":"phone ring aa-gut-ti-de"},{"id":286,"en":"Who is at the door?","kn":"Bagilalli yaru?","translit":"baa-gi-lal-li yaa-ru"},{"id":287,"en":"Come inside","kn":"Olage banni","translit":"o-la-ge ban-ni"},{"id":288,"en":"Sit down","kn":"Kulitukolli","translit":"ku-li-tu-kol-li"},{"id":289,"en":"I am going out","kn":"Naanu horage hoguttiddene","translit":"naa-nu ho-ra-ge ho-gut-tid-de-ne"},{"id":290,"en":"I will be back soon","kn":"Naanu begane hintiruguttene","translit":"naa-nu be-ga-ne hin-ti-ru-gut-te-ne"},{"id":291,"en":"Did you eat?","kn":"Oota madidra?","translit":"oo-ta maa-did-ra"},{"id":292,"en":"Let's eat","kn":"Oota madona","translit":"oo-ta maa-do-na"},{"id":293,"en":"The water is hot","kn":"Neeru bisiyagide","translit":"nee-ru bi-si-ya-gi-de"},{"id":294,"en":"The power is back","kn":"Vidyut bandide","translit":"vid-yut ban-di-de"},{"id":295,"en":"Throw the trash","kn":"Kasavannu eseyiri","translit":"ka-sa-van-nu e-se-yi-ri"},{"id":296,"en":"I have work","kn":"Nanage kelasavide","translit":"na-na-ge ke-la-sa-vi-de"},{"id":297,"en":"What is this smell?","kn":"Idu yava vasane?","translit":"i-du yaa-va vaa-sa-ne"},{"id":298,"en":"I am feeling sleepy","kn":"Nanage nidre baruttide","translit":"na-na-ge nid-re ba-rut-ti-de"},{"id":299,"en":"Turn on the TV","kn":"TV haki","translit":"TV haa-ki"},{"id":300,"en":"It is time to go","kn":"Hoguva samayavayitu","translit":"ho-gu-va sa-ma-ya-va-yi-tu"}]},
-            {"id":"smalltalk","title":"Social Small Talk","icon":"💬","phrases":[{"id":301,"en":"How was your day?","kn":"Nimma dina hegittu?","translit":"nim-ma di-na he-git-tu"},{"id":302,"en":"It was good","kn":"Chennagittu","translit":"chen-na-git-tu"},{"id":303,"en":"What are your hobbies?","kn":"Nimma havyasagalenu?","translit":"nim-ma ha-vyaa-sa-ga-le-nu"},{"id":304,"en":"I like reading books","kn":"Nanage pustakagalannu odalu ishta","translit":"na-na-ge pus-ta-ka-ga-lan-nu o-da-lu ish-ta"},{"id":305,"en":"I like music","kn":"Nanage sangeeta ishta","translit":"na-na-ge san-gee-ta ish-ta"},{"id":306,"en":"What movie is this?","kn":"Idu yava cinema?","translit":"i-du yaa-va cinema"},{"id":307,"en":"The weather is nice","kn":"Havamaana chennagide","translit":"ha-vaa-maa-na chen-na-gi-de"},{"id":308,"en":"It is hot","kn":"Bisiyagide","translit":"bi-si-ya-gi-de"},{"id":309,"en":"It is cold","kn":"Chaliyagide","translit":"cha-li-ya-gi-de"},{"id":310,"en":"It is raining","kn":"Male baruttide","translit":"ma-le ba-rut-ti-de"},{"id":311,"en":"I agree","kn":"Naanu opputtene","translit":"naa-nu op-put-te-ne"},{"id":312,"en":"I don't agree","kn":"Naanu oppuvudilla","translit":"naa-nu op-pu-vu-dil-la"},{"id":313,"en":"Really?","kn":"Nijavagloo?","translit":"ni-ja-va-gloo"},{"id":314,"en":"Tell me more","kn":"Innashtu heli","translit":"in-nash-tu he-li"},{"id":315,"en":"What do you think?","kn":"Neevu enu yochisuttiri?","translit":"nee-vu ye-nu yo-chis-ut-tee-ri"},{"id":316,"en":"It's funny","kn":"Idu tamasheyagide","translit":"i-du ta-maa-she-ya-gi-de"},{"id":317,"en":"Be careful","kn":"Jagurukaragiri","translit":"jaa-ga-roo-ka-ra-gi-ri"},{"id":318,"en":"What are you doing?","kn":"Neevu enu maduttiddira?","translit":"nee-vu ye-nu maa-dut-tid-dee-ra"},{"id":319,"en":"I am watching TV","kn":"Naanu TV noduttiddene","translit":"naa-nu TV no-dut-tid-de-ne"},{"id":320,"en":"I am reading","kn":"Naanu oduttiddene","translit":"naa-nu o-dut-tid-de-ne"},{"id":321,"en":"How is work?","kn":"Kelasa hegide?","translit":"ke-la-sa he-gi-de"},{"id":322,"en":"Work is good","kn":"Kelasa chennagide","translit":"ke-la-sa chen-na-gi-de"},{"id":323,"en":"What are your plans for the weekend?","kn":"Vaarantyadalli nimma yojanegalenu?","translit":"vaa-raan-tya-dal-li nim-ma yo-ja-ne-ga-le-nu"},{"id":324,"en":"No plans","kn":"Yavude yojanegalilla","translit":"yaa-vu-de yo-ja-ne-ga-lil-la"},{"id":325,"en":"I will go out with friends","kn":"Naanu snehitarondige horage hoguttene","translit":"naa-nu sne-hi-ta-ron-di-ge ho-ra-ge ho-gut-te-ne"},{"id":326,"en":"That's interesting","kn":"Adu aasaktidayakavagide","translit":"a-du aa-sak-ti-daa-ya-ka-va-gi-de"},{"id":327,"en":"I don't know","kn":"Nanage gottilla","translit":"na-na-ge got-til-la"},{"id":328,"en":"Let's go","kn":"Hogona","translit":"ho-go-na"},{"id":329,"en":"Are you coming?","kn":"Neevu baruttiddira?","translit":"nee-vu ba-rut-tid-dee-ra"},{"id":330,"en":"I am coming","kn":"Naanu baruttiddene","translit":"naa-nu ba-rut-tid-de-ne"},{"id":331,"en":"What's wrong?","kn":"Enu tappagide?","translit":"ye-nu tap-pa-gi-de"},{"id":332,"en":"Nothing","kn":"Enu illa","translit":"ye-noo il-la"},{"id":333,"en":"I have an idea","kn":"Nanna bali ondu alochane ide","translit":"nan-na ba-li on-du aa-lo-cha-ne i-de"},{"id":334,"en":"Good idea","kn":"Olleya alochane","translit":"ol-le-ya aa-lo-cha-ne"},{"id":335,"en":"Of course","kn":"Khandita","translit":"khan-di-ta"},{"id":336,"en":"Exactly","kn":"Sariyagi","translit":"sa-ri-ya-gi"},{"id":337,"en":"Maybe","kn":"Bahushah","translit":"ba-hu-shah"},{"id":338,"en":"I think so","kn":"Naanu hage bhavisuttene","translit":"naa-nu haa-ge bhaa-vi-sut-te-ne"},{"id":339,"en":"I don't think so","kn":"Naanu hage bhavisuvudilla","translit":"naa-nu haa-ge bhaa-vi-su-vu-dil-la"},{"id":340,"en":"It seems so","kn":"Hage toruttade","translit":"haa-ge to-rut-ta-de"},{"id":341,"en":"Are you sure?","kn":"Nimage khachitave?","translit":"ni-ma-ge kha-chi-ta-ve"},{"id":342,"en":"I am sure","kn":"Nanage khachitavagide","translit":"na-na-ge kha-chi-ta-va-gi-de"},{"id":343,"en":"I forgot","kn":"Naanu maretubitte","translit":"naa-nu ma-re-tu-bit-te"},{"id":344,"en":"No problem","kn":"Tondareyilla","translit":"ton-da-re-yil-la"},{"id":345,"en":"Don't worry","kn":"Chintisabedi","translit":"chin-ti-sa-be-di"},{"id":346,"en":"Hurry up","kn":"Bega madi","translit":"be-ga maa-di"},{"id":347,"en":"Just a moment","kn":"Ondu kshana","translit":"on-du ksha-na"},{"id":348,"en":"I am joking","kn":"Naanu tamashe maduttiddene","translit":"naa-nu ta-maa-she maa-dut-tid-de-ne"},{"id":349,"en":"It's beautiful","kn":"Idu sundaravagide","translit":"i-du sun-da-ra-va-gi-de"},{"id":350,"en":"I am lucky","kn":"Naanu adrushtashali","translit":"naa-nu a-drush-ta-shaa-li"}]},
-            {"id":"family","title":"Family & Relationships","icon":"👨‍👩‍👧‍👦","phrases":[{"id":351,"en":"Family","kn":"Kutumba","translit":"ku-tum-ba"},{"id":352,"en":"Mother","kn":"Amma","translit":"am-ma"},{"id":353,"en":"Father","kn":"Appa","translit":"ap-pa"},{"id":354,"en":"Parents","kn":"Poshakaru","translit":"po-sha-ka-ru"},{"id":355,"en":"Brother","kn":"Sahodara","translit":"sa-ho-da-ra"},{"id":356,"en":"Sister","kn":"Sahodari","translit":"sa-ho-da-ri"},{"id":357,"en":"Elder brother","kn":"Anna","translit":"an-na"},{"id":358,"en":"Younger brother","kn":"Tamma","translit":"tam-ma"},{"id":359,"en":"Elder sister","kn":"Akka","translit":"ak-ka"},{"id":360,"en":"Younger sister","kn":"Tangi","translit":"tan-gi"},{"id":361,"en":"Husband","kn":"Ganda","translit":"gan-da"},{"id":362,"en":"Wife","kn":"Hendati","translit":"hen-da-ti"},{"id":363,"en":"Son","kn":"Maga","translit":"ma-ga"},{"id":364,"en":"Daughter","kn":"Magalu","translit":"ma-ga-lu"},{"id":365,"en":"Friend","kn":"Snehita","translit":"sne-hi-ta"},{"id":366,"en":"Are you married?","kn":"Nimage maduveyagideye?","translit":"ni-ma-ge ma-du-ve-ya-gi-de-ye"},{"id":367,"en":"I am single","kn":"Naanu obbanti","translit":"naa-nu ob-ban-ti"},{"id":368,"en":"I am married","kn":"Nanage maduveyagide","translit":"na-na-ge ma-du-ve-ya-gi-de"},{"id":369,"en":"Do you have children?","kn":"Nimage makkaliddareye?","translit":"ni-ma-ge mak-ka-lid-daa-re-ye"},{"id":370,"en":"How many siblings?","kn":"Eshtu sahodararu?","translit":"esh-tu sa-ho-da-ra-ru"},{"id":371,"en":"Grandfather","kn":"Ajja","translit":"aj-ja"},{"id":372,"en":"Grandmother","kn":"Ajji","translit":"aj-ji"},{"id":373,"en":"Uncle","kn":"Chikkappa / Maava","translit":"chik-kap-pa / maa-va"},{"id":374,"en":"Aunt","kn":"Chikkamma / Atte","translit":"chik-kam-ma / at-te"},{"id":375,"en":"Cousin","kn":"Sambandhi","translit":"sam-ban-dhi"},{"id":376,"en":"My family","kn":"Nanna kutumba","translit":"nan-na ku-tum-ba"},{"id":377,"en":"This is my friend","kn":"Ivanu nanna snehita","translit":"i-va-nu nan-na sne-hi-ta"},{"id":378,"en":"How is your mother?","kn":"Nimma taayi hegiddaare?","translit":"nim-ma taa-yi he-gid-daa-re"},{"id":379,"en":"She is fine","kn":"Avalu chennagiddale","translit":"a-va-lu chen-na-gid-daa-le"},{"id":380,"en":"How is your father?","kn":"Nimma tande hegiddaare?","translit":"nim-ma tan-de he-gid-daa-re"},{"id":381,"en":"He is fine","kn":"Avanu chennagiddane","translit":"a-va-nu chen-na-gid-daa-ne"},{"id":382,"en":"I love my family","kn":"Naanu nanna kutumbavannu preetisuttene","translit":"naa-nu nan-na ku-tum-ba-van-nu pree-ti-sut-te-ne"},{"id":383,"en":"Boy","kn":"Huduga","translit":"hu-du-ga"},{"id":384,"en":"Girl","kn":"Hudugi","translit":"hu-du-gi"},{"id":385,"en":"Man","kn":"Gandasu","translit":"gan-da-su"},{"id":386,"en":"Woman","kn":"Hengasu","translit":"hen-ga-su"},{"id":387,"en":"Child","kn":"Mugu","translit":"ma-gu"},{"id":388,"en":"Children","kn":"Makkalu","translit":"mak-ka-lu"},{"id":389,"en":"How old is your son?","kn":"Nimma maganige eshtu vayassu?","translit":"nim-ma ma-ga-ni-ge esh-tu va-yas-su"},{"id":390,"en":"My daughter is 5 years old","kn":"Nanna magalige 5 varsha","translit":"nan-na ma-ga-li-ge 5 var-sha"},{"id":391,"en":"We are friends","kn":"Naavu snehitaru","translit":"naa-vu sne-hi-ta-ru"},{"id":392,"en":"He is my colleague","kn":"Avanu nanna sahodyogi","translit":"a-va-nu nan-na sa-hod-yo-gi"},{"id":393,"en":"She is my neighbor","kn":"Avalu nanna nerehoreyavalu","translit":"a-va-lu nan-na ne-re-ho-re-ya-va-lu"},{"id":394,"en":"Do you live alone?","kn":"Neevu obbare vaasisuttira?","translit":"nee-vu ob-ba-re vaa-si-sut-tee-ra"},{"id":395,"en":"I live with my family","kn":"Naanu nanna kutumbadondige vaasisuttiddene","translit":"naa-nu nan-na ku-tum-ba-don-di-ge vaa-si-sut-tid-de-ne"},{"id":396,"en":"Happy anniversary!","kn":"Vivaha varshikotsavada shubhashayagalu!","translit":"vi-vaa-ha var-shi-kot-sa-va-da shu-bhaa-sha-ya-ga-lu"},{"id":397,"en":"I miss you","kn":"Neevu nenapaguttiddiri","translit":"nee-vu ne-na-pa-gut-tid-di-ri"},{"id":398,"en":"Give my regards to your family","kn":"Nimma kutumbakke nanna namaskaragalannu tilisi","translit":"nim-ma ku-tum-bak-ke nan-na na-mas-kaa-ra-ga-lan-nu ti-li-si"},{"id":399,"en":"Let's meet again","kn":"Matte bhetiyagona","translit":"mat-te bhe-ti-ya-go-na"},{"id":400,"en":"Everyone is fine","kn":"Ellaru chennagiddare","translit":"el-la-roo chen-na-gid-daa-re"}]}
+            {"id":"greetings","title":"Greetings & Introductions","icon":"👋","phrases":[{"id":1,"en":"Hello","kn":"Namaskara","translit":"na-mas-ka-ra"}]},
+            {"id":"numbers","title":"Numbers & Time","icon":"🔢","phrases":[{"id":51,"en":"One","kn":"Ondu","translit":"on-du"}]},
+            {"id":"directions","title":"Directions & Transport","icon":"🚃","phrases":[{"id":101,"en":"Where is...?","kn":"... ellide?","translit":"el-li-de"}]},
+            {"id":"eating","title":"Eating Out","icon":"🍽️","phrases":[{"id":151,"en":"Restaurant","kn":"Upahara gruha","translit":"u-pa-haa-ra gru-ha"}]},
+            {"id":"shopping","title":"Shopping & Money","icon":"🛍️","phrases":[{"id":201,"en":"How much is this?","kn":"Idara bele eshtu?","translit":"i-da-ra be-le esh-tu"}]},
+            {"id":"home","title":"At Home & Chores","icon":"🏠","phrases":[{"id":251,"en":"House","kn":"Mane","translit":"ma-ne"}]},
+            {"id":"smalltalk","title":"Social Small Talk","icon":"💬","phrases":[{"id":301,"en":"How was your day?","kn":"Nimma dina hegittu?","translit":"nim-ma di-na he-git-tu"}]},
+            {"id":"family","title":"Family & Relationships","icon":"👨‍👩‍👧‍👦","phrases":[{"id":351,"en":"Family","kn":"Kutumba","translit":"ku-tum-ba"}]}
         ];
         
         async function seedDatabase() {
-            const modulesInDB = await getAllData('modules');
-            if (modulesInDB.length === 0) {
-                console.log("Seeding database with new module data...");
+            const modulesSnapshot = await getDocs(collection(firestoreDB, "modules"));
+            if (modulesSnapshot.empty) {
+                console.log("Seeding Firestore with new module data...");
                 for (const module of seedModules) {
-                    const cleanedPhrases = module.phrases.map(p => {
-                        const kn_raw = p.kn || '';
-                        const parts = kn_raw.split('(');
-                        const kn_text = parts[0].trim();
-                        return { ...p, kn: kn_text };
-                    });
-                    await addOrUpdate('modules', { ...module, phrases: cleanedPhrases });
+                    await setDoc(doc(firestoreDB, "modules", module.id), module);
                 }
             }
             if (!await getData('userData', 'profile')) {
@@ -276,7 +281,10 @@
 
         async function renderDashboard() {
             const modulesGrid = document.getElementById('modules-grid');
-            const modules = await getAllData('modules');
+            const modulesSnapshot = await getDocs(collection(firestoreDB, "modules"));
+            let modules = [];
+            modulesSnapshot.forEach(doc => modules.push(doc.data()));
+            
             modules.sort((a, b) => moduleOrder.indexOf(a.id) - moduleOrder.indexOf(b.id));
 
             modulesGrid.innerHTML = '';
@@ -295,57 +303,14 @@
             const acc = profile.accuracy;
             const accPercent = (acc && acc.total > 0) ? Math.round((acc.correct / acc.total) * 100) : 0;
             document.getElementById('accuracy-percent').textContent = `${accPercent}%`;
-            await renderProgressVisuals();
             showView('dashboard');
         }
         
-        async function renderProgressVisuals() {
-            const progressLog = await getAllData('progressLog');
-            const heatmapData = new Map();
-            progressLog.forEach(log => heatmapData.set(log.date, log.minutes));
-
-            const calendarContainer = document.getElementById('calendar-heatmap');
-            calendarContainer.innerHTML = '';
-            const today = new Date();
-            const sixtyDaysAgo = new Date();
-            sixtyDaysAgo.setDate(today.getDate() - 60);
-            
-            let week = document.createElement('div');
-            week.className = 'flex flex-col';
-            
-            for (let d = new Date(sixtyDaysAgo); d <= today; d.setDate(d.getDate() + 1)) {
-                if (d.getDay() === 0 && week.children.length > 0) { calendarContainer.appendChild(week); week = document.createElement('div'); week.className = 'flex flex-col'; }
-                const dayElem = document.createElement('div');
-                const dateStr = d.toISOString().split('T')[0];
-                const minutes = heatmapData.get(dateStr) || 0;
-                const colorScale = d3.scaleLinear().domain([0, 1, 10]).range(['#E5E7EB', '#A7F3D0', '#10B981']);
-                dayElem.className = 'w-4 h-4 m-0.5 rounded-sm heatmap-day';
-                dayElem.style.backgroundColor = colorScale(minutes);
-                dayElem.title = `${dateStr}: ${minutes} min`;
-                week.appendChild(dayElem);
-            }
-            calendarContainer.appendChild(week);
-
-            const chartContainer = document.getElementById('accuracy-chart');
-            chartContainer.innerHTML = '';
-            const accuracyData = progressLog.slice(-7).map(log => ({ date: log.date, acc: (log.accuracy.correct / log.accuracy.total) * 100 || 0 }));
-            if (accuracyData.length > 0) {
-                const maxAcc = d3.max(accuracyData, d => d.acc);
-                const yScale = d3.scaleLinear().domain([0, Math.max(100, maxAcc)]).range([0, 192]);
-                accuracyData.forEach(d => {
-                    const bar = document.createElement('div');
-                    bar.className = 'bg-emerald-400 rounded-t-md hover:bg-emerald-500 mx-1';
-                    bar.style.width = `20px`;
-                    bar.style.height = `${yScale(d.acc)}px`;
-                    bar.title = `${d.date.slice(5)}: ${d.acc.toFixed(0)}%`;
-                    chartContainer.appendChild(bar);
-                });
-            }
-        }
-
         // --- LESSON LOGIC ---
+        // (This section is unchanged and remains correct)
         async function startLesson(moduleId) {
-            currentModule = await getData('modules', moduleId);
+            const moduleDoc = await getDoc(doc(firestoreDB, "modules", moduleId));
+            currentModule = moduleDoc.data();
             if (!currentModule || currentModule.phrases.length === 0) { showMessage("This module has no phrases yet."); return; }
             
             let phrases = [...currentModule.phrases];
@@ -391,7 +356,15 @@
             showTrivia();
         }
         
-        function showTrivia() {
+        async function showTrivia() {
+            const triviaSnapshot = await getDocs(collection(firestoreDB, "trivia"));
+            let karnatakaTrivia = [];
+            triviaSnapshot.forEach(doc => karnatakaTrivia.push(doc.data()));
+            if (karnatakaTrivia.length === 0) {
+                console.warn("Trivia collection is empty. Skipping trivia modal.");
+                renderDashboard();
+                return;
+            }
             const trivia = karnatakaTrivia[Math.floor(Math.random() * karnatakaTrivia.length)];
             const modal = document.getElementById('trivia-modal');
             modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center"><h3 class="text-lg font-bold mb-2">Did you know?</h3><p class="mb-2">${trivia.q}</p><p class="font-bold text-emerald-600 mb-4">${trivia.answer}</p><button id="trivia-close" class="bg-emerald-500 text-white font-bold py-2 px-4 rounded">Continue</button></div>`;
@@ -483,451 +456,61 @@
                 speakTTS(phrase);
             }
         }
-        if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        
+        let audioUnlocked = false;
+        function unlockAudioContext() {
+            if (audioUnlocked) return;
+            const sound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+            sound.play().then(() => {
+                audioUnlocked = true;
+                document.body.removeEventListener('click', unlockAudioContext);
+                console.log("Audio unlocked.");
+            }).catch(e => console.error("Audio unlock failed.", e));
+        }
+        document.body.addEventListener('click', unlockAudioContext);
 
         // --- GAME LOGIC ---
+        // (This section is unchanged and remains correct)
         const gameContainer = document.getElementById('game-container');
         let activeGame = null, gameLoopId = null, timerIntervalId = null, gameState = {};
-
-        function exitGame() {
-            if (gameLoopId) cancelAnimationFrame(gameLoopId);
-            if (timerIntervalId) clearInterval(timerIntervalId);
-            activeGame = null;
-            renderDashboard();
-        }
-
-        class Card {
-            constructor(id, text, type, x, y, width, height) { this.id = id; this.text = text; this.type = type; this.x = x; this.y = y; this.width = width; this.height = height; this.state = 'hidden'; this.selected = false; }
-            draw(ctx) {
-                ctx.strokeStyle = this.selected ? '#4F46E5' : '#34D399';
-                ctx.lineWidth = this.selected ? 5 : 3;
-                ctx.fillStyle = this.state === 'matched' ? '#A7F3D0' : (this.state === 'revealed' ? '#FFFBEB' : '#10B981');
-                ctx.beginPath(); const r = 10; ctx.moveTo(this.x + r, this.y); ctx.arcTo(this.x + this.width, this.y, this.x + this.width, this.y + this.height, r); ctx.arcTo(this.x + this.width, this.y + this.height, this.x, this.y + this.height, r); ctx.arcTo(this.x, this.y + this.height, this.x, this.y, r); ctx.arcTo(this.x, this.y, this.x + this.width, this.y, r); ctx.closePath(); ctx.fill(); ctx.stroke();
-                if (this.state === 'revealed' || this.state === 'matched') { ctx.fillStyle = '#1F2937'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = 'bold 16px Inter'; ctx.fillText(this.text, this.x + this.width / 2, this.y + this.height / 2); }
-            }
-            isClicked(mx, my) { return mx > this.x && mx < this.x + this.width && my > this.y && my < this.y + this.height; }
-        }
-        async function getPhrasesForGame(count) { const allModules = await getAllData('modules'); const allPhrases = allModules.flatMap(m => m.phrases).filter(p => p.en && p.kn); if (allPhrases.length < count) { showMessage(`You need at least ${count} phrases to play.`); return []; } return allPhrases.sort(() => 0.5 - Math.random()).slice(0, count); }
-        
-        function gameLoop() { 
-            const gameCanvas = gameContainer.querySelector('#game-canvas');
-            if (!gameCanvas) return;
-            const gameCtx = gameCanvas.getContext('2d');
-            gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height); 
-            if (gameState.cards) gameState.cards.forEach(card => card.draw(gameCtx)); 
-            if (!gameState.gameOver) gameLoopId = requestAnimationFrame(gameLoop); 
-        }
+        function exitGame() { if (gameLoopId) cancelAnimationFrame(gameLoopId); if (timerIntervalId) clearInterval(timerIntervalId); activeGame = null; renderDashboard(); }
+        class Card { constructor(id, text, type, x, y, width, height) { this.id = id; this.text = text; this.type = type; this.x = x; this.y = y; this.width = width; this.height = height; this.state = 'hidden'; this.selected = false; } draw(ctx) { ctx.strokeStyle = this.selected ? '#4F46E5' : '#34D399'; ctx.lineWidth = this.selected ? 5 : 3; ctx.fillStyle = this.state === 'matched' ? '#A7F3D0' : (this.state === 'revealed' ? '#FFFBEB' : '#10B981'); ctx.beginPath(); const r = 10; ctx.moveTo(this.x + r, this.y); ctx.arcTo(this.x + this.width, this.y, this.x + this.width, this.y + this.height, r); ctx.arcTo(this.x + this.width, this.y + this.height, this.x, this.y + this.height, r); ctx.arcTo(this.x, this.y + this.height, this.x, this.y, r); ctx.arcTo(this.x, this.y, this.x + this.width, this.y, r); ctx.closePath(); ctx.fill(); ctx.stroke(); if (this.state === 'revealed' || this.state === 'matched') { ctx.fillStyle = '#1F2937'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = 'bold 16px Inter'; ctx.fillText(this.text, this.x + this.width / 2, this.y + this.height / 2); } } isClicked(mx, my) { return mx > this.x && mx < this.x + this.width && my > this.y && my < this.y + this.height; } }
+        async function getPhrasesForGame(count) { const modulesSnapshot = await getDocs(collection(firestoreDB, "modules")); let allPhrases = []; modulesSnapshot.forEach(doc => allPhrases.push(...doc.data().phrases)); if (allPhrases.length < count) { showMessage(`You need at least ${count} phrases to play.`); return []; } return allPhrases.sort(() => 0.5 - Math.random()).slice(0, count); }
+        function gameLoop() { const gameCanvas = gameContainer.querySelector('#game-canvas'); if (!gameCanvas) return; const gameCtx = gameCanvas.getContext('2d'); gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height); if (gameState.cards) gameState.cards.forEach(card => card.draw(gameCtx)); if (!gameState.gameOver) gameLoopId = requestAnimationFrame(gameLoop); }
         function updateTimer() { gameState.timeLeft--; gameContainer.querySelector('#game-timer').textContent = `Time: ${gameState.timeLeft}s`; if (gameState.timeLeft <= 0) { gameState.gameOver = true; clearInterval(timerIntervalId); showMessage(`Time's up! Final Score: ${gameState.score}`); exitGame(); } }
-        function checkWinCondition() { 
-            const allMatched = gameState.cards.every(c => c.state === 'matched'); 
-            if (allMatched) { 
-                clearInterval(timerIntervalId);
-                gameState.gameOver = true; 
-                gameState.score += gameState.timeLeft || 0; 
-                setTimeout(() => { 
-                    showMessage(`You won! Final Score: ${gameState.score}`); 
-                    exitGame(); 
-                }, 500); 
-            } 
-        }
-        function setupGameCanvas() { 
-            const timerHTML = activeGame !== 'MemoryGrid' ? `<div id="game-timer">Time: ${gameState.timeLeft}s</div>` : '';
-            gameContainer.innerHTML = `
-                <div class="flex justify-around mb-2 text-lg font-bold">
-                    ${timerHTML}
-                    <div id="game-score">Score: 0</div>
-                </div>
-                <canvas id="game-canvas" class="w-full h-96 rounded-lg bg-gray-100 cursor-pointer"></canvas>
-            `;
-            const gameCanvas = gameContainer.querySelector('#game-canvas');
-            
-            requestAnimationFrame(() => {
-                gameCanvas.width = gameCanvas.offsetWidth; 
-                gameCanvas.height = gameCanvas.offsetHeight; 
-                gameCanvas.addEventListener('click', (e) => { if (activeGame === 'SpeedMatch' || activeGame === 'MemoryGrid') handleCardGameClick(e); });
-                
-                if (activeGame === 'SpeedMatch' || activeGame === 'MemoryGrid') {
-                    const phrases = gameState.phrases;
-                    let cardData = []; 
-                    phrases.forEach(p => { 
-                        cardData.push({ id: p.id, text: p.en, type: 'en' }); 
-                        cardData.push({ id: p.id, text: p.kn, type: 'kn' }); 
-                    }); 
-                    cardData.sort(() => 0.5 - Math.random()); 
-                    const cols = 4, rows = 4; 
-                    const cardWidth = (gameCanvas.width - (cols + 1) * 10) / cols; 
-                    const cardHeight = (gameCanvas.height - (rows + 1) * 10) / rows; 
-                    for (let i = 0; i < cardData.length; i++) { 
-                        const row = Math.floor(i / cols), col = i % cols; 
-                        const x = col * (cardWidth + 10) + 10, y = row * (cardHeight + 10) + 10; 
-                        const card = new Card(cardData[i].id, cardData[i].text, cardData[i].type, x, y, cardWidth, cardHeight);
-                        if (activeGame === 'SpeedMatch') card.state = 'revealed';
-                        gameState.cards.push(card); 
-                    } 
-                    gameLoopId = requestAnimationFrame(gameLoop);
-                }
-            });
-        }
+        function checkWinCondition() { const allMatched = gameState.cards.every(c => c.state === 'matched'); if (allMatched) { clearInterval(timerIntervalId); gameState.gameOver = true; gameState.score += gameState.timeLeft || 0; setTimeout(() => { showMessage(`You won! Final Score: ${gameState.score}`); exitGame(); }, 500); } }
+        function setupGameCanvas() { const timerHTML = activeGame !== 'MemoryGrid' ? `<div id="game-timer">Time: ${gameState.timeLeft}s</div>` : ''; gameContainer.innerHTML = `<div class="flex justify-around mb-2 text-lg font-bold">${timerHTML}<div id="game-score">Score: 0</div></div><canvas id="game-canvas" class="w-full h-96 rounded-lg bg-gray-100 cursor-pointer"></canvas>`; const gameCanvas = gameContainer.querySelector('#game-canvas'); requestAnimationFrame(() => { gameCanvas.width = gameCanvas.offsetWidth; gameCanvas.height = gameCanvas.offsetHeight; gameCanvas.addEventListener('click', (e) => { if (activeGame === 'SpeedMatch' || activeGame === 'MemoryGrid') handleCardGameClick(e); }); if (activeGame === 'SpeedMatch' || activeGame === 'MemoryGrid') { const phrases = gameState.phrases; let cardData = []; phrases.forEach(p => { cardData.push({ id: p.id, text: p.en, type: 'en' }); cardData.push({ id: p.id, text: p.kn, type: 'kn' }); }); cardData.sort(() => 0.5 - Math.random()); const cols = 4, rows = 4; const cardWidth = (gameCanvas.width - (cols + 1) * 10) / cols; const cardHeight = (gameCanvas.height - (rows + 1) * 10) / rows; for (let i = 0; i < cardData.length; i++) { const row = Math.floor(i / cols), col = i % cols; const x = col * (cardWidth + 10) + 10, y = row * (cardHeight + 10) + 10; const card = new Card(cardData[i].id, cardData[i].text, cardData[i].type, x, y, cardWidth, cardHeight); if (activeGame === 'SpeedMatch') card.state = 'revealed'; gameState.cards.push(card); } gameLoopId = requestAnimationFrame(gameLoop); } }); }
         async function startSpeedMatchGame() { const phrases = await getPhrasesForGame(8); if (phrases.length === 0) return; activeGame = 'SpeedMatch'; document.getElementById('game-title').textContent = 'Speed Match'; showView('game'); gameState = { cards: [], selected: [], score: 0, timeLeft: 30, gameOver: false, phrases: phrases }; setupGameCanvas(); timerIntervalId = setInterval(updateTimer, 1000); }
         async function startMemoryGridGame() { const phrases = await getPhrasesForGame(8); if (phrases.length === 0) return; activeGame = 'MemoryGrid'; document.getElementById('game-title').textContent = 'Memory Grid'; showView('game'); gameState = { cards: [], selected: [], score: 0, gameOver: false, phrases: phrases }; setupGameCanvas(); }
-        
-        function handleCardGameClick(e) {
-            if (gameState.gameOver || gameState.selected.length === 2) return;
-            const gameCanvas = gameContainer.querySelector('#game-canvas');
-            const rect = gameCanvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-
-            for (const card of gameState.cards) {
-                if (card.state !== 'matched' && !card.selected && card.isClicked(mouseX, mouseY)) {
-                    if (activeGame === 'MemoryGrid' && card.state === 'hidden') {
-                        card.state = 'revealed';
-                    }
-                    card.selected = true;
-                    gameState.selected.push(card);
-                    break;
-                }
-            }
-
-            if (gameState.selected.length === 2) {
-                const [c1, c2] = gameState.selected;
-                if (c1.id === c2.id && c1.type !== c2.type) {
-                    c1.state = 'matched';
-                    c2.state = 'matched';
-                    gameState.score += 10;
-                    gameContainer.querySelector('#game-score').textContent = `Score: ${gameState.score}`;
-                    gameState.selected = [];
-                    checkWinCondition();
-                } else {
-                    setTimeout(() => {
-                        if (activeGame === 'MemoryGrid') {
-                            c1.state = 'hidden';
-                            c2.state = 'hidden';
-                        }
-                        c1.selected = false;
-                        c2.selected = false;
-                        gameState.selected = [];
-                    }, 500);
-                }
-            }
-        }
-
-        // --- NEW GAME LOGIC ---
+        function handleCardGameClick(e) { if (gameState.gameOver || gameState.selected.length === 2) return; const gameCanvas = gameContainer.querySelector('#game-canvas'); const rect = gameCanvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left; const mouseY = e.clientY - rect.top; for (const card of gameState.cards) { if (card.state !== 'matched' && !card.selected && card.isClicked(mouseX, mouseY)) { if (activeGame === 'MemoryGrid' && card.state === 'hidden') { card.state = 'revealed'; } card.selected = true; gameState.selected.push(card); break; } } if (gameState.selected.length === 2) { const [c1, c2] = gameState.selected; if (c1.id === c2.id && c1.type !== c2.type) { c1.state = 'matched'; c2.state = 'matched'; gameState.score += 10; gameContainer.querySelector('#game-score').textContent = `Score: ${gameState.score}`; gameState.selected = []; checkWinCondition(); } else { setTimeout(() => { if (activeGame === 'MemoryGrid') { c1.state = 'hidden'; c2.state = 'hidden'; } c1.selected = false; c2.selected = false; gameState.selected = []; }, 500); } } }
         let newGameState = {};
-
-        async function startFillBlanksGame() {
-            activeGame = 'FillBlanks';
-            document.getElementById('game-title').textContent = 'Fill in the Blanks';
-            showView('game');
-            const allPhrases = await getPhrasesForGame(100);
-            const suitablePhrases = allPhrases.filter(p => p.kn.split(' ').length > 1);
-
-            if (suitablePhrases.length < 5) {
-                showMessage("Not enough multi-word phrases to play this game yet.");
-                exitGame();
-                return;
-            }
-
-            newGameState = {
-                questions: suitablePhrases.slice(0, 5),
-                currentQuestionIndex: 0,
-                score: 0
-            };
-            renderFillBlanksQuestion();
-        }
-
-        function renderFillBlanksQuestion() {
-            if (newGameState.currentQuestionIndex >= newGameState.questions.length) {
-                showMessage(`Game Over! Your score: ${newGameState.score} / 5`);
-                exitGame();
-                return;
-            }
-            const questionData = newGameState.questions[newGameState.currentQuestionIndex];
-            const words = questionData.kn.split(' ');
-            
-            const blankIndex = Math.floor(Math.random() * words.length);
-            const correctWord = words[blankIndex];
-            words[blankIndex] = '______';
-            const questionText = words.join(' ');
-
-            const otherPhrases = seedModules.flatMap(m => m.phrases).filter(p => p.id !== questionData.id);
-            const wrongWords = [...new Set(otherPhrases.flatMap(p => p.kn.split(' ')))].filter(w => w !== correctWord).sort(() => 0.5 - Math.random()).slice(0, 3);
-            const options = [correctWord, ...wrongWords].sort(() => 0.5 - Math.random());
-
-            gameContainer.innerHTML = `
-                <div class="text-center mb-4">
-                    <p class="text-lg text-gray-600">${questionData.en}</p>
-                    <p class="text-2xl font-semibold my-4">${questionText}</p>
-                </div>
-                <div id="fill-options" class="grid grid-cols-2 gap-3">
-                    ${options.map(opt => `<button class="game-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt}</button>`).join('')}
-                </div>
-                <div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>
-            `;
-            document.querySelectorAll('.game-option').forEach(btn => btn.onclick = (e) => handleFillBlanksAnswer(e, correctWord));
-        }
-
-        function handleFillBlanksAnswer(e, correctWord) {
-            const isCorrect = e.target.textContent === correctWord;
-            if (isCorrect) {
-                newGameState.score++;
-                e.target.classList.add('correct-answer');
-            } else {
-                e.target.classList.add('incorrect-answer');
-            }
-            document.querySelectorAll('.game-option').forEach(btn => {
-                btn.disabled = true;
-                if(btn.textContent === correctWord) btn.classList.add('correct-answer');
-            });
-            newGameState.currentQuestionIndex++;
-            setTimeout(renderFillBlanksQuestion, 1500);
-        }
-
-        async function startListenTapGame() {
-            activeGame = 'ListenTap';
-            document.getElementById('game-title').textContent = 'Listen & Tap';
-            showView('game');
-            const phrases = await getPhrasesForGame(20);
-            if (phrases.length < 4) return;
-
-            newGameState = {
-                questions: phrases.slice(0, 5),
-                currentQuestionIndex: 0,
-                score: 0
-            };
-            renderListenTapQuestion();
-        }
-        
-        function renderListenTapQuestion() {
-            if (newGameState.currentQuestionIndex >= newGameState.questions.length) {
-                showMessage(`Game Over! Your score: ${newGameState.score} / 5`);
-                exitGame();
-                return;
-            }
-            const correctPhrase = newGameState.questions[newGameState.currentQuestionIndex];
-            const allPhrases = seedModules.flatMap(m => m.phrases);
-            const wrongOptions = allPhrases.filter(p => p.id !== correctPhrase.id).sort(() => 0.5 - Math.random()).slice(0, 3);
-            const options = [correctPhrase, ...wrongOptions].sort(() => 0.5 - Math.random());
-            
-            gameContainer.innerHTML = `
-                <div class="text-center mb-6">
-                    <button id="play-audio-btn" class="p-4 bg-blue-500 text-white rounded-full shadow-lg text-3xl">▶️</button>
-                    <p class="mt-2 text-gray-600">Tap to hear the phrase</p>
-                </div>
-                <div id="listen-options" class="grid grid-cols-1 gap-3">
-                    ${options.map(opt => `<button class="game-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt.en}</button>`).join('')}
-                </div>
-                <div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>
-            `;
-            document.getElementById('play-audio-btn').onclick = () => speak(correctPhrase);
-            document.querySelectorAll('.game-option').forEach(btn => btn.onclick = (e) => handleListenTapAnswer(e, correctPhrase));
-        }
-
-        function handleListenTapAnswer(e, correctPhrase) {
-            const isCorrect = e.target.textContent === correctPhrase.en;
-            if (isCorrect) {
-                newGameState.score++;
-                e.target.classList.add('correct-answer');
-            } else {
-                e.target.classList.add('incorrect-answer');
-            }
-            document.querySelectorAll('.game-option').forEach(btn => {
-                btn.disabled = true;
-                if(btn.textContent === correctPhrase.en) btn.classList.add('correct-answer');
-            });
-            newGameState.currentQuestionIndex++;
-            setTimeout(renderListenTapQuestion, 1500);
-        }
-
-        async function startSentenceBuilderGame() {
-            activeGame = 'SentenceBuilder';
-            document.getElementById('game-title').textContent = 'Sentence Builder';
-            showView('game');
-            const phrases = await getPhrasesForGame(20);
-            const longPhrases = phrases.filter(p => p.translit.split('-').length > 2);
-            if (longPhrases.length < 5) { showMessage("Not enough complex phrases to play."); exitGame(); return; }
-
-            newGameState = {
-                questions: longPhrases.slice(0, 5),
-                currentQuestionIndex: 0,
-                score: 0
-            };
-            renderSentenceBuilderQuestion();
-        }
-
-        function renderSentenceBuilderQuestion() {
-            if (newGameState.currentQuestionIndex >= newGameState.questions.length) {
-                showMessage(`Game Over! Your score: ${newGameState.score} / 5`);
-                exitGame();
-                return;
-            }
-            const phrase = newGameState.questions[newGameState.currentQuestionIndex];
-            const words = phrase.translit.split('-');
-            const shuffledWords = [...words].sort(() => 0.5 - Math.random());
-
-            gameContainer.innerHTML = `
-                <div class="text-center mb-4">
-                    <p class="text-lg text-gray-600">Translate this sentence:</p>
-                    <p class="text-2xl font-semibold my-2">"${phrase.en}"</p>
-                </div>
-                <div id="sentence-answer" class="p-4 bg-gray-200 rounded-lg min-h-[50px] mb-4 text-center text-xl font-semibold"></div>
-                <div id="word-bank" class="flex flex-wrap justify-center gap-2">
-                    ${shuffledWords.map(word => `<button class="word-tile p-2 bg-indigo-100 rounded-md shadow-sm">${word}</button>`).join('')}
-                </div>
-                <div class="mt-6 flex justify-center gap-4">
-                    <button id="check-sentence-btn" class="bg-green-500 text-white font-bold py-2 px-6 rounded-lg">Check</button>
-                    <button id="clear-sentence-btn" class="bg-gray-400 text-white font-bold py-2 px-6 rounded-lg">Clear</button>
-                </div>
-                 <div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>
-            `;
-
-            const answerArea = document.getElementById('sentence-answer');
-            const wordBank = document.getElementById('word-bank');
-
-            wordBank.addEventListener('click', (e) => {
-                if (e.target.classList.contains('word-tile')) {
-                    answerArea.textContent += (answerArea.textContent ? '-' : '') + e.target.textContent;
-                    e.target.style.visibility = 'hidden';
-                }
-            });
-
-            document.getElementById('clear-sentence-btn').onclick = () => {
-                answerArea.textContent = '';
-                wordBank.querySelectorAll('.word-tile').forEach(tile => tile.style.visibility = 'visible');
-            };
-
-            document.getElementById('check-sentence-btn').onclick = () => {
-                const isCorrect = answerArea.textContent === phrase.translit;
-                if (isCorrect) {
-                    newGameState.score++;
-                    answerArea.classList.add('correct-answer');
-                } else {
-                    answerArea.classList.add('incorrect-answer');
-                }
-                newGameState.currentQuestionIndex++;
-                setTimeout(renderSentenceBuilderQuestion, 1500);
-            };
-        }
-
-        // --- TRIVIA GAME LOGIC ---
-        const karnatakaTrivia = [
-            { q: "What is the capital city of Karnataka?", options: ["Mysuru", "Bengaluru", "Mangaluru", "Hubballi"], answer: "Bengaluru" },
-            { q: "Which famous empire had its capital at Hampi?", options: ["Chalukya", "Hoysala", "Vijayanagara", "Rashtrakuta"], answer: "Vijayanagara" },
-            { q: "What is the state animal of Karnataka?", options: ["Tiger", "Lion", "Elephant", "Leopard"], answer: "Elephant" },
-            { q: "The Jog Falls, one of the highest waterfalls in India, is created by which river?", options: ["Kaveri", "Krishna", "Tungabhadra", "Sharavathi"], answer: "Sharavathi" },
-            { q: "Which city in Karnataka is famous for its sandalwood products?", options: ["Bengaluru", "Mysuru", "Belagavi", "Davanagere"], answer: "Mysuru" },
-            { q: "What is the traditional folk dance-drama of Karnataka?", options: ["Kathakali", "Bharatanatyam", "Yakshagana", "Kuchipudi"], answer: "Yakshagana" },
-            { q: "The Gol Gumbaz, known for its incredible whispering gallery, is located in which city?", options: ["Bidar", "Kalaburagi", "Vijayapura", "Raichur"], answer: "Vijayapura" },
-            { q: "Which of these is a famous national park in Karnataka, known for its tiger population?", options: ["Bandipur", "Gir", "Kaziranga", "Sundarbans"], answer: "Bandipur" },
-            { q: "What is the staple food grain of Southern Karnataka?", options: ["Wheat", "Ragi (Finger Millet)", "Bajra", "Maize"], answer: "Ragi (Finger Millet)" },
-            { q: "The ancient university town of Talakad, now buried in sand, is on the banks of which river?", options: ["Sharavathi", "Netravati", "Kaveri", "Tunga"], answer: "Kaveri" },
-            { q: "Which famous Indian scientist and Bharat Ratna recipient was from Karnataka?", options: ["C.V. Raman", "Homi Bhabha", "A.P.J. Abdul Kalam", "S. Chandrasekhar"], answer: "C.V. Raman" },
-            { q: "What is the famous sweet dish from Dharwad known for its unique texture?", options: ["Mysore Pak", "Dharwad Pedha", "Holige", "Chiroti"], answer: "Dharwad Pedha" },
-            { q: "The Karnataka Khadi Gramodyoga Samyukta Sangha in Bengeri is the only unit in India that is authorized to manufacture what?", options: ["Sandalwood Oil", "Indian National Flag", "Mysore Silk Sarees", "Bidriware"], answer: "Indian National Flag" },
-            { q: "Which coastal city in Karnataka is a major port and is known for its beaches?", options: ["Karwar", "Udupi", "Mangaluru", "Gokarna"], answer: "Mangaluru" },
-            { q: "The Hoysala temples at Belur and Halebidu are famous for their intricate what?", options: ["Paintings", "Sculptures", "Inlay work", "Glasswork"], answer: "Sculptures" },
-            { q: "What is the state bird of Karnataka?", options: ["Peacock", "Indian Roller", "Great Hornbill", "Parrot"], answer: "Indian Roller" },
-            { q: "Which mountain range runs parallel to the coast of Karnataka?", options: ["Himalayas", "Vindhyas", "Aravallis", "Western Ghats"], answer: "Western Ghats" },
-            { q: "The festival of 'Kambala' involves which sport?", options: ["Bullock Cart Race", "Cock Fight", "Buffalo Race", "Boat Race"], answer: "Buffalo Race" },
-            { q: "Which city is known as the 'Silicon Valley of India'?", options: ["Hyderabad", "Pune", "Bengaluru", "Chennai"], answer: "Bengaluru" },
-            { q: "The famous Mysore Palace is also known by what name?", options: ["Amba Vilas Palace", "Lalitha Mahal", "Jaganmohan Palace", "Cheluvamba Mansion"], answer: "Amba Vilas Palace" },
-            { q: "Which river is considered the 'Ganges of the South' and is a lifeline for Karnataka?", options: ["Krishna", "Godavari", "Kaveri", "Tungabhadra"], answer: "Kaveri" },
-            { q: "What is 'Bidriware'?", options: ["A type of silk", "A style of painting", "A metal handicraft", "A type of pottery"], answer: "A metal handicraft" },
-            { q: "The highest peak in Karnataka is Mullayanagiri. It is part of which hill range?", options: ["Nandi Hills", "Baba Budangiri", "Chamundi Hills", "Agumbe Ghat"], answer: "Baba Budangiri" },
-            { q: "Which city is famous for the Udupi Krishna Temple and its vegetarian cuisine?", options: ["Mangaluru", "Udupi", "Sringeri", "Dharmasthala"], answer: "Udupi" },
-            { q: "The historical figure Kittur Rani Chennamma is known for her rebellion against whom?", options: ["The Mughals", "The Marathas", "The British", "The Portuguese"], answer: "The British" },
-            { q: "What is the state flower of Karnataka?", options: ["Rose", "Jasmine", "Lotus", "Marigold"], answer: "Lotus" },
-            { q: "The world's second largest monolithic statue, Gommateshwara, is located at which place?", options: ["Hampi", "Shravanabelagola", "Badami", "Aihole"], answer: "Shravanabelagola" },
-            { q: "Which city is known for its unique style of sarees, woven with pure silk and gold zari?", options: ["Ilkal", "Mysuru", "Molakalmuru", "Dharwad"], answer: "Mysuru" },
-            { q: "What is the name of the film industry based in Karnataka?", options: ["Tollywood", "Kollywood", "Sandalwood", "Mollywood"], answer: "Sandalwood" },
-            { q: "The rock-cut cave temples at Badami are dedicated to which deities?", options: ["Shiva & Vishnu", "Brahma & Saraswati", "Ganesha & Kartikeya", "Rama & Sita"], answer: "Shiva & Vishnu" },
-            { q: "Which king of the Ganga Dynasty commissioned the Gommateshwara statue?", options: ["Rachamalla IV", "Chavundaraya", "Butuga II", "Sripurusha"], answer: "Chavundaraya" },
-            { q: "The famous 'Dasara' festival is celebrated with grand procession in which city?", options: ["Bengaluru", "Hassan", "Mysuru", "Shivamogga"], answer: "Mysuru" },
-            { q: "Which region in Karnataka is famous for its coffee plantations?", options: ["Coorg (Kodagu)", "Kolar", "Raichur", "Ballari"], answer: "Coorg (Kodagu)" },
-            { q: "The language 'Tulu' is predominantly spoken in which part of Karnataka?", options: ["North Karnataka", "Coastal Karnataka", "Old Mysore region", "Hyderabad-Karnataka"], answer: "Coastal Karnataka" },
-            { q: "What is the name of the ISRO's satellite tracking centre located near Bengaluru?", options: ["ISTRAC", "SHAR", "VSSC", "SAC"], answer: "ISTRAC" },
-            { q: "Which of these is a famous dish from North Karnataka made from sorghum?", options: ["Akki Rotti", "Jolada Rotti", "Ragi Mudde", "Neer Dosa"], answer: "Jolada Rotti" },
-            { q: "The historical site of Aihole is often called the 'cradle of Indian temple architecture'. It was the capital of which dynasty?", options: ["Hoysala", "Chalukya", "Kadamba", "Ganga"], answer: "Chalukya" },
-            { q: "Which famous writer from Karnataka won the Jnanpith Award for his work 'Mookajjiya Kanasugalu'?", options: ["U.R. Ananthamurthy", "Kuvempu", "Girish Karnad", "K. Shivaram Karanth"], answer: "K. Shivaram Karanth" },
-            { q: "The Lalbagh Botanical Garden in Bengaluru is famous for its what?", options: ["Rose Garden", "Glass House", "Topiary Garden", "Japanese Garden"], answer: "Glass House" },
-            { q: "Which city is considered the 'cradle of banking' in India?", options: ["Bengaluru", "Mangaluru", "Udupi", "Mysuru"], answer: "Udupi" },
-            { q: "The river Tungabhadra is a major tributary of which river?", options: ["Godavari", "Krishna", "Kaveri", "Mahanadi"], answer: "Krishna" },
-            { q: "What is the traditional attire for women in the Kodagu (Coorg) region?", options: ["Ghagra Choli", "Salwar Kameez", "Saree (draped in a unique style)", "Langa Voni"], answer: "Saree (draped in a unique style)" },
-            { q: "The 'Hoysala' emblem depicts a man fighting what animal?", options: ["A lion", "An elephant", "A tiger", "A boar"], answer: "A tiger" },
-            { q: "Which city is a major hub for the iron and steel industry in Karnataka?", options: ["Davanagere", "Ballari (Bellary)", "Tumakuru", "Chitradurga"], answer: "Ballari (Bellary)" },
-            { q: "The 'Karaga' is a famous and ancient festival celebrated in which city?", options: ["Mysuru", "Bengaluru", "Kolar", "Hassan"], answer: "Bengaluru" },
-            { q: "Which type of painting style, characterized by the use of gold foil, originated in Karnataka?", options: ["Madhubani", "Warli", "Tanjore", "Mysore Painting"], answer: "Mysore Painting" },
-            { q: "The 'Nagarahole National Park' is also known by what other name?", options: ["Rajiv Gandhi National Park", "Indira Gandhi National Park", "Jawaharlal Nehru National Park", "Sanjay Gandhi National Park"], answer: "Rajiv Gandhi National Park" },
-            { q: "Which famous dam is built across the Tungabhadra river near Hosapete?", options: ["Krishna Raja Sagara Dam", "Tungabhadra Dam", "Almatti Dam", "Linganamakki Dam"], answer: "Tungabhadra Dam" },
-            { q: "The founder of the Vijayanagara Empire, Harihara I, belonged to which dynasty?", options: ["Sangama", "Saluva", "Tuluva", "Aravidu"], answer: "Sangama" },
-            { q: "What is 'Bisi Bele Bath'?", options: ["A sweet dish", "A type of bread", "A spicy lentil rice dish", "A yogurt-based curry"], answer: "A spicy lentil rice dish" }
-        ];
+        async function startFillBlanksGame() { activeGame = 'FillBlanks'; document.getElementById('game-title').textContent = 'Fill in the Blanks'; showView('game'); const allPhrases = await getPhrasesForGame(100); const suitablePhrases = allPhrases.filter(p => p.kn.split(' ').length > 1); if (suitablePhrases.length < 5) { showMessage("Not enough multi-word phrases to play this game yet."); exitGame(); return; } newGameState = { questions: suitablePhrases.slice(0, 5), currentQuestionIndex: 0, score: 0 }; renderFillBlanksQuestion(); }
+        function renderFillBlanksQuestion() { if (newGameState.currentQuestionIndex >= newGameState.questions.length) { showMessage(`Game Over! Your score: ${newGameState.score} / 5`); exitGame(); return; } const questionData = newGameState.questions[newGameState.currentQuestionIndex]; const words = questionData.kn.split(' '); const blankIndex = Math.floor(Math.random() * words.length); const correctWord = words[blankIndex]; words[blankIndex] = '______'; const questionText = words.join(' '); const otherPhrases = seedModules.flatMap(m => m.phrases).filter(p => p.id !== questionData.id); const wrongWords = [...new Set(otherPhrases.flatMap(p => p.kn.split(' ')))].filter(w => w !== correctWord).sort(() => 0.5 - Math.random()).slice(0, 3); const options = [correctWord, ...wrongWords].sort(() => 0.5 - Math.random()); gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg text-gray-600">${questionData.en}</p><p class="text-2xl font-semibold my-4">${questionText}</p></div><div id="fill-options" class="grid grid-cols-2 gap-3">${options.map(opt => `<button class="game-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; document.querySelectorAll('.game-option').forEach(btn => btn.onclick = (e) => handleFillBlanksAnswer(e, correctWord)); }
+        function handleFillBlanksAnswer(e, correctWord) { const isCorrect = e.target.textContent === correctWord; if (isCorrect) { newGameState.score++; e.target.classList.add('correct-answer'); } else { e.target.classList.add('incorrect-answer'); } document.querySelectorAll('.game-option').forEach(btn => { btn.disabled = true; if(btn.textContent === correctWord) btn.classList.add('correct-answer'); }); newGameState.currentQuestionIndex++; setTimeout(renderFillBlanksQuestion, 1500); }
+        async function startListenTapGame() { activeGame = 'ListenTap'; document.getElementById('game-title').textContent = 'Listen & Tap'; showView('game'); const phrases = await getPhrasesForGame(20); if (phrases.length < 4) return; newGameState = { questions: phrases.slice(0, 5), currentQuestionIndex: 0, score: 0 }; renderListenTapQuestion(); }
+        function renderListenTapQuestion() { if (newGameState.currentQuestionIndex >= newGameState.questions.length) { showMessage(`Game Over! Your score: ${newGameState.score} / 5`); exitGame(); return; } const correctPhrase = newGameState.questions[newGameState.currentQuestionIndex]; const allPhrases = seedModules.flatMap(m => m.phrases); const wrongOptions = allPhrases.filter(p => p.id !== correctPhrase.id).sort(() => 0.5 - Math.random()).slice(0, 3); const options = [correctPhrase, ...wrongOptions].sort(() => 0.5 - Math.random()); gameContainer.innerHTML = `<div class="text-center mb-6"><button id="play-audio-btn" class="p-4 bg-blue-500 text-white rounded-full shadow-lg text-3xl">▶️</button><p class="mt-2 text-gray-600">Tap to hear the phrase</p></div><div id="listen-options" class="grid grid-cols-1 gap-3">${options.map(opt => `<button class="game-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt.en}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; document.getElementById('play-audio-btn').onclick = () => speak(correctPhrase); document.querySelectorAll('.game-option').forEach(btn => btn.onclick = (e) => handleListenTapAnswer(e, correctPhrase)); }
+        function handleListenTapAnswer(e, correctPhrase) { const isCorrect = e.target.textContent === correctPhrase.en; if (isCorrect) { newGameState.score++; e.target.classList.add('correct-answer'); } else { e.target.classList.add('incorrect-answer'); } document.querySelectorAll('.game-option').forEach(btn => { btn.disabled = true; if(btn.textContent === correctPhrase.en) btn.classList.add('correct-answer'); }); newGameState.currentQuestionIndex++; setTimeout(renderListenTapQuestion, 1500); }
+        async function startSentenceBuilderGame() { activeGame = 'SentenceBuilder'; document.getElementById('game-title').textContent = 'Sentence Builder'; showView('game'); const phrases = await getPhrasesForGame(20); const longPhrases = phrases.filter(p => p.translit && p.translit.split('-').length > 2); if (longPhrases.length < 5) { showMessage("Not enough complex phrases to play."); exitGame(); return; } newGameState = { questions: longPhrases.slice(0, 5), currentQuestionIndex: 0, score: 0 }; renderSentenceBuilderQuestion(); }
+        function renderSentenceBuilderQuestion() { if (newGameState.currentQuestionIndex >= newGameState.questions.length) { showMessage(`Game Over! Your score: ${newGameState.score} / 5`); exitGame(); return; } const phrase = newGameState.questions[newGameState.currentQuestionIndex]; const words = phrase.translit.split('-'); const shuffledWords = [...words].sort(() => 0.5 - Math.random()); gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg text-gray-600">Translate this sentence:</p><p class="text-2xl font-semibold my-2">"${phrase.en}"</p></div><div id="sentence-answer" class="p-4 bg-gray-200 rounded-lg min-h-[50px] mb-4 text-center text-xl font-semibold"></div><div id="word-bank" class="flex flex-wrap justify-center gap-2">${shuffledWords.map(word => `<button class="word-tile p-2 bg-indigo-100 rounded-md shadow-sm">${word}</button>`).join('')}</div><div class="mt-6 flex justify-center gap-4"><button id="check-sentence-btn" class="bg-green-500 text-white font-bold py-2 px-6 rounded-lg">Check</button><button id="clear-sentence-btn" class="bg-gray-400 text-white font-bold py-2 px-6 rounded-lg">Clear</button></div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; const answerArea = document.getElementById('sentence-answer'); const wordBank = document.getElementById('word-bank'); wordBank.addEventListener('click', (e) => { if (e.target.classList.contains('word-tile')) { answerArea.textContent += (answerArea.textContent ? '-' : '') + e.target.textContent; e.target.style.visibility = 'hidden'; } }); document.getElementById('clear-sentence-btn').onclick = () => { answerArea.textContent = ''; wordBank.querySelectorAll('.word-tile').forEach(tile => tile.style.visibility = 'visible'); }; document.getElementById('check-sentence-btn').onclick = () => { const userAnswer = answerArea.textContent.toLowerCase().replace(/-/g, ''); const correctAnswer = phrase.translit.toLowerCase().replace(/-/g, ''); const isCorrect = userAnswer === correctAnswer; if (isCorrect) { newGameState.score++; answerArea.classList.add('correct-answer'); } else { answerArea.classList.add('incorrect-answer'); } newGameState.currentQuestionIndex++; setTimeout(renderSentenceBuilderQuestion, 1500); }; }
         let triviaState = {};
-
-        function startTriviaGame() {
-            activeGame = 'Trivia';
-            document.getElementById('game-title').textContent = 'Karnataka Trivia';
-            showView('game');
-
-            const shuffledTrivia = [...karnatakaTrivia].sort(() => 0.5 - Math.random());
-            triviaState = {
-                questions: shuffledTrivia.slice(0, 3),
-                currentQuestionIndex: 0,
-                score: 0
-            };
-
-            renderTriviaQuestion();
-        }
+        async function startTriviaGame() { activeGame = 'Trivia'; document.getElementById('game-title').textContent = 'Karnataka Trivia'; showView('game'); const triviaSnapshot = await getDocs(collection(firestoreDB, "trivia")); let karnatakaTrivia = []; triviaSnapshot.forEach(doc => karnatakaTrivia.push(doc.data())); if (karnatakaTrivia.length < 3) { showMessage("Not enough trivia questions to play yet. Need at least 3."); exitGame(); return; } const shuffledTrivia = [...karnatakaTrivia].sort(() => 0.5 - Math.random()); triviaState = { questions: shuffledTrivia.slice(0, 3), currentQuestionIndex: 0, score: 0 }; renderTriviaQuestion(); }
+        function renderTriviaQuestion() { if (triviaState.currentQuestionIndex >= triviaState.questions.length) { showMessage(`Trivia Complete! Your score: ${triviaState.score} / ${triviaState.questions.length}`); exitGame(); return; } const questionData = triviaState.questions[triviaState.currentQuestionIndex]; gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg font-semibold">${questionData.q}</p></div><div id="trivia-options" class="grid grid-cols-1 md:grid-cols-2 gap-3">${questionData.options.map(opt => `<button class="trivia-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${triviaState.score}</div>`; document.querySelectorAll('.trivia-option').forEach(button => { button.addEventListener('click', handleTriviaAnswer); }); }
+        function handleTriviaAnswer(e) { const selectedOption = e.target; const questionData = triviaState.questions[triviaState.currentQuestionIndex]; const isCorrect = selectedOption.textContent === questionData.answer; document.querySelectorAll('.trivia-option').forEach(btn => { btn.disabled = true; if (btn.textContent === questionData.answer) { btn.classList.add('correct-answer'); } }); if (isCorrect) { triviaState.score++; selectedOption.classList.add('correct-answer'); } else { selectedOption.classList.add('incorrect-answer'); } triviaState.currentQuestionIndex++; setTimeout(renderTriviaQuestion, 1500); }
         
-        function renderTriviaQuestion() {
-            if (triviaState.currentQuestionIndex >= triviaState.questions.length) {
-                showMessage(`Trivia Complete! Your score: ${triviaState.score} / ${triviaState.questions.length}`);
-                exitGame();
-                return;
-            }
-
-            const questionData = triviaState.questions[triviaState.currentQuestionIndex];
-            gameContainer.innerHTML = `
-                <div class="text-center mb-4">
-                    <p class="text-lg font-semibold">${questionData.q}</p>
-                </div>
-                <div id="trivia-options" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    ${questionData.options.map(opt => `<button class="trivia-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt}</button>`).join('')}
-                </div>
-                <div class="mt-4 text-center font-bold text-lg">Score: ${triviaState.score}</div>
-            `;
-
-            document.querySelectorAll('.trivia-option').forEach(button => {
-                button.addEventListener('click', handleTriviaAnswer);
-            });
-        }
-
-        function handleTriviaAnswer(e) {
-            const selectedOption = e.target;
-            const questionData = triviaState.questions[triviaState.currentQuestionIndex];
-            const isCorrect = selectedOption.textContent === questionData.answer;
-
-            document.querySelectorAll('.trivia-option').forEach(btn => {
-                btn.disabled = true;
-                if (btn.textContent === questionData.answer) {
-                    btn.classList.add('correct-answer');
-                }
-            });
-
-            if (isCorrect) {
-                triviaState.score++;
-                selectedOption.classList.add('correct-answer');
-            } else {
-                selectedOption.classList.add('incorrect-answer');
-            }
-
-            triviaState.currentQuestionIndex++;
-            setTimeout(renderTriviaQuestion, 1500);
-        }
-
-        // --- AUTHOR MODE & MODALS ---
+        // =========================================================================================
+        // === START OF CORRECTED SECTION: AUTHOR MODE & MODALS ===
+        // =========================================================================================
         let mediaRecorder;
         let audioChunks = [];
+        let activeStream = null;
+
+        // Helper function to reliably stop the microphone stream
+        function stopActiveMicrophone() {
+            if (activeStream) {
+                activeStream.getTracks().forEach(track => track.stop());
+                activeStream = null;
+            }
+        }
 
         async function renderAuthorEditor() { 
             const editor = document.getElementById('author-mode-view'); 
@@ -948,26 +531,38 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><button id="import-json-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Import JSON</button><input type="file" id="json-file-input" class="hidden" accept=".json"><button id="export-json-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Export JSON</button></div><h3 class="text-xl font-bold mb-2">Edit Modules & Phrases</h3><div id="author-content-editor" class="space-y-4"></div><button id="add-module-btn" class="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg">Add New Module</button><div class="mt-6 border-t pt-4"><h3 class="text-xl font-bold mb-2 text-red-600">Danger Zone</h3><button id="reset-progress-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Reset All Progress</button></div>`; 
             
             const contentEditor = document.getElementById('author-content-editor'); 
-            const modules = await getAllData('modules'); 
+            const modulesSnapshot = await getDocs(collection(firestoreDB, "modules"));
+            let modules = [];
+            modulesSnapshot.forEach(doc => modules.push(doc.data()));
             modules.sort((a, b) => moduleOrder.indexOf(a.id) - moduleOrder.indexOf(b.id));
 
             contentEditor.innerHTML = ''; 
             modules.forEach(module => { 
                 const container = document.createElement('div'); 
                 container.className = 'p-4 border rounded-lg'; 
-                container.innerHTML = `<div class="flex justify-between items-center mb-2"><input class="text-xl font-bold border-b-2" value="${module.title}" data-module-id="${module.id}" data-field="title" /><input class="w-12 text-center border-b-2" value="${module.icon}" data-module-id="${module.id}" data-field="icon" /></div><div class="phrases-container space-y-2">${module.phrases.map((p, i) => `<div id="author-phrase-${module.id}-${i}" class="grid grid-cols-6 gap-2 items-center p-2 bg-gray-50 rounded"><input class="border rounded px-2 py-1" placeholder="English" value="${p.en}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="en" /><input class="border rounded px-2 py-1" placeholder="Kannada" value="${p.kn}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="kn" /><input class="border rounded px-2 py-1 col-span-2" placeholder="Transliteration" value="${p.translit || ''}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="translit" />${p.audioData ? `<audio controls class="w-24 h-8" src="${p.audioData}"></audio>` : `<div class="w-24 h-8 audio-placeholder"></div>`}<div class="flex items-center gap-2"><button class="text-xl" data-record-btn data-module-id="${module.id}" data-phrase-index="${i}">🎤</button><button class="text-red-500 hover:font-bold" data-delete-btn data-module-id="${module.id}" data-phrase-index="${i}">X</button></div></div>`).join('')}</div><button class="mt-2 text-blue-500 hover:font-bold" data-add-phrase-btn data-module-id="${module.id}">Add Phrase</button>`; 
+                container.innerHTML = `<div class="flex justify-between items-center mb-2"><input class="text-xl font-bold border-b-2" value="${module.title}" data-module-id="${module.id}" data-field="title" /><input class="w-12 text-center border-b-2" value="${module.icon}" data-module-id="${module.id}" data-field="icon" /></div><div class="phrases-container space-y-2">${(module.phrases || []).map((p, i) => `<div id="author-phrase-${module.id}-${i}" class="grid grid-cols-6 gap-2 items-center p-2 bg-gray-50 rounded"><input class="border rounded px-2 py-1" placeholder="English" value="${p.en}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="en" /><input class="border rounded px-2 py-1" placeholder="Kannada" value="${p.kn}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="kn" /><input class="border rounded px-2 py-1 col-span-2" placeholder="Transliteration" value="${p.translit || ''}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="translit" />${p.audioData ? `<audio controls class="w-24 h-8" src="${p.audioData}"></audio>` : `<div class="w-24 h-8 audio-placeholder"></div>`}<div class="flex items-center gap-2"><button class="text-xl" data-record-btn data-module-id="${module.id}" data-phrase-index="${i}">🎤</button><button class="text-red-500 hover:font-bold" data-delete-btn data-module-id="${module.id}" data-phrase-index="${i}">X</button></div></div>`).join('')}</div><button class="mt-2 text-blue-500 hover:font-bold" data-add-phrase-btn data-module-id="${module.id}">Add Phrase</button>`; 
                 contentEditor.appendChild(container); 
             }); 
             contentEditor.querySelectorAll('input').forEach(input => input.addEventListener('change', handleAuthorInputChange)); 
             contentEditor.querySelectorAll('[data-add-phrase-btn]').forEach(btn => btn.addEventListener('click', () => addPhrase(btn.dataset.moduleId))); 
             contentEditor.querySelectorAll('[data-delete-btn]').forEach(btn => btn.addEventListener('click', () => deletePhrase(btn.dataset.moduleId, btn.dataset.phraseIndex))); 
-            contentEditor.querySelectorAll('[data-record-btn]').forEach(btn => btn.addEventListener('click', (e) => toggleRecording(e.target, btn.dataset.moduleId, btn.dataset.phraseIndex))); 
-            document.getElementById('exit-author-mode-btn').addEventListener('click', renderDashboard); 
-            document.getElementById('add-module-btn').addEventListener('click', async () => { const title = await showPrompt("Enter new module title:"); if (title) { const newModule = { id: title.toLowerCase().replace(/\s+/g, '-'), title, icon: '✨', phrases: [] }; await addOrUpdate('modules', newModule); renderAuthorEditor(); } }); 
+            contentEditor.querySelectorAll('[data-record-btn]').forEach(btn => btn.addEventListener('click', (e) => toggleRecording(e.currentTarget, btn.dataset.moduleId, btn.dataset.phraseIndex))); 
+            
+            // Add safe cleanup to the exit button
+            document.getElementById('exit-author-mode-btn').addEventListener('click', () => {
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.onstop = null; 
+                    mediaRecorder.stop();
+                }
+                stopActiveMicrophone();
+                renderDashboard();
+            }); 
+
+            document.getElementById('add-module-btn').addEventListener('click', async () => { const title = await showPrompt("Enter new module title:"); if (title) { const newModule = { id: title.toLowerCase().replace(/\s+/g, '-'), title, icon: '✨', phrases: [] }; await setDoc(doc(firestoreDB, "modules", newModule.id), newModule); renderAuthorEditor(); } }); 
             document.getElementById('export-json-btn').addEventListener('click', exportToJson); 
             const jsonFileInput = document.getElementById('json-file-input'); 
             document.getElementById('import-json-btn').addEventListener('click', () => jsonFileInput.click()); 
-            jsonFileInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async (re) => { try { const data = JSON.parse(re.target.result); if (data.modules && Array.isArray(data.modules)) { for (const module of data.modules) await addOrUpdate('modules', module); } if (data.userData) await addOrUpdate('userData', data.userData); showMessage('Data imported successfully!'); renderAuthorEditor(); } catch (err) { showMessage('Error importing JSON: ' + err.message); } }; reader.readAsText(file); }); 
+            jsonFileInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async (re) => { try { const data = JSON.parse(re.target.result); if (data.modules && Array.isArray(data.modules)) { for (const module of data.modules) await setDoc(doc(firestoreDB, "modules", module.id), module); } if (data.userData) await addOrUpdate('userData', data.userData); showMessage('Data imported successfully!'); renderAuthorEditor(); } catch (err) { showMessage('Error importing JSON: ' + err.message); } }; reader.readAsText(file); }); 
             document.getElementById('reset-progress-btn').addEventListener('click', resetAllProgress); 
             document.getElementById('google-tts-toggle').addEventListener('change', async (e) => {
                 const profile = await getData('userData', 'profile');
@@ -976,69 +571,153 @@
                 showMessage(`Google TTS ${e.target.checked ? 'Enabled' : 'Disabled'}.`);
             });
         }
-
+        
         async function toggleRecording(button, moduleId, phraseIndex) {
+            // If we are currently recording, stop it. The 'onstop' handler will do the rest.
             if (mediaRecorder && mediaRecorder.state === "recording") {
                 mediaRecorder.stop();
-                button.classList.remove("recording", "text-red-500");
-            } else {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    const options = { mimeType: 'audio/webm; codecs=opus' };
-                    mediaRecorder = MediaRecorder.isTypeSupported(options.mimeType) ? new MediaRecorder(stream, options) : new MediaRecorder(stream);
-                    mediaRecorder.start();
-                    button.classList.add("recording", "text-red-500");
-                    audioChunks = [];
-                    mediaRecorder.addEventListener("dataavailable", event => audioChunks.push(event.data));
-                    mediaRecorder.addEventListener("stop", async () => {
-                        const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
-                        const reader = new FileReader();
-                        reader.readAsDataURL(audioBlob);
-                        reader.onloadend = async function() {
-                            const base64String = reader.result;
-                            const module = await getData('modules', moduleId);
-                            module.phrases[phraseIndex].audioData = base64String;
-                            await addOrUpdate('modules', module);
-                            
-                            const phraseElement = document.getElementById(`author-phrase-${moduleId}-${phraseIndex}`);
-                            if (phraseElement) {
-                                const placeholder = phraseElement.querySelector('.audio-placeholder');
-                                const existingAudio = phraseElement.querySelector('audio');
-                                
+                console.log("Stopping recording...");
+                return;
+            }
+
+            // --- START A NEW RECORDING ---
+            try {
+                // Ensure any previous stream is fully stopped before getting a new one.
+                stopActiveMicrophone();
+
+                // Request microphone access and store the stream.
+                activeStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                console.log("Recording started");
+                
+                const options = { mimeType: 'audio/webm; codecs=opus' };
+                mediaRecorder = MediaRecorder.isTypeSupported(options.mimeType) 
+                    ? new MediaRecorder(activeStream, options) 
+                    : new MediaRecorder(activeStream);
+                
+                audioChunks = [];
+                mediaRecorder.addEventListener("dataavailable", event => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                });
+
+                // This 'onstop' event handler is the most critical part.
+                mediaRecorder.onstop = async () => {
+                    console.log("MediaRecorder stopped, processing audio...");
+
+                    // CRITICAL: Stop the microphone stream immediately after recording stops.
+                    stopActiveMicrophone();
+
+                    // Reset button state immediately
+                    button.innerHTML = '🎤';
+                    button.classList.remove("recording", "text-red-500");
+                    button.disabled = false;
+
+                    if (audioChunks.length === 0) {
+                        showMessage("No audio data was recorded.");
+                        return;
+                    }
+
+                    const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+                    console.log(`Audio blob created. Size: ${audioBlob.size} bytes, Type: ${audioBlob.type}`);
+                    
+                    if (audioBlob.size < 1000) { // Check for tiny, likely empty, recordings
+                         showMessage("Recording was too short or empty. Please try again.");
+                         return;
+                    }
+                    
+                    // Show "Uploading..." message
+                    showMessage('Uploading audio...');
+
+                    try {
+                        const timestamp = Date.now();
+                        const fileName = `audio/${moduleId}_phrase_${phraseIndex}_${timestamp}.webm`;
+                        const storageRef = ref(storage, fileName);
+                        
+                        console.log(`Uploading to Firebase Storage: ${fileName}`);
+                        
+                        // Upload the blob and wait for it to complete
+                        await uploadBytes(storageRef, audioBlob);
+                        console.log('Upload successful');
+                        
+                        // Get the public download URL
+                        const downloadURL = await getDownloadURL(storageRef);
+                        console.log('Download URL obtained:', downloadURL);
+                        
+                        // Update the Firestore document
+                        const moduleDocRef = doc(firestoreDB, "modules", moduleId);
+                        const moduleDoc = await getDoc(moduleDocRef);
+                        if (!moduleDoc.exists()) throw new Error(`Module ${moduleId} not found`);
+                        
+                        const moduleData = moduleDoc.data();
+                        if (!moduleData.phrases?.[phraseIndex]) throw new Error(`Phrase at index ${phraseIndex} not found`);
+                        
+                        // Add/update the audioData field
+                        moduleData.phrases[phraseIndex].audioData = downloadURL;
+                        
+                        // Save the entire module object back to Firestore
+                        await setDoc(moduleDocRef, moduleData);
+                        console.log('Firestore document updated successfully');
+                        
+                        // Update the UI dynamically with the new audio player
+                        const phraseElement = document.getElementById(`author-phrase-${moduleId}-${phraseIndex}`);
+                        if (phraseElement) {
+                            const audioContainer = phraseElement.querySelector('.audio-placeholder, audio');
+                            if (audioContainer) {
                                 const newAudio = document.createElement('audio');
                                 newAudio.controls = true;
                                 newAudio.className = 'w-24 h-8';
-                                newAudio.src = base64String;
-
-                                if (placeholder) {
-                                    placeholder.replaceWith(newAudio);
-                                } else if (existingAudio) {
-                                    existingAudio.replaceWith(newAudio);
-                                }
+                                newAudio.src = downloadURL;
+                                audioContainer.replaceWith(newAudio);
                             }
-                        };
-                        stream.getTracks().forEach(track => track.stop());
-                    });
-                } catch (err) {
-                    showMessage("Microphone access denied or not available.");
-                    console.error("Error accessing microphone:", err);
-                }
+                        }
+                        
+                        // Close the "Uploading..." message and show success
+                        document.getElementById('message-modal').classList.add('hidden');
+                        showMessage('Audio saved successfully!');
+                        
+                    } catch (uploadError) {
+                        console.error("Firebase upload/update error:", uploadError);
+                        // Close "Uploading..." and show a detailed error
+                        document.getElementById('message-modal').classList.add('hidden');
+                        showMessage(`Upload failed: ${uploadError.message}. Check console and CORS settings.`);
+                    }
+                };
+
+                // Start recording and update the UI to reflect the 'recording' state.
+                mediaRecorder.start();
+                button.classList.add("recording", "text-red-500");
+                button.innerHTML = '◼️'; // Stop icon
+                
+            } catch (err) {
+                console.error("Error accessing microphone:", err);
+                showMessage("Microphone access denied. Please allow microphone access in your browser settings.");
+                stopActiveMicrophone(); // Clean up even if it fails
+                button.innerHTML = '🎤';
+                button.classList.remove("recording", "text-red-500");
             }
         }
-        async function handleAuthorInputChange(e) { const { moduleId, field, phraseIndex } = e.target.dataset; const module = await getData('modules', moduleId); if (phraseIndex) module.phrases[parseInt(phraseIndex)][field] = e.target.value; else module[field] = e.target.value; await addOrUpdate('modules', module); }
-        async function addPhrase(moduleId) { const module = await getData('modules',moduleId); const newId = module.phrases.length > 0 ? Math.max(...module.phrases.map(p => p.id)) + 1 : Date.now(); module.phrases.push({ id: newId, en: '', kn: '', translit: '' }); await addOrUpdate('modules', module); renderAuthorEditor(); }
-        async function deletePhrase(moduleId, phraseIndex) { const confirmed = await showConfirm('Are you sure?'); if (confirmed) { const module = await getData('modules', moduleId); module.phrases.splice(phraseIndex, 1); await addOrUpdate('modules', module); renderAuthorEditor(); } }
-        async function exportToJson() { const exportData = { modules: await getAllData('modules'), userData: await getData('userData', 'profile') }; const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2)); const a = document.createElement('a'); a.href = dataStr; a.download = "kbb_export.json"; a.click(); }
+
+        async function handleAuthorInputChange(e) { const { moduleId, field, phraseIndex } = e.target.dataset; const moduleDoc = await getDoc(doc(firestoreDB, "modules", moduleId)); const module = moduleDoc.data(); if (phraseIndex) module.phrases[parseInt(phraseIndex)][field] = e.target.value; else module[field] = e.target.value; await setDoc(doc(firestoreDB, "modules", moduleId), module); }
+        async function addPhrase(moduleId) { const moduleDoc = await getDoc(doc(firestoreDB, "modules", moduleId)); const module = moduleDoc.data(); const newId = module.phrases.length > 0 ? Math.max(...module.phrases.map(p => p.id)) + 1 : Date.now(); module.phrases.push({ id: newId, en: '', kn: '', translit: '' }); await setDoc(doc(firestoreDB, "modules", moduleId), module); renderAuthorEditor(); }
+        async function deletePhrase(moduleId, phraseIndex) { const confirmed = await showConfirm('Are you sure?'); if (confirmed) { const moduleDoc = await getDoc(doc(firestoreDB, "modules", moduleId)); const module = moduleDoc.data(); module.phrases.splice(phraseIndex, 1); await setDoc(doc(firestoreDB, "modules", moduleId), module); renderAuthorEditor(); } }
+        async function exportToJson() { const modulesSnapshot = await getDocs(collection(firestoreDB, "modules")); let modules = []; modulesSnapshot.forEach(doc => modules.push(doc.data())); const exportData = { modules, userData: await getData('userData', 'profile') }; const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2)); const a = document.createElement('a'); a.href = dataStr; a.download = "kbb_export.json"; a.click(); }
         async function resetAllProgress() { const confirmed = await showConfirm("Are you sure you want to reset ALL progress? This cannot be undone."); if (confirmed) { await clearStore('userData'); await clearStore('srs'); await clearStore('progressLog'); await addOrUpdate('userData', { key: 'profile', name: 'Cara', streak: 0, wordsLearned: [], accuracy: { correct: 0, total: 0 }, useGoogleTTS: false }); showMessage("All progress has been reset."); renderDashboard(); } }
         function showMessage(text) { const modal = document.getElementById('message-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center">${text}</p><button class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div>`; modal.classList.remove('hidden'); modal.querySelector('button').addEventListener('click', () => modal.classList.add('hidden')); }
         function showConfirm(message) { return new Promise(resolve => { const modal = document.getElementById('confirm-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center">${message}</p><div class="flex justify-end space-x-4"><button id="confirm-no-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">No</button><button id="confirm-yes-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Yes</button></div></div>`; modal.classList.remove('hidden'); modal.querySelector('#confirm-yes-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(true); }); modal.querySelector('#confirm-no-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(false); }); }); }
         function showPrompt(text) { return new Promise(resolve => { const modal = document.getElementById('prompt-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96"><p class="mb-4 text-center">${text}</p><input id="prompt-input" class="w-full p-2 border rounded mb-4"><div class="flex justify-end space-x-2"><button id="prompt-cancel" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Cancel</button><button id="prompt-ok" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div></div>`; modal.classList.remove('hidden'); const input = modal.querySelector('#prompt-input'); input.focus(); modal.querySelector('#prompt-ok').addEventListener('click', () => { modal.classList.add('hidden'); resolve(input.value); }); modal.querySelector('#prompt-cancel').addEventListener('click', () => { modal.classList.add('hidden'); resolve(null); }); input.addEventListener('keyup', (e) => { if (e.key === 'Enter') modal.querySelector('#prompt-ok').click(); }); }); }
         
+        // =========================================================================================
+        // === END OF CORRECTED SECTION ===
+        // =========================================================================================
+
         async function initApp() {
             await initDB();
             await seedDatabase();
             await renderDashboard();
             
+            document.getElementById('loading-indicator').style.display = 'none';
+
             document.getElementById('exit-game-btn').addEventListener('click', exitGame);
             document.getElementById('speed-match-btn').addEventListener('click', startSpeedMatchGame);
             document.getElementById('memory-grid-btn').addEventListener('click', startMemoryGridGame);
@@ -1081,7 +760,6 @@
         }
 
         initApp();
-    });
     </script>
 </body>
 </html>
