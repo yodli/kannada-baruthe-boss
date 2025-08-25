@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kannada Baruthe, Boss</title>
+    <link rel="icon" type="image/x-icon" href="/data/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#34D399"/>
@@ -49,6 +50,38 @@
         .locked-game-container:hover .lock-message {
             opacity: 1;
         }
+        
+        /* Word wrapping styles for better mobile experience */
+        .game-option, .trivia-option {
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            white-space: normal !important;
+        }
+        
+        /* Ensure buttons and text containers wrap properly */
+        .word-tile {
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }
+        
+        /* Mobile-friendly text wrapping for all interactive elements */
+        @media (max-width: 768px) {
+            .game-option, .trivia-option, .word-tile {
+                font-size: 16px;
+                line-height: 1.4;
+                padding: 12px;
+                text-align: center;
+            }
+            
+            /* Ensure canvas text wrapping is handled in JavaScript */
+            #flashcard-canvas {
+                min-height: 200px;
+            }
+        }
     </style>
     <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
@@ -73,7 +106,7 @@
                     <input type="file" id="profile-pic-input" class="hidden" accept="image/*">
                     <img id="profile-pic" src="https://placehold.co/40x40/34D399/FFFFFF?text=C" class="rounded-full w-10 h-10 object-cover" alt="Profile Picture">
                 </div>
-                <button id="author-mode-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg">Author</button>
+                <button id="author-mode-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg">Admin</button>
             </div>
         </header>
 
@@ -137,7 +170,7 @@
                                 <div class="text-4xl mb-2">✍️</div>
                                 <h3 class="font-bold">Fill in the Blanks</h3>
                             </button>
-                            <div class="lock-message">Learn 20 words to unlock games</div>
+                            <div class="lock-message">Learn 100 words to unlock games</div>
                         </div>
                         <button id="trivia-game-btn" class="bg-purple-100 p-4 rounded-xl shadow-md text-center cursor-pointer hover:bg-purple-200 transition">
                             <div class="text-4xl mb-2">🌍</div>
@@ -177,7 +210,7 @@
                 </div>
             </div>
 
-            <!-- Author Mode View -->
+            <!-- Admin Mode View -->
             <div id="author-mode-view" class="hidden bg-white p-6 rounded-xl shadow-md"></div>
         </main>
     </div>
@@ -571,30 +604,73 @@
         
         const flashcardCanvas = document.getElementById('flashcard-canvas');
         const flashcardCtx = flashcardCanvas.getContext('2d');
+        
+        // Enhanced text wrapping function for canvas
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lines = [];
+            
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                const testWidth = metrics.width;
+                
+                if (testWidth > maxWidth && n > 0) {
+                    lines.push(line);
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line);
+            
+            // Calculate starting Y position to center text vertically
+            const totalHeight = lines.length * lineHeight;
+            const startY = y - (totalHeight / 2) + (lineHeight / 2);
+            
+            // Draw each line
+            for (let i = 0; i < lines.length; i++) {
+                ctx.fillText(lines[i].trim(), x, startY + (i * lineHeight));
+            }
+        }
+        
         function drawFlashcard(phrase, showKannada) {
             const canvas = flashcardCanvas; 
             canvas.width = canvas.offsetWidth; 
             canvas.height = canvas.offsetHeight; 
             const ctx = flashcardCtx; 
+            
+            // Clear and fill background
             ctx.fillStyle = '#FFFBEB'; 
             ctx.fillRect(0, 0, canvas.width, canvas.height); 
-            ctx.fillStyle = '#10B981'; 
             ctx.textAlign = 'center';
             
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const maxWidth = canvas.width - 40; // 20px padding on each side
+            
             if (showKannada) { 
-                ctx.font = 'bold 32px Inter'; 
-                ctx.fillText(phrase.kn, canvas.width / 2, canvas.height / 2 - 20); 
-                ctx.font = '20px Inter'; 
+                // Kannada text
+                ctx.font = 'bold 28px Inter';
+                ctx.fillStyle = '#10B981'; 
+                wrapText(ctx, phrase.kn, centerX, centerY - 15, maxWidth, 35);
+                
+                // Transliteration
+                ctx.font = '18px Inter'; 
                 ctx.fillStyle = '#6B7280'; 
-                ctx.fillText(phrase.translit, canvas.width / 2, canvas.height / 2 + 20); 
+                wrapText(ctx, phrase.translit, centerX, centerY + 25, maxWidth, 25);
             } else { 
-                ctx.font = 'bold 32px Inter'; 
-                ctx.fillText(phrase.en, canvas.width / 2, canvas.height / 2); 
+                // English text
+                ctx.font = 'bold 28px Inter'; 
+                ctx.fillStyle = '#10B981'; 
+                wrapText(ctx, phrase.en, centerX, centerY, maxWidth, 35);
             }
             
+            // "Tap to flip" instruction
             ctx.font = '14px Inter'; 
             ctx.fillStyle = '#9CA3AF'; 
-            ctx.fillText('Tap to flip', canvas.width / 2, canvas.height - 20);
+            ctx.fillText('Tap to flip', centerX, canvas.height - 20);
         }
 
         function showFlashcard() { 
@@ -685,7 +761,63 @@
             renderDashboard(); 
         }
         
-        class Card { constructor(id, text, type, x, y, width, height) { this.id = id; this.text = text; this.type = type; this.x = x; this.y = y; this.width = width; this.height = height; this.state = 'hidden'; this.selected = false; } draw(ctx) { ctx.strokeStyle = this.selected ? '#4F46E5' : '#34D399'; ctx.lineWidth = this.selected ? 5 : 3; ctx.fillStyle = this.state === 'matched' ? '#A7F3D0' : (this.state === 'revealed' ? '#FFFBEB' : '#10B981'); ctx.beginPath(); const r = 10; ctx.moveTo(this.x + r, this.y); ctx.arcTo(this.x + this.width, this.y, this.x + this.width, this.y + this.height, r); ctx.arcTo(this.x + this.width, this.y + this.height, this.x, this.y + this.height, r); ctx.arcTo(this.x, this.y + this.height, this.x, this.y, r); ctx.arcTo(this.x, this.y, this.x + this.width, this.y, r); ctx.closePath(); ctx.fill(); ctx.stroke(); if (this.state === 'revealed' || this.state === 'matched') { ctx.fillStyle = '#1F2937'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = 'bold 16px Inter'; ctx.fillText(this.text, this.x + this.width / 2, this.y + this.height / 2); } } isClicked(mx, my) { return mx > this.x && mx < this.x + this.width && my > this.y && my < this.y + this.height; } }
+        // Enhanced Card class with better text wrapping
+        class Card { 
+            constructor(id, text, type, x, y, width, height) { 
+                this.id = id; 
+                this.text = text; 
+                this.type = type; 
+                this.x = x; 
+                this.y = y; 
+                this.width = width; 
+                this.height = height; 
+                this.state = 'hidden'; 
+                this.selected = false; 
+            } 
+            
+            draw(ctx) { 
+                ctx.strokeStyle = this.selected ? '#4F46E5' : '#34D399'; 
+                ctx.lineWidth = this.selected ? 5 : 3; 
+                ctx.fillStyle = this.state === 'matched' ? '#A7F3D0' : (this.state === 'revealed' ? '#FFFBEB' : '#10B981'); 
+                ctx.beginPath(); 
+                const r = 10; 
+                ctx.moveTo(this.x + r, this.y); 
+                ctx.arcTo(this.x + this.width, this.y, this.x + this.width, this.y + this.height, r); 
+                ctx.arcTo(this.x + this.width, this.y + this.height, this.x, this.y + this.height, r); 
+                ctx.arcTo(this.x, this.y + this.height, this.x, this.y, r); 
+                ctx.arcTo(this.x, this.y, this.x + this.width, this.y, r); 
+                ctx.closePath(); 
+                ctx.fill(); 
+                ctx.stroke(); 
+                
+                if (this.state === 'revealed' || this.state === 'matched') { 
+                    ctx.fillStyle = '#1F2937'; 
+                    ctx.textAlign = 'center'; 
+                    ctx.textBaseline = 'middle'; 
+                    ctx.font = 'bold 14px Inter'; 
+                    
+                    // Use text wrapping for cards too
+                    const maxWidth = this.width - 10;
+                    const centerX = this.x + this.width / 2;
+                    const centerY = this.y + this.height / 2;
+                    
+                    // Simple text wrapping for cards
+                    const words = this.text.split(' ');
+                    if (words.length > 1 && this.text.length > 15) {
+                        const firstLine = words.slice(0, Math.ceil(words.length / 2)).join(' ');
+                        const secondLine = words.slice(Math.ceil(words.length / 2)).join(' ');
+                        ctx.fillText(firstLine, centerX, centerY - 8);
+                        ctx.fillText(secondLine, centerX, centerY + 8);
+                    } else {
+                        ctx.fillText(this.text, centerX, centerY);
+                    }
+                } 
+            } 
+            
+            isClicked(mx, my) { 
+                return mx > this.x && mx < this.x + this.width && my > this.y && my < this.y + this.height; 
+            } 
+        }
         
         async function getPhrasesForGame(count) { 
             const learnedPhrases = await getLearnedPhrases();
@@ -764,7 +896,7 @@
             const allPhrases = await getLearnedPhrases(); 
             const wrongWords = [...new Set(allPhrases.flatMap(p => p.kn.split(' ')))].filter(w => w !== correctWord).sort(() => 0.5 - Math.random()).slice(0, 3); 
             const options = [correctWord, ...wrongWords].sort(() => 0.5 - Math.random()); 
-            gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg text-gray-600">${questionData.en}</p><p class="text-2xl font-semibold my-4">${questionText}</p></div><div id="fill-options" class="grid grid-cols-2 gap-3">${options.map(opt => `<button class="game-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; 
+            gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg text-gray-600 break-words">${questionData.en}</p><p class="text-2xl font-semibold my-4 break-words">${questionText}</p></div><div id="fill-options" class="grid grid-cols-2 gap-3">${options.map(opt => `<button class="game-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; 
             document.querySelectorAll('.game-option').forEach(btn => btn.onclick = (e) => handleFillBlanksAnswer(e, correctWord)); 
         }
         
@@ -831,7 +963,7 @@
             const phrase = newGameState.questions[newGameState.currentQuestionIndex]; 
             const words = phrase.translit.split('-'); 
             const shuffledWords = [...words].sort(() => 0.5 - Math.random()); 
-            gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg text-gray-600">Translate this sentence:</p><p class="text-2xl font-semibold my-2">"${phrase.en}"</p></div><div id="sentence-answer" class="p-4 bg-gray-200 rounded-lg min-h-[50px] mb-4 text-center text-xl font-semibold"></div><div id="word-bank" class="flex flex-wrap justify-center gap-2">${shuffledWords.map(word => `<button class="word-tile p-2 bg-indigo-100 rounded-md shadow-sm">${word}</button>`).join('')}</div><div class="mt-6 flex justify-center gap-4"><button id="check-sentence-btn" class="bg-green-500 text-white font-bold py-2 px-6 rounded-lg">Check</button><button id="clear-sentence-btn" class="bg-gray-400 text-white font-bold py-2 px-6 rounded-lg">Clear</button></div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; 
+            gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg text-gray-600">Translate this sentence:</p><p class="text-2xl font-semibold my-2 break-words">"${phrase.en}"</p></div><div id="sentence-answer" class="p-4 bg-gray-200 rounded-lg min-h-[50px] mb-4 text-center text-xl font-semibold break-words"></div><div id="word-bank" class="flex flex-wrap justify-center gap-2">${shuffledWords.map(word => `<button class="word-tile p-2 bg-indigo-100 rounded-md shadow-sm">${word}</button>`).join('')}</div><div class="mt-6 flex justify-center gap-4"><button id="check-sentence-btn" class="bg-green-500 text-white font-bold py-2 px-6 rounded-lg">Check</button><button id="clear-sentence-btn" class="bg-gray-400 text-white font-bold py-2 px-6 rounded-lg">Clear</button></div><div class="mt-4 text-center font-bold text-lg">Score: ${newGameState.score} | Question: ${newGameState.currentQuestionIndex + 1} / 5</div>`; 
             const answerArea = document.getElementById('sentence-answer'); 
             const wordBank = document.getElementById('word-bank'); 
             wordBank.addEventListener('click', (e) => { 
@@ -861,7 +993,7 @@
                 return; 
             } 
             const questionData = triviaState.questions[triviaState.currentQuestionIndex]; 
-            gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg font-semibold">${questionData.q}</p></div><div id="trivia-options" class="grid grid-cols-1 md:grid-cols-2 gap-3">${questionData.options.map(opt => `<button class="trivia-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${triviaState.score}</div>`; 
+            gameContainer.innerHTML = `<div class="text-center mb-4"><p class="text-lg font-semibold break-words">${questionData.q}</p></div><div id="trivia-options" class="grid grid-cols-1 md:grid-cols-2 gap-3">${questionData.options.map(opt => `<button class="trivia-option p-4 bg-gray-100 hover:bg-gray-200 rounded-lg border-2 border-transparent shadow-sm text-lg">${opt}</button>`).join('')}</div><div class="mt-4 text-center font-bold text-lg">Score: ${triviaState.score}</div>`; 
             document.querySelectorAll('.trivia-option').forEach(button => { 
                 button.addEventListener('click', handleTriviaAnswer); 
             }); 
@@ -871,7 +1003,7 @@
             const selectedOption = e.target; const questionData = triviaState.questions[triviaState.currentQuestionIndex]; const isCorrect = selectedOption.textContent === questionData.answer; document.querySelectorAll('.trivia-option').forEach(btn => { btn.disabled = true; if (btn.textContent === questionData.answer) { btn.classList.add('correct-answer'); } }); if (isCorrect) { triviaState.score++; selectedOption.classList.add('correct-answer'); } else { selectedOption.classList.add('incorrect-answer'); } triviaState.currentQuestionIndex++; setTimeout(renderTriviaQuestion, 1500); 
         }
         
-        // === AUTHOR MODE & MODALS ===
+        // === ADMIN MODE & MODALS ===
         let mediaRecorder;
         let audioChunks = [];
         let activeStream = null;
@@ -889,7 +1021,7 @@
             const profile = await getData('userData', 'profile');
             const isTtsEnabled = profile.useGoogleTTS || false;
 
-            editor.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Author Mode</h2><button id="exit-author-mode-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Exit</button></div>
+            editor.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Admin Mode</h2><button id="exit-author-mode-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Exit</button></div>
                                 <div class="mb-6 border-b pb-4">
                                     <h3 class="text-xl font-bold mb-2">Settings</h3>
                                     <div class="flex items-center justify-between">
@@ -912,7 +1044,7 @@
             modules.forEach(module => { 
                 const container = document.createElement('div'); 
                 container.className = 'p-4 border rounded-lg'; 
-                container.innerHTML = `<div class="flex justify-between items-center mb-2"><input class="text-xl font-bold border-b-2" value="${module.title}" data-module-id="${module.id}" data-field="title" /><input class="w-12 text-center border-b-2" value="${module.icon}" data-module-id="${module.id}" data-field="icon" /></div><div class="phrases-container space-y-2">${(module.phrases || []).map((p, i) => `<div id="author-phrase-${module.id}-${i}" class="grid grid-cols-6 gap-2 items-center p-2 bg-gray-50 rounded"><input class="border rounded px-2 py-1" placeholder="English" value="${p.en}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="en" /><input class="border rounded px-2 py-1" placeholder="Kannada" value="${p.kn}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="kn" /><input class="border rounded px-2 py-1 col-span-2" placeholder="Transliteration" value="${p.translit || ''}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="translit" />${p.audioData ? `<audio controls class="w-24 h-8" src="${p.audioData}"></audio>` : `<div class="w-24 h-8 audio-placeholder"></div>`}<div class="flex items-center gap-2"><button class="text-xl" data-record-btn data-module-id="${module.id}" data-phrase-index="${i}">🎤</button><button class="text-red-500 hover:font-bold" data-delete-btn data-module-id="${module.id}" data-phrase-index="${i}">X</button></div></div>`).join('')}</div><button class="mt-2 text-blue-500 hover:font-bold" data-add-phrase-btn data-module-id="${module.id}">Add Phrase</button>`; 
+                container.innerHTML = `<div class="flex justify-between items-center mb-2"><input class="text-xl font-bold border-b-2 flex-1 mr-2" value="${module.title}" data-module-id="${module.id}" data-field="title" /><input class="w-12 text-center border-b-2" value="${module.icon}" data-module-id="${module.id}" data-field="icon" /></div><div class="phrases-container space-y-2">${(module.phrases || []).map((p, i) => `<div id="author-phrase-${module.id}-${i}" class="grid grid-cols-6 gap-2 items-center p-2 bg-gray-50 rounded"><input class="border rounded px-2 py-1" placeholder="English" value="${p.en}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="en" /><input class="border rounded px-2 py-1" placeholder="Kannada" value="${p.kn}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="kn" /><input class="border rounded px-2 py-1 col-span-2" placeholder="Transliteration" value="${p.translit || ''}" data-module-id="${module.id}" data-phrase-index="${i}" data-field="translit" />${p.audioData ? `<audio controls class="w-24 h-8" src="${p.audioData}"></audio>` : `<div class="w-24 h-8 audio-placeholder"></div>`}<div class="flex items-center gap-2"><button class="text-xl" data-record-btn data-module-id="${module.id}" data-phrase-index="${i}">🎤</button><button class="text-red-500 hover:font-bold" data-delete-btn data-module-id="${module.id}" data-phrase-index="${i}">X</button></div></div>`).join('')}</div><button class="mt-2 text-blue-500 hover:font-bold" data-add-phrase-btn data-module-id="${module.id}">Add Phrase</button>`; 
                 contentEditor.appendChild(container); 
             }); 
             contentEditor.querySelectorAll('input').forEach(input => input.addEventListener('change', handleAuthorInputChange)); 
@@ -1109,15 +1241,15 @@
         }
         function showMessage(text) { 
             stopCurrentAudio(); // Stop audio when showing message
-            const modal = document.getElementById('message-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center">${text}</p><button class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div>`; modal.classList.remove('hidden'); modal.querySelector('button').addEventListener('click', () => modal.classList.add('hidden')); 
+            const modal = document.getElementById('message-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center break-words">${text}</p><button class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div>`; modal.classList.remove('hidden'); modal.querySelector('button').addEventListener('click', () => modal.classList.add('hidden')); 
         }
         function showConfirm(message) { 
             stopCurrentAudio(); // Stop audio when showing confirm
-            return new Promise(resolve => { const modal = document.getElementById('confirm-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center">${message}</p><div class="flex justify-end space-x-4"><button id="confirm-no-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">No</button><button id="confirm-yes-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Yes</button></div></div>`; modal.classList.remove('hidden'); modal.querySelector('#confirm-yes-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(true); }); modal.querySelector('#confirm-no-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(false); }); }); 
+            return new Promise(resolve => { const modal = document.getElementById('confirm-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-80"><p class="mb-4 text-center break-words">${message}</p><div class="flex justify-end space-x-4"><button id="confirm-no-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">No</button><button id="confirm-yes-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Yes</button></div></div>`; modal.classList.remove('hidden'); modal.querySelector('#confirm-yes-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(true); }); modal.querySelector('#confirm-no-btn').addEventListener('click', () => { modal.classList.add('hidden'); resolve(false); }); }); 
         }
         function showPrompt(text) { 
             stopCurrentAudio(); // Stop audio when showing prompt
-            return new Promise(resolve => { const modal = document.getElementById('prompt-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96"><p class="mb-4 text-center">${text}</p><input id="prompt-input" class="w-full p-2 border rounded mb-4"><div class="flex justify-end space-x-2"><button id="prompt-cancel" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Cancel</button><button id="prompt-ok" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div></div>`; modal.classList.remove('hidden'); const input = modal.querySelector('#prompt-input'); input.focus(); modal.querySelector('#prompt-ok').addEventListener('click', () => { modal.classList.add('hidden'); resolve(input.value); }); modal.querySelector('#prompt-cancel').addEventListener('click', () => { modal.classList.add('hidden'); resolve(null); }); input.addEventListener('keyup', (e) => { if (e.key === 'Enter') modal.querySelector('#prompt-ok').click(); }); }); 
+            return new Promise(resolve => { const modal = document.getElementById('prompt-modal'); modal.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-96"><p class="mb-4 text-center break-words">${text}</p><input id="prompt-input" class="w-full p-2 border rounded mb-4"><div class="flex justify-end space-x-2"><button id="prompt-cancel" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Cancel</button><button id="prompt-ok" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">OK</button></div></div>`; modal.classList.remove('hidden'); const input = modal.querySelector('#prompt-input'); input.focus(); modal.querySelector('#prompt-ok').addEventListener('click', () => { modal.classList.add('hidden'); resolve(input.value); }); modal.querySelector('#prompt-cancel').addEventListener('click', () => { modal.classList.add('hidden'); resolve(null); }); input.addEventListener('keyup', (e) => { if (e.key === 'Enter') modal.querySelector('#prompt-ok').click(); }); }); 
         }
 
         async function initApp() {

@@ -7,6 +7,8 @@ Generate the entire index.html code wit the changes.
 Before implementing the changes, share your detailed approach of the changes.
 Ask me any questions to get any clarifications. Let me know if you have any questions before making the changes.
 
+i have one issue that needs to be fixed in the index.html. in mobile mode, i notice some flashcards with long phrases do not word wrap so because of this the phrase is not completely visible in the screen. can you enable word wrap in the app for modules and the games so that the longer phrases are more mobile friendly. make changes to the index.html and share the entire code here. ensure no functionality is broken and the app is bug free.
+
 To be tested:
 
 Known bugs:
