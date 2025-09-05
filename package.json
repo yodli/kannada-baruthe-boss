@@ -1,0 +1,23 @@
+{
+  "name": "kbb",
+  "version": "1.0.0",
+  "description": "**Kannada Baruthe, Boss** is a lightweight Progressive Web App that teaches basic spoken Kannada through interactive flashcards and mini‑games. The app runs entirely in the browser, works offline, and stores progress locally so learners can pick up where they left off.",
+  "main": "service-worker.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yodli/kannada-baruthe-boss.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yodli/kannada-baruthe-boss/issues"
+  },
+  "homepage": "https://github.com/yodli/kannada-baruthe-boss#readme"
+}

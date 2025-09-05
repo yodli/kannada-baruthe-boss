@@ -7,7 +7,11 @@ const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './data/favicon.ico'
+  './data/favicon.ico',
+  './icons/icon-72x72.png',
+  './icons/icon-96x96.png',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png'
 ];
 
 // External resources that we want to cache but with different strategy
