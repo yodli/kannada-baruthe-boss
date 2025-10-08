@@ -1,9 +1,22 @@
 // Admin/Author mode: edit content and manage audio uploads
-import { firestoreDB, storage, collection, getDocs, doc, getDoc, setDoc, ref, uploadBytes, getDownloadURL } from './firebase.js';
+import {
+  firestoreDB,
+  storage,
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from './firebase.js';
 import { moduleOrder } from './config.js';
 import { addOrUpdate, clearStore, getData } from './db.js';
 import { showMessage, showConfirm, showPrompt } from './modals.js';
 import { stopCurrentAudio } from './audio.js';
+import { computeModuleSync, normalizeUserDataRecords } from './import-utils.js';
 
 let mediaRecorder = null;
 let audioChunks = [];
@@ -233,21 +246,48 @@ async function renderAuthorEditor() {
   document.getElementById('import-json-btn').addEventListener('click', () => jsonFileInput.click());
   jsonFileInput.addEventListener('change', (e) => {
     stopCurrentAudio();
-    const file = e.target.files[0];
+    const fileInput = e.target;
+    const file = fileInput.files[0];
     if (!file) return;
     const reader = new FileReader();
+    const resetFileInput = () => {
+      fileInput.value = '';
+    };
     reader.onload = async (re) => {
       try {
         const data = JSON.parse(re.target.result);
-        if (data.modules && Array.isArray(data.modules)) {
-          for (const module of data.modules) await setDoc(doc(firestoreDB, 'modules', module.id), module);
+        const modulesPayload = data.modules ?? [];
+
+        const existingModulesSnapshot = await getDocs(collection(firestoreDB, 'modules'));
+        const existingModuleIds = existingModulesSnapshot.docs.map((docSnap) => docSnap.id);
+        const { toUpsert, toDelete } = computeModuleSync(existingModuleIds, modulesPayload);
+
+        for (const module of toUpsert) {
+          await setDoc(doc(firestoreDB, 'modules', module.id), module);
         }
-        if (data.userData) await addOrUpdate('userData', data.userData);
+
+        for (const moduleId of toDelete) {
+          await deleteDoc(doc(firestoreDB, 'modules', moduleId));
+        }
+
+        const userRecords = normalizeUserDataRecords(data.userData);
+        for (const record of userRecords) {
+          await addOrUpdate('userData', record);
+        }
+
         showMessage('Data imported successfully!');
         renderAuthorEditor();
       } catch (err) {
+        console.error('Error importing JSON:', err);
         showMessage('Error importing JSON: ' + err.message);
+      } finally {
+        resetFileInput();
       }
+    };
+    reader.onerror = () => {
+      console.error('Error reading JSON file:', reader.error);
+      showMessage('Error reading JSON file: ' + (reader.error?.message || 'Unknown error'));
+      resetFileInput();
     };
     reader.readAsText(file);
   });
