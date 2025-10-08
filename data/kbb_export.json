@@ -1,88 +1,394 @@
 {
   "modules": [
     {
-      "id": "bangalore-slangs",
-      "title": "Bangalore Slangs & Cuss Words",
-      "icon": "😎",
+        "id": "endearment",
+      "title": "Phrases and Words of Endearment",
+      "icon": "❤️",
       "phrases": [
-        {"id": 401, "en": "Dude/Bro", "kn": "maga", "translit": "ma-ga"},
-        {"id": 402, "en": "Buddy", "kn": "machaa", "translit": "ma-chaa"},
-        {"id": 403, "en": "Son of a whore", "kn": "soole maga", "translit": "soo-le ma-ga"},
-        {"id": 404, "en": "Mischief", "kn": "kirik", "translit": "ki-rik"},
-        {"id": 405, "en": "Over-smart boy", "kn": "chalu huduga", "translit": "cha-lu hu-du-ga"},
-        {"id": 406, "en": "Pubic Hair", "kn": "shaata (short form: sha)", "translit": "sha-ta"},
-        {"id": 407, "en": "Asshole", "kn": "gandu", "translit": "gan-du"},
-        {"id": 408, "en": "Troublemaker", "kn": "kirik party", "translit": "ki-rik paar-ti"},
-        {"id": 409, "en": "Lazy fellow", "kn": "somberi", "translit": "som-be-ri"},
-        {"id": 410, "en": "Expert", "kn": "bond", "translit": "bon-d"},
-        {"id": 411, "en": "Asshole (literal)", "kn": "thika", "translit": "thik-a"},
-        {"id": 412, "en": "Shut up", "kn": "thika muchu", "translit": "thik-a much-u"},
-        {"id": 413, "en": "Silly person", "kn": "loose", "translit": "loose"},
-        {"id": 414, "en": "Bastard", "kn": "bevarsi", "translit": "be-ver-si"},
-        {"id": 415, "en": "Slow Thinker", "kn": "goobe (owl)", "translit": "goo-be"},
-        {"id": 416, "en": "Energy fellow", "kn": "full josh", "translit": "full josh"},
-        {"id": 417, "en": "Useless/Poor Quality", "kn": "dabba", "translit": "dub-ba"},
-        {"id": 418, "en": "Convey shock/disgust", "kn": "yappa", "translit": "ya-paa"},
-        {"id": 419, "en": "Average activity", "kn": "timepass maga", "translit": "time-pass ma-ga"},
-        {"id": 420, "en": "Amazing", "kn": "chindi", "translit": "chin-di"},
-        {"id": 421, "en": "Simply", "kn": "chumma", "translit": "chum-ma"},
-        {"id": 422, "en": "Copycat", "kn": "xerox", "translit": "xe-rox"},
-        {"id": 423, "en": "Naughty", "kn": "looti", "translit": "loo-ti"},
-        {"id": 424, "en": "Liar", "kn": "kaage haarsu", "translit": "kaa-ge haar-su"},
-        {"id": 425, "en": "Awesome", "kn": "sakkath", "translit": "sak-kath"},
-        {"id": 426, "en": "Intellectuat activity", "kn": "high funda", "translit": "high fun-da"},
-        {"id": 427, "en": "Always joking", "kn": "comedy piece", "translit": "co-me-dy piece"},
-        {"id": 428, "en": "Trouble gang", "kn": "rowdy gang", "translit": "row-dy gang"},
-        {"id": 429, "en": "Drunk", "kn": "tight", "translit": "ti-ght"},
-        {"id": 430, "en": "Drunkard (m/f)", "kn": "kudka / kudki", "translit": "kud-ka / kud-ki"},
-        {"id": 431, "en": "Family of dogs", "kn": "nai jaati", "translit": "nai jaa-ti"},
-        {"id": 432, "en": "Sister Fucker", "kn": "akkan", "translit": "ak-kan"},
-        {"id": 433, "en": "Mother Fucker", "kn": "amman", "translit": "am-man"},
-        {"id": 434, "en": "Rotten Genitals", "kn": "bhosudi", "translit": "bo-su-di"},
-        {"id": 435, "en": "Extremly Stupid/Naive", "kn": "chutiya", "translit": "chu-ti-ya"},
-        {"id": 436, "en": "Cringe/Low Class", "kn": "chappar", "translit": "chaep-per"},
-        {"id": 437, "en": "Fraudulent/Petty Person", "kn": "chatri", "translit": "chaet-ri"},
-        {"id": 438, "en": "A Lot", "kn": "bejaan", "translit": "be-jaan"},
-        {"id": 439, "en": "Loose Man/Woman", "kn": "dagaar", "translit": "dag-gar"},
-        {"id": 440, "en": "Girlfriend", "kn": "dove", "translit": "dove"},
-        {"id": 441, "en": "Close friend", "kn": "chaddi dost", "translit": "chud-di do-st"},
-        {"id": 442, "en": "Foolish person", "kn": "guggu / gubaal", "translit": "gug-gu / gu-bal"},
-        {"id": 443, "en": "Incredible", "kn": "bombat", "translit": "bom-bat"},
-        {"id": 444, "en": "Got cheated", "kn": "topi hakda (to put on a hat)", "translit": "to-pi hak-da"},
-        {"id": 445, "en": "Show Off", "kn": "chamak (shine)", "translit": "cham-mak"},
-        {"id": 446, "en": "Lie", "kn": "ollu", "translit": "ol-lu"},
-        {"id": 447, "en": "Dead / The End", "kn": "damar", "translit": "dum-ar"},
-        {"id": 448, "en": "Free", "kn": "bitti", "translit": "bit-ti"},
-        {"id": 449, "en": "Policeman", "kn": "mama (uncle)", "translit": "ma-ma"},
-        {"id": 450, "en": "Dick / Dickhead", "kn": "loude", "translit": "lou-de"}
+        {"id": 451, "en": "My dear (for husband)", "kn": "priya", "translit": "pri-ya"},
+        {"id": 452, "en": "Beloved / sweetheart (for husband)", "kn": "priyatama", "translit": "pri-ya-ta-ma"},
+        {"id": 453, "en": "My life (for husband)", "kn": "nanna praana", "translit": "nan-na praa-na"},
+        {"id": 454, "en": "My heart (for husband)", "kn": "nanna hrudaya", "translit": "nan-na hru-da-ya"},
+        {"id": 455, "en": "Golden one (for husband)", "kn": "bangari", "translit": "ban-ga-ri"},
+        {"id": 456, "en": "My light (for husband)", "kn": "nanna belaku", "translit": "nan-na be-la-ku"},
+        {"id": 457, "en": "My hero (for husband)", "kn": "nanna nayaka", "translit": "nan-na na-ya-ka"},
+        {"id": 458, "en": "My king (for husband)", "kn": "nanna raja", "translit": "nan-na ra-ja"},
+        {"id": 459, "en": "Handsome one (for husband)", "kn": "sundara", "translit": "sun-da-ra"},
+        {"id": 460, "en": "Beautiful one / beloved (for husband)", "kn": "cheluva", "translit": "che-lu-va"},
+        {"id": 461, "en": "Lover (for husband)", "kn": "premi", "translit": "pre-mi"},
+        {"id": 462, "en": "My eye (for husband)", "kn": "nanna kannu", "translit": "nan-na kan-nu"},
+        {"id": 463, "en": "My friend (for husband)", "kn": "nanna geleya", "translit": "nan-na ge-le-ya"},
+        {"id": 464, "en": "My world (for husband)", "kn": "nanna prapancha", "translit": "nan-na pra-pan-cha"},
+        {"id": 465, "en": "Dear husband (for husband)", "kn": "nanna ganda", "translit": "nan-na gan-da"},
+        {"id": 466, "en": "Beloved man (for husband)", "kn": "mudda", "translit": "mud-da"},
+        {"id": 467, "en": "Dear friend (for husband)", "kn": "snehita", "translit": "sne-hi-ta"},
+        {"id": 468, "en": "My breath (for husband)", "kn": "nannusiru", "translit": "nan-nu-si-ru"},
+        {"id": 469, "en": "My love (for husband)", "kn": "nanna preeti", "translit": "nan-na pree-ti"},
+        {"id": 470, "en": "My sweet (for husband)", "kn": "nanna sihi", "translit": "nan-na si-hi"},
+        {"id": 471, "en": "My heart/mind (for husband)", "kn": "nanna manasu", "translit": "nan-na ma-na-su"},
+        {"id": 472, "en": "Sweetie (for husband)", "kn": "chinni", "translit": "chin-ni"},
+        {"id": 473, "en": "King of my heart (for husband)", "kn": "hrudaya raja", "translit": "hru-da-ya ra-ja"},
+        {"id": 474, "en": "My lord (traditional; for husband)", "kn": "nanna swami", "translit": "nan-na swa-mi"},
+        {"id": 475, "en": "Beloved of my heart (for husband)", "kn": "hrudaya priya", "translit": "hru-da-ya pri-ya"},
+        {"id": 476, "en": "Little one (for kids)", "kn": "putta", "translit": "put-ta"},
+        {"id": 477, "en": "Little one, girl (for kids)", "kn": "putti", "translit": "put-ti"},
+        {"id": 478, "en": "Tiny tot (for kids)", "kn": "puttani", "translit": "put-taa-ni"},
+        {"id": 479, "en": "Sweetie (for kids)", "kn": "muddu", "translit": "mud-du"},
+        {"id": 480, "en": "Sweet baby (for kids)", "kn": "muddu mari", "translit": "mud-du ma-ri"},
+        {"id": 481, "en": "Sweet boy (for kids)", "kn": "muddu huduga", "translit": "mud-du hu-du-ga"},
+        {"id": 482, "en": "Sweet girl (for kids)", "kn": "muddu hudugi", "translit": "mud-du hu-du-gi"},
+        {"id": 483, "en": "Golden one (for kids)", "kn": "bangari", "translit": "ban-ga-ri"},
+        {"id": 484, "en": "My doll (for kids)", "kn": "nanna gombe", "translit": "nan-na gom-be"},
+        {"id": 485, "en": "My eye (for kids)", "kn": "nanna kannu", "translit": "nan-na kan-nu"},
+        {"id": 486, "en": "My child (for kids)", "kn": "nanna magu", "translit": "nan-na ma-gu"},
+        {"id": 487, "en": "Baby (for kids)", "kn": "mari", "translit": "ma-ri"},
+        {"id": 488, "en": "My son (for kids)", "kn": "nanna maga", "translit": "nan-na ma-ga"},
+        {"id": 489, "en": "My daughter (for kids)", "kn": "nanna magalu", "translit": "nan-na ma-ga-lu"},
+        {"id": 490, "en": "Little brother (for kids)", "kn": "tamma", "translit": "tam-ma"},
+        {"id": 491, "en": "Little sister (for kids)", "kn": "tangi", "translit": "tan-gi"},
+        {"id": 492, "en": "Prince (for kids)", "kn": "rajakumara", "translit": "ra-ja-ku-ma-ra"},
+        {"id": 493, "en": "Princess (for kids)", "kn": "rajakumari", "translit": "ra-ja-ku-ma-ri"},
+        {"id": 494, "en": "Cute nickname (for kids)", "kn": "appu", "translit": "ap-pu"},
+        {"id": 495, "en": "Sweetie (for kids)", "kn": "chinnu", "translit": "chin-nu"},
+        {"id": 496, "en": "Sweetie (for kids)", "kn": "chinni", "translit": "chin-ni"},
+        {"id": 497, "en": "My light (for kids)", "kn": "nanna belaku", "translit": "nan-na be-la-ku"},
+        {"id": 498, "en": "Little darling (for kids)", "kn": "chinnu mari", "translit": "chin-nu ma-ri"},
+        {"id": 499, "en": "Little prince (for kids)", "kn": "putta rajakumara", "translit": "put-ta ra-ja-ku-ma-ra"},
+        {"id": 500, "en": "Golden darling (for kids)", "kn": "bangaara", "translit": "ban-gaa-ra"}
       ]
-    },    
+    },
     {
-      "id": "directions",
-      "title": "Directions & Transport",
-      "icon": "🚃",
+      "icon": "😎",
+      "title": "Bangalore Slangs & Cuss Words",
       "phrases": [
         {
-          "translit": "el-li-de",
-          "kn": "... ellide?",
-          "id": 101,
-          "en": "Where is...?"
+          "id": 401,
+          "en": "Dude/Bro",
+          "kn": "maga",
+          "translit": "ma-ga"
         },
         {
-          "kn": "Bus nildana",
+          "translit": "ma-chaa",
+          "id": 402,
+          "kn": "machaa",
+          "en": "Buddy"
+        },
+        {
+          "en": "Son of a whore",
+          "translit": "soo-le ma-ga",
+          "id": 403,
+          "kn": "soole maga"
+        },
+        {
+          "translit": "ki-rik",
+          "en": "Mischief",
+          "id": 404,
+          "kn": "kirik"
+        },
+        {
+          "translit": "cha-lu hu-du-ga",
+          "id": 405,
+          "kn": "chalu huduga",
+          "en": "Over-smart boy"
+        },
+        {
+          "id": 406,
+          "translit": "sha-ta",
+          "kn": "shaata (short form: sha)",
+          "en": "Pubic Hair"
+        },
+        {
+          "en": "Asshole",
+          "translit": "gan-du",
+          "kn": "gandu",
+          "id": 407
+        },
+        {
+          "translit": "ki-rik paar-ti",
+          "en": "Troublemaker",
+          "kn": "kirik party",
+          "id": 408
+        },
+        {
+          "id": 409,
+          "kn": "somberi",
+          "translit": "som-be-ri",
+          "en": "Lazy fellow"
+        },
+        {
+          "en": "Expert",
+          "id": 410,
+          "kn": "bond",
+          "translit": "bon-d"
+        },
+        {
+          "kn": "thika",
+          "id": 411,
+          "en": "Asshole (literal)",
+          "translit": "thik-a"
+        },
+        {
+          "translit": "thik-a much-u",
+          "kn": "thika muchu",
+          "id": 412,
+          "en": "Shut up"
+        },
+        {
+          "id": 413,
+          "translit": "loose",
+          "kn": "loose",
+          "en": "Silly person"
+        },
+        {
+          "id": 414,
+          "kn": "bevarsi",
+          "translit": "be-ver-si",
+          "en": "Bastard"
+        },
+        {
+          "translit": "goo-be",
+          "kn": "goobe (owl)",
+          "id": 415,
+          "en": "Slow Thinker"
+        },
+        {
+          "translit": "full josh",
+          "en": "Energy fellow",
+          "kn": "full josh",
+          "id": 416
+        },
+        {
+          "en": "Useless/Poor Quality",
+          "kn": "dabba",
+          "translit": "dub-ba",
+          "id": 417
+        },
+        {
+          "id": 418,
+          "translit": "ya-paa",
+          "kn": "yappa",
+          "en": "Convey shock/disgust"
+        },
+        {
+          "en": "Average activity",
+          "id": 419,
+          "translit": "time-pass ma-ga",
+          "kn": "timepass maga"
+        },
+        {
+          "en": "Amazing",
+          "id": 420,
+          "kn": "chindi",
+          "translit": "chin-di"
+        },
+        {
+          "kn": "chumma",
+          "id": 421,
+          "en": "Simply",
+          "translit": "chum-ma"
+        },
+        {
+          "id": 422,
+          "translit": "xe-rox",
+          "kn": "xerox",
+          "en": "Copycat"
+        },
+        {
+          "kn": "looti",
+          "translit": "loo-ti",
+          "en": "Naughty",
+          "id": 423
+        },
+        {
+          "en": "Liar",
+          "id": 424,
+          "kn": "kaage haarsu",
+          "translit": "kaa-ge haar-su"
+        },
+        {
+          "id": 425,
+          "translit": "sak-kath",
+          "kn": "sakkath",
+          "en": "Awesome"
+        },
+        {
+          "kn": "high funda",
+          "translit": "high fun-da",
+          "en": "Intellectuat activity",
+          "id": 426
+        },
+        {
+          "kn": "comedy piece",
+          "en": "Always joking",
+          "id": 427,
+          "translit": "co-me-dy piece"
+        },
+        {
+          "translit": "row-dy gang",
+          "kn": "rowdy gang",
+          "en": "Trouble gang",
+          "id": 428
+        },
+        {
+          "translit": "ti-ght",
+          "id": 429,
+          "kn": "tight",
+          "en": "Drunk"
+        },
+        {
+          "id": 430,
+          "kn": "kudka / kudki",
+          "en": "Drunkard (m/f)",
+          "translit": "kud-ka / kud-ki"
+        },
+        {
+          "id": 431,
+          "en": "Family of dogs",
+          "translit": "nai jaa-ti",
+          "kn": "nai jaati"
+        },
+        {
+          "en": "Sister Fucker",
+          "kn": "akkan",
+          "id": 432,
+          "translit": "ak-kan"
+        },
+        {
+          "id": 433,
+          "en": "Mother Fucker",
+          "kn": "amman",
+          "translit": "am-man"
+        },
+        {
+          "id": 434,
+          "translit": "bo-su-di",
+          "kn": "bhosudi",
+          "en": "Rotten Genitals"
+        },
+        {
+          "id": 435,
+          "translit": "chu-ti-ya",
+          "en": "Extremly Stupid/Naive",
+          "kn": "chutiya"
+        },
+        {
+          "kn": "chappar",
+          "en": "Cringe/Low Class",
+          "id": 436,
+          "translit": "chaep-per"
+        },
+        {
+          "translit": "chaet-ri",
+          "kn": "chatri",
+          "id": 437,
+          "en": "Fraudulent/Petty Person"
+        },
+        {
+          "en": "A Lot",
+          "translit": "be-jaan",
+          "id": 438,
+          "kn": "bejaan"
+        },
+        {
+          "kn": "dagaar",
+          "id": 439,
+          "translit": "dag-gar",
+          "en": "Loose Man/Woman"
+        },
+        {
+          "translit": "dove",
+          "kn": "dove",
+          "en": "Girlfriend",
+          "id": 440
+        },
+        {
+          "translit": "chud-di do-st",
+          "en": "Close friend",
+          "id": 441,
+          "kn": "chaddi dost"
+        },
+        {
+          "id": 442,
+          "en": "Foolish person",
+          "translit": "gug-gu / gu-bal",
+          "kn": "guggu / gubaal"
+        },
+        {
+          "translit": "bom-bat",
+          "kn": "bombat",
+          "id": 443,
+          "en": "Incredible"
+        },
+        {
+          "id": 444,
+          "en": "Got cheated",
+          "translit": "to-pi hak-da",
+          "kn": "topi hakda (to put on a hat)"
+        },
+        {
+          "id": 445,
+          "translit": "cham-mak",
+          "en": "Show Off",
+          "kn": "chamak (shine)"
+        },
+        {
+          "en": "Lie",
+          "translit": "ol-lu",
+          "kn": "ollu",
+          "id": 446
+        },
+        {
+          "id": 447,
+          "en": "Dead / The End",
+          "kn": "damar",
+          "translit": "dum-ar"
+        },
+        {
+          "translit": "bit-ti",
+          "en": "Free",
+          "id": 448,
+          "kn": "bitti"
+        },
+        {
+          "en": "Policeman",
+          "kn": "mama (uncle)",
+          "translit": "ma-ma",
+          "id": 449
+        },
+        {
+          "id": 450,
+          "en": "Dick / Dickhead",
+          "kn": "loude",
+          "translit": "lou-de"
+        }
+      ],
+      "id": "bangalore-slangs"
+    },
+    {
+      "title": "Directions & Transport",
+      "id": "directions",
+      "phrases": [
+        {
+          "id": 101,
+          "en": "Where is...?",
+          "translit": "el-li-de",
+          "kn": "... ellide?"
+        },
+        {
           "en": "Bus stand",
           "id": 102,
+          "kn": "Bus nildana",
           "translit": "bus nil-daa-na"
         },
         {
           "id": 103,
-          "translit": "rail-way nil-daa-na",
           "kn": "Railway nildana",
-          "en": "Railway station"
+          "en": "Railway station",
+          "translit": "rail-way nil-daa-na"
         },
         {
-          "id": 104,
           "kn": "Vimana nildana",
+          "id": 104,
           "en": "Airport",
           "translit": "vi-maa-na nil-daa-na"
         },
@@ -93,106 +399,106 @@
           "en": "Left"
         },
         {
-          "id": 106,
           "translit": "ba-la",
+          "id": 106,
           "kn": "Bala",
           "en": "Right"
         },
         {
-          "id": 107,
+          "en": "Straight",
           "kn": "Neravagi",
-          "translit": "ne-ra-va-gi",
-          "en": "Straight"
+          "id": 107,
+          "translit": "ne-ra-va-gi"
         },
         {
-          "id": 108,
-          "kn": "Neravagi hogi",
           "translit": "ne-ra-va-gi ho-gi",
+          "kn": "Neravagi hogi",
+          "id": 108,
           "en": "Go straight"
         },
         {
-          "translit": "e-dak-ke ti-ru-gi",
+          "kn": "Edakke tirugi",
           "en": "Turn left",
           "id": 109,
-          "kn": "Edakke tirugi"
+          "translit": "e-dak-ke ti-ru-gi"
         },
         {
           "translit": "ba-lak-ke ti-ru-gi",
-          "id": 110,
           "en": "Turn right",
-          "kn": "Balakke tirugi"
+          "kn": "Balakke tirugi",
+          "id": 110
         },
         {
-          "kn": "Illi",
-          "translit": "il-li",
           "en": "Here",
-          "id": 111
+          "id": 111,
+          "kn": "Illi",
+          "translit": "il-li"
         },
         {
           "en": "There",
-          "kn": "Alli",
           "id": 112,
-          "translit": "al-li"
+          "translit": "al-li",
+          "kn": "Alli"
         },
         {
           "id": 113,
           "translit": "hat-ti-ra",
-          "en": "Near",
-          "kn": "Hattira"
+          "kn": "Hattira",
+          "en": "Near"
         },
         {
           "id": 114,
           "kn": "Doora",
-          "translit": "doo-ra",
-          "en": "Far"
+          "en": "Far",
+          "translit": "doo-ra"
         },
         {
-          "translit": "il-li nil-li-si",
           "en": "Stop here",
           "id": 115,
+          "translit": "il-li nil-li-si",
           "kn": "Illi nillisi"
         },
         {
-          "id": 116,
-          "translit": "ge he-ge ho-gu-vu-du",
           "en": "How to go to...?",
-          "kn": "...ge hege hoguvudu?"
+          "kn": "...ge hege hoguvudu?",
+          "id": 116,
+          "translit": "ge he-ge ho-gu-vu-du"
         },
         {
-          "en": "How much is the ticket?",
           "kn": "Ticket eshtu?",
+          "en": "How much is the ticket?",
           "translit": "ticket esh-tu",
           "id": 117
         },
         {
-          "kn": "...ge ondu ticket",
-          "translit": "ge on-du ticket",
+          "id": 118,
           "en": "One ticket to...",
-          "id": 118
+          "translit": "ge on-du ticket",
+          "kn": "...ge ondu ticket"
         },
         {
-          "translit": "ge yaa-va bus ho-gut-ta-de",
-          "kn": "...ge yava bus hoguttade?",
+          "id": 119,
           "en": "Which bus goes to...?",
-          "id": 119
+          "kn": "...ge yava bus hoguttade?",
+          "translit": "ge yaa-va bus ho-gut-ta-de"
         },
         {
-          "id": 120,
-          "kn": "Auto",
           "translit": "aa-to",
+          "kn": "Auto",
+          "id": 120,
           "en": "Auto rickshaw"
         },
         {
+          "id": 121,
           "en": "Come",
           "kn": "Banni",
-          "translit": "ban-ni",
-          "id": 121
+          "translit": "ban-ni"
         },
         {
           "translit": "ho-gi",
-          "id": 122,
+          "kn": "Hogi",
           "en": "Go",
-          "kn": "Hogi"
+          "id": 122
         },
         {
           "id": 123,
@@ -201,461 +507,460 @@
           "kn": "Raste"
         },
         {
-          "translit": "hotel el-li-de",
+          "id": 124,
           "en": "Where is the hotel?",
           "kn": "Hotel ellide?",
-          "id": 124
+          "translit": "hotel el-li-de"
         },
         {
+          "kn": "Idu doorave?",
           "en": "Is it far?",
           "id": 125,
-          "translit": "i-du doo-ra-ve",
-          "kn": "Idu doorave?"
+          "translit": "i-du doo-ra-ve"
         },
         {
+          "translit": "da-ya-vit-tu nan-nan-nu ee vi-la-sak-ke ka-re-doy-yi-ri",
           "kn": "Dayavittu nannannu ee vilasakke karedoyyiri",
           "id": 126,
-          "translit": "da-ya-vit-tu nan-nan-nu ee vi-la-sak-ke ka-re-doy-yi-ri",
           "en": "Please take me to this address"
         },
         {
-          "kn": "Eshtu samaya tegedukolluttade?",
-          "translit": "esh-tu sa-ma-ya te-ge-du-kol-lut-ta-de",
+          "en": "How long will it take?",
           "id": 127,
-          "en": "How long will it take?"
+          "kn": "Eshtu samaya tegedukolluttade?",
+          "translit": "esh-tu sa-ma-ya te-ge-du-kol-lut-ta-de"
         },
         {
+          "en": "Next stop",
           "id": 128,
           "kn": "Mundina nildana",
-          "en": "Next stop",
           "translit": "mun-di-na nil-daa-na"
         },
         {
+          "translit": "naa-nu il-li i-li-ya-be-ku",
           "kn": "Naanu illi iliyabeku",
           "en": "I want to get down here",
-          "id": 129,
-          "translit": "naa-nu il-li i-li-ya-be-ku"
+          "id": 129
         },
         {
-          "id": 130,
           "en": "Traffic",
           "kn": "Sanchara",
+          "id": 130,
           "translit": "san-chaa-ra"
         },
         {
-          "kn": "Setuve",
           "translit": "se-tu-ve",
-          "en": "Bridge",
-          "id": 131
+          "id": 131,
+          "kn": "Setuve",
+          "en": "Bridge"
         },
         {
+          "id": 132,
           "translit": "hin-de ho-gi",
           "en": "Go back",
-          "kn": "Hinde hogi",
-          "id": 132
+          "kn": "Hinde hogi"
         },
         {
-          "translit": "mun-de",
           "en": "In front of",
+          "id": 133,
           "kn": "Munde",
-          "id": 133
+          "translit": "mun-de"
         },
         {
-          "kn": "Hinde",
-          "en": "Behind",
           "translit": "hin-de",
-          "id": 134
+          "id": 134,
+          "en": "Behind",
+          "kn": "Hinde"
         },
         {
+          "en": "Opposite",
           "kn": "Viruddha",
           "translit": "vi-rud-dha",
-          "en": "Opposite",
           "id": 135
         },
         {
+          "kn": "Yava daari?",
           "en": "Which way?",
           "translit": "yaa-va daa-ri",
-          "id": 136,
-          "kn": "Yava daari?"
+          "id": 136
         },
         {
-          "kn": "Naanu daari tappisikondiddene",
-          "translit": "naa-nu daa-ri tap-pi-si-kon-did-de-ne",
           "id": 137,
+          "translit": "naa-nu daa-ri tap-pi-si-kon-did-de-ne",
+          "kn": "Naanu daari tappisikondiddene",
           "en": "I am lost"
         },
         {
-          "en": "Can you show me on the map?",
-          "kn": "Naksheyalli torisabahude?",
           "translit": "nak-she-yal-li to-ri-sa-bahu-de",
-          "id": 138
+          "id": 138,
+          "en": "Can you show me on the map?",
+          "kn": "Naksheyalli torisabahude?"
         },
         {
-          "id": 139,
-          "en": "Walk",
+          "kn": "Nadi",
           "translit": "na-di",
-          "kn": "Nadi"
+          "id": 139,
+          "en": "Walk"
         },
         {
           "kn": "Vahana",
-          "id": 140,
           "translit": "vaa-ha-na",
-          "en": "Vehicle"
+          "en": "Vehicle",
+          "id": 140
         },
         {
-          "kn": "Vegavagi",
           "id": 141,
-          "translit": "ve-ga-va-gi",
-          "en": "Fast"
+          "en": "Fast",
+          "kn": "Vegavagi",
+          "translit": "ve-ga-va-gi"
         },
         {
           "kn": "Nidhana",
-          "en": "Slow",
+          "translit": "ni-dhaa-na",
           "id": 142,
-          "translit": "ni-dhaa-na"
+          "en": "Slow"
         },
         {
-          "kn": "Nidhanavagi hogi",
-          "en": "Go slow",
           "id": 143,
-          "translit": "ni-dhaa-na-va-gi ho-gi"
+          "translit": "ni-dhaa-na-va-gi ho-gi",
+          "en": "Go slow",
+          "kn": "Nidhanavagi hogi"
         },
         {
-          "translit": "pra-ve-sha",
-          "kn": "Pravesha",
+          "id": 144,
           "en": "Entrance",
-          "id": 144
+          "translit": "pra-ve-sha",
+          "kn": "Pravesha"
         },
         {
           "en": "Exit",
-          "id": 145,
           "kn": "Nirgamana",
-          "translit": "nir-ga-ma-na"
+          "translit": "nir-ga-ma-na",
+          "id": 145
         },
         {
-          "kn": "Petrol bunk",
-          "en": "Petrol station",
           "id": 146,
-          "translit": "petrol bunk"
+          "translit": "petrol bunk",
+          "kn": "Petrol bunk",
+          "en": "Petrol station"
         },
         {
           "id": 147,
-          "en": "How far is it?",
           "translit": "i-du esh-tu doo-ra-dal-li-de",
-          "kn": "Idu eshtu dooradallide?"
+          "kn": "Idu eshtu dooradallide?",
+          "en": "How far is it?"
         },
         {
           "id": 148,
-          "kn": "Idu sariyada bassa?",
+          "en": "Is this the right bus?",
           "translit": "i-du sa-ri-ya-da bas-sa",
-          "en": "Is this the right bus?"
+          "kn": "Idu sariyada bassa?"
         },
         {
-          "kn": "Railu yavaga horaduttade?",
           "translit": "rai-lu yaa-vaa-ga ho-ra-dut-ta-de",
           "en": "When does the train leave?",
-          "id": 149
+          "id": 149,
+          "kn": "Railu yavaga horaduttade?"
         },
         {
           "en": "From where?",
-          "kn": "Ellinda?",
+          "id": 150,
           "translit": "el-lin-da",
-          "id": 150
+          "kn": "Ellinda?"
         }
-      ]
+      ],
+      "icon": "🚃"
     },
     {
-      "id": "eating",
-      "icon": "🍽️",
       "title": "Eating Out",
       "phrases": [
         {
           "translit": "u-pa-haa-ra gru-ha",
-          "id": 151,
           "kn": "Upahara gruha",
-          "en": "Restaurant"
+          "en": "Restaurant",
+          "id": 151
         },
         {
+          "id": 152,
           "en": "Water",
           "translit": "nee-ru",
-          "id": 152,
           "kn": "Neeru"
         },
         {
           "id": 153,
           "en": "Coffee",
-          "translit": "kaa-phi",
-          "kn": "Kaaphi"
+          "kn": "Kaaphi",
+          "translit": "kaa-phi"
         },
         {
           "kn": "Chaha",
           "en": "Tea",
-          "id": 154,
-          "translit": "cha-haa"
+          "translit": "cha-haa",
+          "id": 154
         },
         {
+          "translit": "oo-ta",
           "id": 155,
-          "kn": "Oota",
           "en": "Food",
+          "kn": "Oota"
+        },
+        {
+          "translit": "tin-di",
+          "kn": "Tindi",
+          "id": 156,
+          "en": "Breakfast"
+        },
+        {
+          "id": 157,
+          "en": "Lunch",
+          "translit": "oo-ta",
+          "kn": "Oota"
+        },
+        {
+          "kn": "Oota",
+          "en": "Dinner",
+          "id": 158,
           "translit": "oo-ta"
         },
         {
-          "kn": "Tindi",
-          "en": "Breakfast",
-          "translit": "tin-di",
-          "id": 156
-        },
-        {
-          "kn": "Oota",
-          "translit": "oo-ta",
-          "en": "Lunch",
-          "id": 157
-        },
-        {
-          "translit": "oo-ta",
-          "kn": "Oota",
-          "en": "Dinner",
-          "id": 158
-        },
-        {
-          "translit": "menu ko-di",
-          "en": "Menu please",
           "id": 159,
+          "en": "Menu please",
+          "translit": "menu ko-di",
           "kn": "Menu kodi"
         },
         {
-          "translit": "i-vat-tu ye-nu vi-she-sha",
           "id": 160,
+          "en": "What is special today?",
           "kn": "Ivattu enu vishesha?",
-          "en": "What is special today?"
+          "translit": "i-vat-tu ye-nu vi-she-sha"
         },
         {
-          "kn": "Naanu sasyahari",
           "en": "I am vegetarian",
+          "id": 161,
           "translit": "naa-nu sas-yaa-haa-ri",
-          "id": 161
+          "kn": "Naanu sasyahari"
         },
         {
           "kn": "Motte illade",
-          "id": 162,
+          "en": "Without egg",
           "translit": "mot-te il-la-de",
-          "en": "Without egg"
+          "id": 162
         },
         {
-          "translit": "khaa-ra",
           "id": 163,
+          "kn": "Khaara",
           "en": "Spicy",
-          "kn": "Khaara"
+          "translit": "khaa-ra"
         },
         {
           "id": 164,
-          "kn": "Khaara kadime",
           "translit": "khaa-ra ka-di-me",
+          "kn": "Khaara kadime",
           "en": "Less spicy"
         },
         {
+          "translit": "khaa-ra be-da",
           "kn": "Khaara beda",
-          "id": 165,
           "en": "No spice",
-          "translit": "khaa-ra be-da"
+          "id": 165
         },
         {
           "id": 166,
           "en": "Sweet",
-          "translit": "si-hi",
-          "kn": "Sihi"
+          "kn": "Sihi",
+          "translit": "si-hi"
         },
         {
-          "kn": "Uppu",
           "id": 167,
+          "en": "Salt",
           "translit": "up-pu",
-          "en": "Salt"
+          "kn": "Uppu"
         },
         {
           "translit": "sak-ka-re",
+          "en": "Sugar",
           "kn": "Sakkare",
-          "id": 168,
-          "en": "Sugar"
+          "id": 168
         },
         {
-          "translit": "bill ko-di",
           "kn": "Bill kodi",
           "id": 169,
+          "translit": "bill ko-di",
           "en": "The bill please"
         },
         {
           "translit": "oo-ta ru-chi-ya-gi-de",
+          "en": "The food is tasty",
           "id": 170,
-          "kn": "Oota ruchiyagide",
-          "en": "The food is tasty"
+          "kn": "Oota ruchiyagide"
         },
         {
-          "id": 171,
-          "kn": "Anna",
           "translit": "an-na",
+          "kn": "Anna",
+          "id": 171,
           "en": "Rice"
         },
         {
-          "en": "Sambar",
+          "translit": "saa-ru",
           "kn": "Saaru",
-          "id": 172,
-          "translit": "saa-ru"
+          "en": "Sambar",
+          "id": 172
         },
         {
           "kn": "Mosaru",
-          "en": "Curd / Yogurt",
           "translit": "mo-sa-ru",
-          "id": 173
+          "id": 173,
+          "en": "Curd / Yogurt"
         },
         {
+          "en": "Dosa",
           "kn": "Dose",
           "id": 174,
-          "en": "Dosa",
           "translit": "do-se"
         },
         {
+          "id": 175,
           "kn": "Idli",
-          "en": "Idli",
           "translit": "id-li",
-          "id": 175
+          "en": "Idli"
         },
         {
-          "translit": "on-du plate",
           "kn": "Ondu plate...",
-          "en": "One plate...",
-          "id": 176
+          "translit": "on-du plate",
+          "id": 176,
+          "en": "One plate..."
         },
         {
           "en": "More",
-          "translit": "in-nash-tu",
           "kn": "Innashtu",
-          "id": 177
+          "id": 177,
+          "translit": "in-nash-tu"
         },
         {
+          "kn": "Saaku",
           "translit": "saa-ku",
-          "en": "Enough",
           "id": 178,
-          "kn": "Saaku"
+          "en": "Enough"
         },
         {
           "id": 179,
+          "en": "Hot water",
           "kn": "Bisi neeru",
-          "translit": "bi-si nee-ru",
-          "en": "Hot water"
+          "translit": "bi-si nee-ru"
         },
         {
-          "translit": "tan-nee-ru",
-          "kn": "Tanneeru",
+          "id": 180,
           "en": "Cold water",
-          "id": 180
+          "kn": "Tanneeru",
+          "translit": "tan-nee-ru"
         },
         {
           "translit": "fork",
-          "kn": "Fork",
           "id": 181,
+          "kn": "Fork",
           "en": "Fork"
         },
         {
           "translit": "cha-ma-cha",
+          "en": "Spoon",
           "kn": "Chamacha",
-          "id": 182,
-          "en": "Spoon"
+          "id": 182
         },
         {
-          "kn": "Tatte",
           "en": "Plate",
-          "id": 183,
-          "translit": "tat-te"
+          "translit": "tat-te",
+          "kn": "Tatte",
+          "id": 183
         },
         {
-          "translit": "lo-ta",
-          "kn": "Lota",
           "id": 184,
-          "en": "Glass"
+          "en": "Glass",
+          "kn": "Lota",
+          "translit": "lo-ta"
         },
         {
-          "kn": "Idu taaja ideye?",
-          "translit": "i-du taa-ja i-de-ye",
+          "id": 185,
           "en": "Is this fresh?",
-          "id": 185
+          "translit": "i-du taa-ja i-de-ye",
+          "kn": "Idu taaja ideye?"
         },
         {
           "translit": "naa-nu order maa-da-lu ba-ya-sut-te-ne",
-          "kn": "Naanu order madalu bayasuttene",
           "id": 186,
-          "en": "I want to order"
+          "en": "I want to order",
+          "kn": "Naanu order madalu bayasuttene"
         },
         {
           "kn": "Neevu enu shipharasu maduttiri?",
-          "translit": "nee-vu ye-nu shi-pha-ra-su maa-dut-ti-ri",
+          "en": "What do you recommend?",
           "id": 187,
-          "en": "What do you recommend?"
+          "translit": "nee-vu ye-nu shi-pha-ra-su maa-dut-ti-ri"
         },
         {
-          "translit": "ee-rul-li il-la-de",
           "en": "Without onion",
-          "kn": "Eerulli illade",
-          "id": 188
+          "translit": "ee-rul-li il-la-de",
+          "id": 188,
+          "kn": "Eerulli illade"
         },
         {
           "translit": "bel-lul-li il-la-de",
+          "id": 189,
           "kn": "Bellulli illade",
-          "en": "Without garlic",
-          "id": 189
+          "en": "Without garlic"
         },
         {
-          "id": 190,
           "kn": "Ibbarige table",
-          "translit": "ib-ba-ri-ge table",
-          "en": "Table for two"
+          "id": 190,
+          "en": "Table for two",
+          "translit": "ib-ba-ri-ge table"
         },
         {
+          "kn": "Innu swalpa neeru siguvude?",
           "id": 191,
           "translit": "in-nu swal-pa nee-ru si-gu-vu-de",
-          "kn": "Innu swalpa neeru siguvude?",
           "en": "Can I have some more water?"
         },
         {
-          "en": "Juice",
           "id": 192,
+          "translit": "ra-sa",
           "kn": "Rasa",
-          "translit": "ra-sa"
+          "en": "Juice"
         },
         {
-          "kn": "Tarakarigalu",
-          "id": 193,
+          "translit": "ta-ra-kaa-ri-ga-lu",
           "en": "Vegetables",
-          "translit": "ta-ra-kaa-ri-ga-lu"
+          "id": 193,
+          "kn": "Tarakarigalu"
         },
         {
-          "translit": "han-nu-ga-lu",
           "en": "Fruits",
-          "id": 194,
-          "kn": "Hannugalu"
+          "translit": "han-nu-ga-lu",
+          "kn": "Hannugalu",
+          "id": 194
         },
         {
+          "en": "I am full",
           "kn": "Nanna hotte tumbide",
           "id": 195,
-          "translit": "nan-na hot-te tum-bi-de",
-          "en": "I am full"
+          "translit": "nan-na hot-te tum-bi-de"
         },
         {
-          "en": "Take away / Parcel",
-          "id": 196,
+          "kn": "Parcel",
           "translit": "par-cel",
-          "kn": "Parcel"
+          "en": "Take away / Parcel",
+          "id": 196
         },
         {
           "en": "It's delicious",
+          "kn": "Idu ruchikaravagide",
           "translit": "i-du ru-chi-ka-ra-va-gi-de",
-          "id": 197,
-          "kn": "Idu ruchikaravagide"
+          "id": 197
         },
         {
-          "kn": "Naanu idannu order madalilla",
-          "id": 198,
           "translit": "naa-nu i-dan-nu order maa-da-lil-la",
-          "en": "I did not order this"
+          "en": "I did not order this",
+          "id": 198,
+          "kn": "Naanu idannu order madalilla"
         },
         {
           "translit": "naa-vu il-li ku-li-tu-kol-la-bahu-de",
@@ -664,58 +969,58 @@
           "en": "Can we sit here?"
         },
         {
-          "en": "Is service included?",
-          "id": 200,
           "kn": "Seve seride?",
-          "translit": "se-ve se-ri-de"
+          "translit": "se-ve se-ri-de",
+          "id": 200,
+          "en": "Is service included?"
         }
-      ]
+      ],
+      "icon": "🍽️",
+      "id": "eating"
     },
     {
-      "icon": "👨‍👩‍👧‍👦",
-      "title": "Family & Relationships",
       "phrases": [
         {
+          "translit": "ku-tum-ba",
           "id": 351,
-          "en": "Family",
           "kn": "Kutumba",
-          "translit": "ku-tum-ba"
+          "en": "Family"
         },
         {
-          "en": "Mother",
           "kn": "Amma",
           "translit": "am-ma",
+          "en": "Mother",
           "id": 352
         },
         {
-          "translit": "ap-pa",
           "en": "Father",
-          "id": 353,
-          "kn": "Appa"
+          "kn": "Appa",
+          "translit": "ap-pa",
+          "id": 353
         },
         {
+          "en": "Parents",
           "kn": "Poshakaru",
           "translit": "po-sha-ka-ru",
-          "id": 354,
-          "en": "Parents"
+          "id": 354
         },
         {
-          "translit": "sa-ho-da-ra",
           "kn": "Sahodara",
-          "id": 355,
-          "en": "Brother"
+          "en": "Brother",
+          "translit": "sa-ho-da-ra",
+          "id": 355
         },
         {
           "id": 356,
+          "kn": "Sahodari",
           "translit": "sa-ho-da-ri",
-          "en": "Sister",
-          "kn": "Sahodari"
+          "en": "Sister"
         },
         {
+          "translit": "an-na",
           "en": "Elder brother",
-          "id": 357,
           "kn": "Anna",
-          "translit": "an-na"
+          "id": 357
         },
         {
           "id": 358,
@@ -725,62 +1030,62 @@
         },
         {
           "translit": "ak-ka",
+          "en": "Elder sister",
           "kn": "Akka",
-          "id": 359,
-          "en": "Elder sister"
+          "id": 359
         },
         {
           "id": 360,
-          "en": "Younger sister",
           "kn": "Tangi",
+          "en": "Younger sister",
           "translit": "tan-gi"
         },
         {
-          "translit": "gan-da",
-          "kn": "Ganda",
           "id": 361,
+          "kn": "Ganda",
+          "translit": "gan-da",
           "en": "Husband"
         },
         {
-          "id": 362,
           "en": "Wife",
+          "translit": "hen-da-ti",
           "kn": "Hendati",
-          "translit": "hen-da-ti"
+          "id": 362
         },
         {
-          "en": "Son",
           "id": 363,
+          "translit": "ma-ga",
           "kn": "Maga",
-          "translit": "ma-ga"
+          "en": "Son"
         },
         {
-          "en": "Daughter",
           "translit": "ma-ga-lu",
-          "kn": "Magalu",
-          "id": 364
+          "en": "Daughter",
+          "id": 364,
+          "kn": "Magalu"
         },
         {
+          "id": 365,
           "en": "Friend",
           "kn": "Snehita",
-          "translit": "sne-hi-ta",
-          "id": 365
+          "translit": "sne-hi-ta"
         },
         {
+          "en": "Are you married?",
           "translit": "ni-ma-ge ma-du-ve-ya-gi-de-ye",
           "id": 366,
-          "en": "Are you married?",
           "kn": "Nimage maduveyagideye?"
         },
         {
-          "translit": "naa-nu ob-ban-ti",
-          "kn": "Naanu obbanti",
           "id": 367,
-          "en": "I am single"
+          "en": "I am single",
+          "translit": "naa-nu ob-ban-ti",
+          "kn": "Naanu obbanti"
         },
         {
           "translit": "na-na-ge ma-du-ve-ya-gi-de",
-          "en": "I am married",
           "id": 368,
+          "en": "I am married",
           "kn": "Nanage maduveyagide"
         },
         {
@@ -790,614 +1095,614 @@
           "kn": "Nimage makkaliddareye?"
         },
         {
-          "translit": "esh-tu sa-ho-da-ra-ru",
-          "en": "How many siblings?",
+          "id": 370,
           "kn": "Eshtu sahodararu?",
-          "id": 370
+          "en": "How many siblings?",
+          "translit": "esh-tu sa-ho-da-ra-ru"
         },
         {
+          "en": "Grandfather",
           "id": 371,
           "kn": "Ajja",
-          "en": "Grandfather",
           "translit": "aj-ja"
         },
         {
-          "en": "Grandmother",
           "id": 372,
           "translit": "aj-ji",
-          "kn": "Ajji"
+          "kn": "Ajji",
+          "en": "Grandmother"
         },
         {
           "kn": "Chikkappa / Maava",
+          "id": 373,
           "en": "Uncle",
-          "translit": "chik-kap-pa / maa-va",
-          "id": 373
+          "translit": "chik-kap-pa / maa-va"
         },
         {
-          "translit": "chik-kam-ma / at-te",
-          "id": 374,
           "kn": "Chikkamma / Atte",
-          "en": "Aunt"
+          "id": 374,
+          "en": "Aunt",
+          "translit": "chik-kam-ma / at-te"
         },
         {
-          "translit": "sam-ban-dhi",
-          "kn": "Sambandhi",
+          "id": 375,
           "en": "Cousin",
-          "id": 375
+          "kn": "Sambandhi",
+          "translit": "sam-ban-dhi"
         },
         {
-          "en": "My family",
-          "kn": "Nanna kutumba",
           "translit": "nan-na ku-tum-ba",
-          "id": 376
+          "id": 376,
+          "en": "My family",
+          "kn": "Nanna kutumba"
         },
         {
+          "en": "This is my friend",
           "id": 377,
-          "translit": "i-va-nu nan-na sne-hi-ta",
           "kn": "Ivanu nanna snehita",
-          "en": "This is my friend"
+          "translit": "i-va-nu nan-na sne-hi-ta"
         },
         {
-          "translit": "nim-ma taa-yi he-gid-daa-re",
           "id": 378,
-          "en": "How is your mother?",
-          "kn": "Nimma taayi hegiddaare?"
+          "kn": "Nimma taayi hegiddaare?",
+          "translit": "nim-ma taa-yi he-gid-daa-re",
+          "en": "How is your mother?"
         },
         {
+          "translit": "a-va-lu chen-na-gid-daa-le",
           "id": 379,
           "en": "She is fine",
-          "kn": "Avalu chennagiddale",
-          "translit": "a-va-lu chen-na-gid-daa-le"
+          "kn": "Avalu chennagiddale"
         },
         {
+          "en": "How is your father?",
           "translit": "nim-ma tan-de he-gid-daa-re",
           "id": 380,
-          "kn": "Nimma tande hegiddaare?",
-          "en": "How is your father?"
+          "kn": "Nimma tande hegiddaare?"
         },
         {
-          "en": "He is fine",
-          "id": 381,
+          "kn": "Avanu chennagiddane",
           "translit": "a-va-nu chen-na-gid-daa-ne",
-          "kn": "Avanu chennagiddane"
+          "en": "He is fine",
+          "id": 381
         },
         {
-          "kn": "Naanu nanna kutumbavannu preetisuttene",
-          "translit": "naa-nu nan-na ku-tum-ba-van-nu pree-ti-sut-te-ne",
+          "en": "I love my family",
           "id": 382,
-          "en": "I love my family"
+          "kn": "Naanu nanna kutumbavannu preetisuttene",
+          "translit": "naa-nu nan-na ku-tum-ba-van-nu pree-ti-sut-te-ne"
         },
         {
           "translit": "hu-du-ga",
-          "id": 383,
+          "kn": "Huduga",
           "en": "Boy",
-          "kn": "Huduga"
+          "id": 383
         },
         {
+          "translit": "hu-du-gi",
           "en": "Girl",
           "id": 384,
-          "translit": "hu-du-gi",
           "kn": "Hudugi"
         },
         {
           "translit": "gan-da-su",
-          "kn": "Gandasu",
           "id": 385,
-          "en": "Man"
+          "en": "Man",
+          "kn": "Gandasu"
         },
         {
-          "id": 386,
           "translit": "hen-ga-su",
-          "kn": "Hengasu",
-          "en": "Woman"
+          "id": 386,
+          "en": "Woman",
+          "kn": "Hengasu"
         },
         {
-          "translit": "ma-gu",
-          "en": "Child",
           "kn": "Mugu",
-          "id": 387
+          "en": "Child",
+          "id": 387,
+          "translit": "ma-gu"
         },
         {
-          "id": 388,
-          "en": "Children",
           "translit": "mak-ka-lu",
+          "en": "Children",
+          "id": 388,
           "kn": "Makkalu"
         },
         {
-          "id": 389,
-          "kn": "Nimma maganige eshtu vayassu?",
           "translit": "nim-ma ma-ga-ni-ge esh-tu va-yas-su",
+          "kn": "Nimma maganige eshtu vayassu?",
+          "id": 389,
           "en": "How old is your son?"
         },
         {
+          "translit": "nan-na ma-ga-li-ge 5 var-sha",
           "en": "My daughter is 5 years old",
           "id": 390,
-          "translit": "nan-na ma-ga-li-ge 5 var-sha",
           "kn": "Nanna magalige 5 varsha"
         },
         {
           "id": 391,
-          "en": "We are friends",
           "translit": "naa-vu sne-hi-ta-ru",
-          "kn": "Naavu snehitaru"
+          "kn": "Naavu snehitaru",
+          "en": "We are friends"
         },
         {
-          "translit": "a-va-nu nan-na sa-hod-yo-gi",
-          "kn": "Avanu nanna sahodyogi",
           "en": "He is my colleague",
-          "id": 392
+          "id": 392,
+          "translit": "a-va-nu nan-na sa-hod-yo-gi",
+          "kn": "Avanu nanna sahodyogi"
         },
         {
-          "translit": "a-va-lu nan-na ne-re-ho-re-ya-va-lu",
-          "kn": "Avalu nanna nerehoreyavalu",
           "en": "She is my neighbor",
-          "id": 393
+          "translit": "a-va-lu nan-na ne-re-ho-re-ya-va-lu",
+          "id": 393,
+          "kn": "Avalu nanna nerehoreyavalu"
         },
         {
           "id": 394,
-          "translit": "nee-vu ob-ba-re vaa-si-sut-tee-ra",
           "kn": "Neevu obbare vaasisuttira?",
-          "en": "Do you live alone?"
+          "en": "Do you live alone?",
+          "translit": "nee-vu ob-ba-re vaa-si-sut-tee-ra"
         },
         {
-          "id": 395,
           "translit": "naa-nu nan-na ku-tum-ba-don-di-ge vaa-si-sut-tid-de-ne",
           "en": "I live with my family",
+          "id": 395,
           "kn": "Naanu nanna kutumbadondige vaasisuttiddene"
         },
         {
-          "translit": "vi-vaa-ha var-shi-kot-sa-va-da shu-bhaa-sha-ya-ga-lu",
-          "id": 396,
           "en": "Happy anniversary!",
-          "kn": "Vivaha varshikotsavada shubhashayagalu!"
+          "translit": "vi-vaa-ha var-shi-kot-sa-va-da shu-bhaa-sha-ya-ga-lu",
+          "kn": "Vivaha varshikotsavada shubhashayagalu!",
+          "id": 396
         },
         {
           "translit": "nee-vu ne-na-pa-gut-tid-di-ri",
           "id": 397,
-          "en": "I miss you",
-          "kn": "Neevu nenapaguttiddiri"
+          "kn": "Neevu nenapaguttiddiri",
+          "en": "I miss you"
         },
         {
-          "en": "Give my regards to your family",
-          "kn": "Nimma kutumbakke nanna namaskaragalannu tilisi",
           "id": 398,
-          "translit": "nim-ma ku-tum-bak-ke nan-na na-mas-kaa-ra-ga-lan-nu ti-li-si"
+          "translit": "nim-ma ku-tum-bak-ke nan-na na-mas-kaa-ra-ga-lan-nu ti-li-si",
+          "en": "Give my regards to your family",
+          "kn": "Nimma kutumbakke nanna namaskaragalannu tilisi"
         },
         {
+          "kn": "Matte bhetiyagona",
           "translit": "mat-te bhe-ti-ya-go-na",
-          "id": 399,
           "en": "Let's meet again",
-          "kn": "Matte bhetiyagona"
+          "id": 399
         },
         {
           "en": "Everyone is fine",
-          "kn": "Ellaru chennagiddare",
           "translit": "el-la-roo chen-na-gid-daa-re",
-          "id": 400
+          "id": 400,
+          "kn": "Ellaru chennagiddare"
         }
       ],
-      "id": "family"
+      "icon": "👨‍👩‍👧‍👦",
+      "id": "family",
+      "title": "Family & Relationships"
     },
     {
-      "title": "Greetings & Introductions",
-      "icon": "👋",
       "id": "greetings",
+      "icon": "👋",
+      "title": "Greetings & Introductions",
       "phrases": [
         {
+          "kn": "Namaskara",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_0_1756140138496.webm?alt=media&token=838439c2-0446-4b19-a484-86cec3ffade6",
           "id": 1,
           "en": "Hello",
-          "kn": "Namaskara",
           "translit": "na-mas-ka-ra"
         },
         {
           "translit": "he-gid-dee-ra",
-          "kn": "Hegiddeera?",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_1_1756140151446.webm?alt=media&token=537c6d1b-3843-49f3-b606-8ca172cc0d6d",
+          "en": "How are you?",
           "id": 2,
-          "en": "How are you?"
+          "kn": "Hegiddeera?"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_2_1756140169030.webm?alt=media&token=14347af9-e518-4768-9dd3-a047cd227589",
-          "id": 3,
-          "en": "I'm fine",
           "translit": "chen-na-gid-dee-ni",
-          "kn": "Chennagiddeeni"
+          "kn": "Chennagiddeeni",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_2_1756140169030.webm?alt=media&token=14347af9-e518-4768-9dd3-a047cd227589",
+          "en": "I'm fine",
+          "id": 3
         },
         {
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_3_1756140232291.webm?alt=media&token=30e0ea41-31c4-4551-a3fd-2d6bc2253925",
+          "id": 4,
           "en": "What's your name?",
           "kn": "Nimma hesarenu?",
-          "id": 4,
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_3_1756140232291.webm?alt=media&token=30e0ea41-31c4-4551-a3fd-2d6bc2253925",
           "translit": "nim-ma he-sa-re-nu"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_4_1756140312721.webm?alt=media&token=f66e3d3c-2bb9-4067-b4e2-80fcb396f78a",
+          "en": "My name is Cara.",
           "kn": "Nanna hesaru Cara",
-          "translit": "nan-na he-sa-ru ca-ra",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_4_1756140312721.webm?alt=media&token=f66e3d3c-2bb9-4067-b4e2-80fcb396f78a",
           "id": 5,
-          "en": "My name is Cara."
+          "translit": "nan-na he-sa-ru ca-ra"
         },
         {
-          "translit": "nim-man-nu bhe-ti maa-di san-to-sha-va-yi-tu",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_5_1756142343175.webm?alt=media&token=f301224f-caf6-4f79-9abc-f6da811a8292",
-          "kn": "Nimmannu bheti maadi santoshavayitu",
           "id": 6,
+          "translit": "nim-man-nu bhe-ti maa-di san-to-sha-va-yi-tu",
+          "kn": "Nimmannu bheti maadi santoshavayitu",
           "en": "Nice to meet you"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_6_1756147442070.webm?alt=media&token=0fd0fd70-38b8-4e13-a401-c4f48012c425",
           "id": 7,
-          "translit": "dhan-ya-vaa-da-ga-lu",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_6_1756147442070.webm?alt=media&token=0fd0fd70-38b8-4e13-a401-c4f48012c425",
           "en": "Thank you",
+          "translit": "dhan-ya-vaa-da-ga-lu",
           "kn": "Dhanyavadagalu"
         },
         {
-          "kn": "Paravagilla",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_7_1756147471920.webm?alt=media&token=34fe4807-b8b2-42c1-8b64-6900997c6b12",
-          "en": "You're welcome",
           "id": 8,
-          "translit": "pa-ra-va-gil-la"
+          "translit": "pa-ra-va-gil-la",
+          "en": "You're welcome",
+          "kn": "Paravagilla"
         },
         {
-          "kn": "Kshamisi",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_8_1756147480137.webm?alt=media&token=8343e141-6659-44b9-98d9-e87b28d2b018",
-          "id": 9,
           "translit": "ksha-mi-si",
-          "en": "Excuse me / Sorry"
+          "en": "Excuse me / Sorry",
+          "id": 9,
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_8_1756147480137.webm?alt=media&token=8343e141-6659-44b9-98d9-e87b28d2b018",
+          "kn": "Kshamisi"
         },
         {
-          "id": 10,
           "kn": "Houdu",
-          "en": "Yes",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_9_1756147487170.webm?alt=media&token=62684081-b88e-4aea-9cf2-886ce6e5b8fd",
-          "translit": "hou-du"
+          "translit": "hou-du",
+          "id": 10,
+          "en": "Yes"
         },
         {
           "kn": "Illa",
-          "translit": "il-la",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_10_1756147493619.webm?alt=media&token=227fb74b-7c96-44f1-ab73-f6a3b8fe85ca",
+          "translit": "il-la",
           "id": 11,
           "en": "No"
         },
         {
+          "en": "Please",
           "id": 12,
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_11_1756147503035.webm?alt=media&token=d6cdbd4a-e429-4eaa-8309-f1a103bc4f00",
-          "en": "Please",
-          "translit": "da-ya-vit-tu",
-          "kn": "Dayavittu"
+          "kn": "Dayavittu",
+          "translit": "da-ya-vit-tu"
         },
         {
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_12_1756147522302.webm?alt=media&token=b58bbb26-03f4-4e03-bb9d-24800d18c7f8",
           "translit": "ho-gi ba-rut-te-ne",
-          "en": "Goodbye",
-          "id": 13,
           "kn": "Hogi baruttene",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_12_1756147522302.webm?alt=media&token=b58bbb26-03f4-4e03-bb9d-24800d18c7f8"
+          "en": "Goodbye",
+          "id": 13
         },
         {
-          "id": 14,
-          "kn": "Shubhodaya",
-          "en": "Good morning",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_13_1756147532068.webm?alt=media&token=c4814c22-d450-43c2-a1e5-5561f82fb6fd",
           "translit": "shu-bho-da-ya",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_13_1756147532068.webm?alt=media&token=c4814c22-d450-43c2-a1e5-5561f82fb6fd"
+          "kn": "Shubhodaya",
+          "id": 14,
+          "en": "Good morning"
         },
         {
-          "id": 15,
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_14_1756147541501.webm?alt=media&token=0aaa0cb3-85eb-467b-a2d4-cc229d0eb13b",
           "translit": "shu-bha raa-tri",
-          "en": "Good night",
-          "kn": "Shubha raatri"
+          "id": 15,
+          "kn": "Shubha raatri",
+          "en": "Good night"
         },
         {
           "id": 16,
-          "translit": "mat-te si-go-na",
-          "kn": "Matte sigona",
+          "en": "See you later",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_15_1756147567532.webm?alt=media&token=f2cb7299-dd17-4112-8364-0761836a2429",
-          "en": "See you later"
+          "kn": "Matte sigona",
+          "translit": "mat-te si-go-na"
         },
         {
-          "kn": "Jaagrate",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_16_1756147576081.webm?alt=media&token=0f084ca6-f65d-41bc-a935-41d8954d3ab2",
           "en": "Take care",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_16_1756147576081.webm?alt=media&token=0f084ca6-f65d-41bc-a935-41d8954d3ab2",
+          "id": 17,
           "translit": "jaa-gra-te",
-          "id": 17
+          "kn": "Jaagrate"
         },
         {
-          "id": 18,
+          "en": "Where are you from?",
           "translit": "nee-vu el-li-ya-va-ru",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_17_1756147640477.webm?alt=media&token=1488943f-2013-4e69-89d8-68409ac26542",
           "kn": "Neevu elliyavaru?",
-          "en": "Where are you from?"
+          "id": 18
         },
         {
-          "kn": "Naanu amrika inda bandiddene",
+          "id": 19,
           "translit": "naa-nu am-ri-ka in-da ban-di-dde-ne",
           "en": "I am from America",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_18_1756147698392.webm?alt=media&token=2dc31349-1f4f-411d-b0db-224eb4323599",
-          "id": 19
+          "kn": "Naanu amrika inda bandiddene",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_18_1756147698392.webm?alt=media&token=2dc31349-1f4f-411d-b0db-224eb4323599"
         },
         {
-          "id": 20,
-          "translit": "nee-vu English maa-ta-naa-dut-tee-ra",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_19_1756147720891.webm?alt=media&token=0980d857-8d54-4f72-abcf-f1a443b8f3b4",
           "en": "Do you speak English?",
-          "kn": "Neevu English maatanaduttira?"
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_19_1756147720891.webm?alt=media&token=0980d857-8d54-4f72-abcf-f1a443b8f3b4",
+          "translit": "nee-vu English maa-ta-naa-dut-tee-ra",
+          "kn": "Neevu English maatanaduttira?",
+          "id": 20
         },
         {
-          "id": 21,
+          "kn": "Naanu swalpa Kannada maatanaduttene",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_20_1756147795352.webm?alt=media&token=31565375-8b6d-4849-9861-4b6d13844564",
           "en": "I speak a little Kannada",
           "translit": "naa-nu swal-pa kan-na-da maa-ta-naa-dut-te-ne",
-          "kn": "Naanu swalpa Kannada maatanaduttene"
+          "id": 21
         },
         {
-          "kn": "Nanage arthavagalilla",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_21_1756147817050.webm?alt=media&token=eb6930bd-85af-40cf-9f11-5c2e66828d44",
           "id": 22,
           "en": "I don't understand",
+          "kn": "Nanage arthavagalilla",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_21_1756147817050.webm?alt=media&token=eb6930bd-85af-40cf-9f11-5c2e66828d44",
           "translit": "na-na-ge ar-tha-va-ga-lil-la"
         },
         {
-          "translit": "in-nom-me he-li",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_22_1756147836301.webm?alt=media&token=03b18e4b-2d69-44f9-8b8c-7ad10364490a",
           "kn": "Innomme heli",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_22_1756147836301.webm?alt=media&token=03b18e4b-2d69-44f9-8b8c-7ad10364490a",
+          "translit": "in-nom-me he-li",
           "en": "Can you repeat that?",
           "id": 23
         },
         {
+          "id": 24,
+          "en": "Speak slowly",
           "translit": "ni-dhaa-na-va-gi maa-ta-naa-di",
           "kn": "Nidhanavagi maatanadi",
-          "id": 24,
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_23_1756147884997.webm?alt=media&token=5e4e7d8e-4468-4be7-afd9-851032323e5e",
-          "en": "Speak slowly"
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_23_1756147884997.webm?alt=media&token=5e4e7d8e-4468-4be7-afd9-851032323e5e"
         },
         {
           "kn": "Idu enu?",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_24_1756147895448.webm?alt=media&token=85e53fc9-f5d6-4a8a-9862-0a11732637b0",
+          "translit": "i-du ye-nu",
           "en": "What is this?",
-          "id": 25,
-          "translit": "i-du ye-nu"
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_24_1756147895448.webm?alt=media&token=85e53fc9-f5d6-4a8a-9862-0a11732637b0",
+          "id": 25
         },
         {
-          "translit": "ye-na-yi-tu",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_25_1756147913912.webm?alt=media&token=202f8c1c-16a8-409c-89dd-14c9c4c90f16",
           "id": 26,
           "kn": "Enayitu?",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_25_1756147913912.webm?alt=media&token=202f8c1c-16a8-409c-89dd-14c9c4c90f16",
+          "translit": "ye-na-yi-tu",
           "en": "What happened?"
         },
         {
-          "id": 27,
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_26_1756147953476.webm?alt=media&token=bb8bd7f1-e2f9-40a8-9e29-433c07a682b1",
-          "translit": "pa-ra-va-gil-la",
           "en": "It's okay",
+          "translit": "pa-ra-va-gil-la",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_26_1756147953476.webm?alt=media&token=bb8bd7f1-e2f9-40a8-9e29-433c07a682b1",
+          "id": 27,
           "kn": "Paravagilla"
         },
         {
-          "en": "I am learning",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_27_1756147968643.webm?alt=media&token=154b4e14-c71a-4681-8799-3edf6b3daa25",
           "kn": "Naanu kaliyuttiddene",
+          "translit": "naa-nu ka-li-yut-tid-de-ne",
           "id": 28,
-          "translit": "naa-nu ka-li-yut-tid-de-ne"
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_27_1756147968643.webm?alt=media&token=154b4e14-c71a-4681-8799-3edf6b3daa25",
+          "en": "I am learning"
         },
         {
-          "kn": "Swagata",
           "translit": "swa-ga-ta",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_28_1756147977859.webm?alt=media&token=f31b4f81-8a0a-4619-aa2f-c2a349a712ea",
-          "en": "Welcome",
-          "id": 29
+          "kn": "Swagata",
+          "id": 29,
+          "en": "Welcome"
         },
         {
-          "kn": "Mattu neevu?",
-          "id": 30,
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_29_1756148040972.webm?alt=media&token=1984f000-a38c-408f-8dbb-b7a6d5ec1ddc",
           "en": "And you?",
-          "translit": "mat-tu nee-vu"
+          "translit": "mat-tu nee-vu",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_29_1756148040972.webm?alt=media&token=1984f000-a38c-408f-8dbb-b7a6d5ec1ddc",
+          "kn": "Mattu neevu?",
+          "id": 30
         },
         {
-          "kn": "Tumba olleyadu",
-          "translit": "tum-ba ol-le-ya-du",
           "id": 31,
+          "kn": "Tumba olleyadu",
           "en": "Very good",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_30_1756148055155.webm?alt=media&token=459d6949-f680-48ac-b42c-6abeb7ca798c"
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_30_1756148055155.webm?alt=media&token=459d6949-f680-48ac-b42c-6abeb7ca798c",
+          "translit": "tum-ba ol-le-ya-du"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_31_1756148137150.webm?alt=media&token=a6d7ff1f-4033-4728-9286-e48757b4b4ee",
-          "kn": "Kettadagilla",
           "translit": "ket-ta-da-gil-la",
           "en": "Not bad",
-          "id": 32
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_31_1756148137150.webm?alt=media&token=a6d7ff1f-4033-4728-9286-e48757b4b4ee",
+          "id": 32,
+          "kn": "Kettadagilla"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_32_1756148148636.webm?alt=media&token=38dbe32e-20b8-44ba-9bf3-1ca07ae67550",
+          "en": "What's new?",
           "kn": "Enu samachara?",
           "id": 33,
           "translit": "ye-nu sa-ma-chaa-ra",
-          "en": "What's new?"
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_32_1756148148636.webm?alt=media&token=38dbe32e-20b8-44ba-9bf3-1ca07ae67550"
         },
         {
           "kn": "Enu illa",
-          "id": 34,
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_33_1756148157503.webm?alt=media&token=fbc1ba74-b385-4233-90b6-870ba031a76c",
+          "translit": "ye-nu il-la",
           "en": "Nothing much",
-          "translit": "ye-nu il-la"
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_33_1756148157503.webm?alt=media&token=fbc1ba74-b385-4233-90b6-870ba031a76c",
+          "id": 34
         },
         {
           "translit": "nee-vu ye-nu kel-a-sa maa-dut-tee-ra",
-          "kn": "Neevu enu kelasa maaduttira?",
           "id": 35,
           "en": "What do you do?",
+          "kn": "Neevu enu kelasa maaduttira?",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_34_1756148181615.webm?alt=media&token=fa015bf9-2e20-4079-b00b-d5a8d6450593"
         },
         {
-          "translit": "naa-nu vid-yaar-thi",
+          "kn": "Naanu vidyarthi",
+          "id": 36,
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_35_1756148192114.webm?alt=media&token=115e4607-2db4-49db-8d20-70480798e256",
           "en": "I am a student",
-          "id": 36,
-          "kn": "Naanu vidyarthi"
+          "translit": "naa-nu vid-yaar-thi"
         },
         {
-          "id": 37,
           "en": "Have a good day",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_36_1756148207063.webm?alt=media&token=433805ae-8b14-441c-8277-9359c9a673b8",
-          "kn": "Dinavu chennagirali",
-          "translit": "di-na-vu chen-na-gi-ra-li"
+          "id": 37,
+          "translit": "di-na-vu chen-na-gi-ra-li",
+          "kn": "Dinavu chennagirali"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_37_1756148254944.webm?alt=media&token=2d12ec40-9d80-4679-854f-d63590549d72",
           "kn": "Nimagoo kooda",
-          "id": 38,
           "translit": "ni-ma-goo koo-da",
-          "en": "You too"
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_37_1756148254944.webm?alt=media&token=2d12ec40-9d80-4679-854f-d63590549d72",
+          "en": "You too",
+          "id": 38
         },
         {
-          "translit": "na-na-ge san-to-sha-va-gi-de",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_38_1756148271193.webm?alt=media&token=04afff04-250d-4229-b4cf-a2a6fb13ab97",
-          "kn": "Nanage santoshavagide",
+          "translit": "na-na-ge san-to-sha-va-gi-de",
           "en": "I am happy",
-          "id": 39
+          "id": 39,
+          "kn": "Nanage santoshavagide"
         },
         {
           "en": "I am tired",
-          "translit": "na-na-ge aa-yaa-sa-va-gi-de",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_39_1756148286976.webm?alt=media&token=546e5cca-3f63-4ae2-b4d0-5455a48bd54d",
           "kn": "Nanage ayasavagide",
-          "id": 40,
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_39_1756148286976.webm?alt=media&token=546e5cca-3f63-4ae2-b4d0-5455a48bd54d"
+          "translit": "na-na-ge aa-yaa-sa-va-gi-de",
+          "id": 40
         },
         {
-          "translit": "nee-vu kar-ya-ni-ra-ta-ra-gid-di-ra",
-          "en": "Are you busy?",
           "kn": "Neevu karyanirataragiddira",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_40_1756148513896.webm?alt=media&token=1d62c770-1150-4c55-bf8e-4f29fb21dca3",
-          "id": 41
+          "id": 41,
+          "translit": "nee-vu kar-ya-ni-ra-ta-ra-gid-di-ra",
+          "en": "Are you busy?"
         },
         {
           "id": 42,
-          "translit": "swal-pa",
-          "en": "A little bit",
+          "kn": "Swalpa",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_41_1756148528179.webm?alt=media&token=dc5d43f2-0112-4e74-84d4-07163a56c79a",
-          "kn": "Swalpa"
+          "translit": "swal-pa",
+          "en": "A little bit"
         },
         {
-          "id": 43,
-          "translit": "khan-di-ta il-la",
           "en": "Not at all",
+          "kn": "Khandita illa",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_42_1756148537994.webm?alt=media&token=806e1cd6-e9b0-4030-b46d-f89b1e2bc7ed",
-          "kn": "Khandita illa"
+          "id": 43,
+          "translit": "khan-di-ta il-la"
         },
         {
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_43_1756148562194.webm?alt=media&token=66e72655-aa33-4e40-808a-4fa352cd3dc7",
-          "kn": "Nimma phone sankhye enu?",
-          "en": "What is your phone number?",
           "id": 44,
-          "translit": "nim-ma phone sank-hye ye-nu"
+          "translit": "nim-ma phone sank-hye ye-nu",
+          "kn": "Nimma phone sankhye enu?",
+          "en": "What is your phone number?"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_44_1756148699708.webm?alt=media&token=e6e1c3ba-2983-4ebd-8d67-44d4dd07d51a",
           "en": "Can I help you?",
-          "translit": "naa-nu ni-ma-ge sa-haa-ya maa-da-bahu-de",
           "id": 45,
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_44_1756148699708.webm?alt=media&token=e6e1c3ba-2983-4ebd-8d67-44d4dd07d51a",
+          "translit": "naa-nu ni-ma-ge sa-haa-ya maa-da-bahu-de",
           "kn": "Naanu nimage sahaya maadabahude?"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_45_1756148737017.webm?alt=media&token=a6f08778-871c-47f3-b16e-fc080b3b20f7",
           "id": 46,
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_45_1756148737017.webm?alt=media&token=a6f08778-871c-47f3-b16e-fc080b3b20f7",
           "translit": "na-na-ge sa-haa-ya be-ku",
-          "kn": "Nanage sahaya beku",
-          "en": "I need help"
+          "en": "I need help",
+          "kn": "Nanage sahaya beku"
         },
         {
+          "kn": "Abhinandanegalu!",
           "translit": "a-bhi-nan-da-ne-ga-lu",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_46_1756148598425.webm?alt=media&token=45a99705-2e44-4593-b856-86d39b9d39fc",
           "en": "Congratulations!",
-          "id": 47,
-          "kn": "Abhinandanegalu!"
+          "id": 47
         },
         {
-          "kn": "Shubhavagali!",
           "en": "All the best!",
           "translit": "shu-bha-va-ga-li",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_47_1756148610507.webm?alt=media&token=d0f69280-a6a1-4b82-ab9c-9d8b1b23215e",
-          "id": 48
+          "id": 48,
+          "kn": "Shubhavagali!",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_47_1756148610507.webm?alt=media&token=d0f69280-a6a1-4b82-ab9c-9d8b1b23215e"
         },
         {
-          "id": 49,
+          "kn": "Nanage bayarikeyagide",
           "translit": "na-na-ge baa-yaa-ri-ke-ya-gi-de",
+          "id": 49,
           "en": "I am thirsty",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_48_1756148649138.webm?alt=media&token=e6affba3-7150-4150-99ba-76623d500328",
-          "kn": "Nanage bayarikeyagide"
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_48_1756148649138.webm?alt=media&token=e6affba3-7150-4150-99ba-76623d500328"
         },
         {
-          "kn": "Nanage hasivagide",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_49_1756148662270.webm?alt=media&token=78e1b68e-47ef-4613-bb08-c6a80d95cfb3",
           "id": 50,
+          "en": "I am hungry",
           "translit": "na-na-ge ha-si-va-gi-de",
-          "en": "I am hungry"
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fgreetings_phrase_49_1756148662270.webm?alt=media&token=78e1b68e-47ef-4613-bb08-c6a80d95cfb3",
+          "kn": "Nanage hasivagide"
         }
       ]
     },
     {
-      "id": "home",
-      "title": "At Home & Chores",
       "phrases": [
         {
-          "id": 251,
           "kn": "Mane",
+          "translit": "ma-ne",
           "en": "House",
-          "translit": "ma-ne"
+          "id": 251
         },
         {
-          "translit": "ko-ne",
+          "id": 252,
           "kn": "Kone",
-          "en": "Room",
-          "id": 252
+          "translit": "ko-ne",
+          "en": "Room"
         },
         {
-          "id": 253,
           "translit": "baa-gi-lu",
+          "en": "Door",
           "kn": "Bagilu",
-          "en": "Door"
+          "id": 253
         },
         {
-          "en": "Window",
-          "translit": "ki-ta-ki",
           "kn": "Kitaki",
-          "id": 254
+          "id": 254,
+          "translit": "ki-ta-ki",
+          "en": "Window"
         },
         {
-          "kn": "Keeli",
-          "id": 255,
+          "translit": "kee-li",
           "en": "Key",
-          "translit": "kee-li"
+          "kn": "Keeli",
+          "id": 255
         },
         {
-          "id": 256,
-          "kn": "Keeli ellide?",
           "translit": "kee-li el-li-de",
-          "en": "Where is the key?"
+          "en": "Where is the key?",
+          "id": 256,
+          "kn": "Keeli ellide?"
         },
         {
           "kn": "Light haki",
-          "en": "Switch on the light",
           "id": 257,
+          "en": "Switch on the light",
           "translit": "light haa-ki"
         },
         {
-          "kn": "Fan off madi",
           "en": "Switch off the fan",
+          "kn": "Fan off madi",
           "id": 258,
           "translit": "fan off maa-di"
         },
         {
+          "kn": "Mane swachchagolisi",
           "id": 259,
           "en": "Clean the house",
-          "translit": "ma-ne swach-cha-go-li-si",
-          "kn": "Mane swachchagolisi"
+          "translit": "ma-ne swach-cha-go-li-si"
         },
         {
-          "kn": "Aduge",
-          "en": "Cooking",
+          "id": 260,
           "translit": "a-du-ge",
-          "id": 260
+          "kn": "Aduge",
+          "en": "Cooking"
         },
         {
           "translit": "naa-nu a-du-ge maa-dut-tid-de-ne",
@@ -1407,56 +1712,56 @@
         },
         {
           "kn": "Nidre",
-          "en": "Sleep",
           "id": 262,
+          "en": "Sleep",
           "translit": "nid-re"
         },
         {
           "id": 263,
+          "kn": "Nanage nidre beku",
           "en": "I want to sleep",
-          "translit": "na-na-ge nid-re be-ku",
-          "kn": "Nanage nidre beku"
+          "translit": "na-na-ge nid-re be-ku"
         },
         {
           "id": 264,
+          "kn": "Elu",
           "translit": "ye-lu",
-          "en": "Wake up",
-          "kn": "Elu"
+          "en": "Wake up"
         },
         {
           "id": 265,
+          "kn": "Neeru baruttide",
           "translit": "nee-ru ba-rut-ti-de",
-          "en": "Water is coming",
-          "kn": "Neeru baruttide"
+          "en": "Water is coming"
         },
         {
           "en": "Power cut",
           "id": 266,
-          "translit": "vid-yut ka-di-ta",
-          "kn": "Vidyut kadita"
+          "kn": "Vidyut kadita",
+          "translit": "vid-yut ka-di-ta"
         },
         {
           "kn": "Batte ogeyiri",
-          "translit": "bat-te o-ge-yi-ri",
           "id": 267,
+          "translit": "bat-te o-ge-yi-ri",
           "en": "Wash clothes"
         },
         {
+          "id": 268,
           "kn": "Vruttapatrike",
-          "en": "Newspaper",
           "translit": "vrut-ta-pat-ri-ke",
-          "id": 268
+          "en": "Newspaper"
         },
         {
-          "translit": "a-tithi-ga-lu ba-rut-tid-daa-re",
           "kn": "Atithigalu baruttiddare",
-          "id": 269,
-          "en": "Guests are coming"
+          "translit": "a-tithi-ga-lu ba-rut-tid-daa-re",
+          "en": "Guests are coming",
+          "id": 269
         },
         {
           "kn": "Bagilu lock madi",
-          "en": "Lock the door",
           "translit": "baa-gi-lu lock maa-di",
+          "en": "Lock the door",
           "id": 270
         },
         {
@@ -1466,112 +1771,112 @@
           "translit": "baa-gi-lu te-re-yi-ri"
         },
         {
-          "en": "Where is the remote?",
-          "kn": "Remote ellide?",
           "translit": "remote el-li-de",
-          "id": 272
+          "en": "Where is the remote?",
+          "id": 272,
+          "kn": "Remote ellide?"
         },
         {
           "id": 273,
-          "kn": "Shabdavannu hechchisi",
           "translit": "shab-da-van-nu hech-chi-si",
-          "en": "Increase the volume"
+          "en": "Increase the volume",
+          "kn": "Shabdavannu hechchisi"
         },
         {
-          "kn": "Shabdavannu kadime madi",
           "id": 274,
+          "kn": "Shabdavannu kadime madi",
           "translit": "shab-da-van-nu ka-di-me maa-di",
           "en": "Decrease the volume"
         },
         {
-          "id": 275,
-          "kn": "Raatri ootakke enu?",
+          "en": "What's for dinner?",
           "translit": "raa-tri oo-tak-ke ye-nu",
-          "en": "What's for dinner?"
+          "id": 275,
+          "kn": "Raatri ootakke enu?"
         },
         {
-          "kn": "Naanu maduttene",
           "id": 276,
-          "translit": "naa-nu maa-dut-te-ne",
-          "en": "I will do it"
+          "en": "I will do it",
+          "kn": "Naanu maduttene",
+          "translit": "naa-nu maa-dut-te-ne"
         },
         {
-          "translit": "na-na-ge aa-yaa-sa-va-gi-de",
-          "en": "I am tired",
+          "id": 277,
           "kn": "Nanage ayasavagide",
-          "id": 277
+          "translit": "na-na-ge aa-yaa-sa-va-gi-de",
+          "en": "I am tired"
         },
         {
-          "translit": "naa-nu kaar-ya-ni-ra-ta-na-gid-de-ne",
           "id": 278,
-          "en": "I am busy",
-          "kn": "Naanu karyaniratanagiddene"
+          "kn": "Naanu karyaniratanagiddene",
+          "translit": "naa-nu kaar-ya-ni-ra-ta-na-gid-de-ne",
+          "en": "I am busy"
         },
         {
-          "translit": "haa-si-ge",
-          "kn": "Hasige",
           "id": 279,
-          "en": "Bed"
+          "en": "Bed",
+          "kn": "Hasige",
+          "translit": "haa-si-ge"
         },
         {
           "id": 280,
-          "translit": "dim-bu",
           "en": "Pillow",
-          "kn": "Dimbu"
+          "kn": "Dimbu",
+          "translit": "dim-bu"
         },
         {
           "translit": "kam-ba-li",
-          "en": "Blanket",
+          "kn": "Kambali",
           "id": 281,
-          "kn": "Kambali"
+          "en": "Blanket"
         },
         {
-          "en": "Chair",
+          "kn": "Kurchi",
           "translit": "kur-chi",
           "id": 282,
-          "kn": "Kurchi"
+          "en": "Chair"
         },
         {
-          "translit": "me-ju",
+          "en": "Table",
           "id": 283,
-          "kn": "Meju",
-          "en": "Table"
+          "translit": "me-ju",
+          "kn": "Meju"
         },
         {
-          "kn": "Naanu snana madabeku",
           "id": 284,
           "translit": "naa-nu snaa-na maa-da-be-ku",
-          "en": "I need to take a bath"
+          "en": "I need to take a bath",
+          "kn": "Naanu snana madabeku"
         },
         {
           "kn": "Phone ring aguttide",
-          "id": 285,
+          "translit": "phone ring aa-gut-ti-de",
           "en": "The phone is ringing",
-          "translit": "phone ring aa-gut-ti-de"
+          "id": 285
         },
         {
-          "id": 286,
           "kn": "Bagilalli yaru?",
-          "translit": "baa-gi-lal-li yaa-ru",
-          "en": "Who is at the door?"
+          "id": 286,
+          "en": "Who is at the door?",
+          "translit": "baa-gi-lal-li yaa-ru"
         },
         {
-          "en": "Come inside",
+          "id": 287,
           "kn": "Olage banni",
           "translit": "o-la-ge ban-ni",
-          "id": 287
+          "en": "Come inside"
         },
         {
-          "kn": "Kulitukolli",
-          "id": 288,
           "en": "Sit down",
-          "translit": "ku-li-tu-kol-li"
+          "translit": "ku-li-tu-kol-li",
+          "kn": "Kulitukolli",
+          "id": 288
         },
         {
-          "kn": "Naanu horage hoguttiddene",
-          "en": "I am going out",
           "id": 289,
-          "translit": "naa-nu ho-ra-ge ho-gut-tid-de-ne"
+          "kn": "Naanu horage hoguttiddene",
+          "translit": "naa-nu ho-ra-ge ho-gut-tid-de-ne",
+          "en": "I am going out"
         },
         {
           "en": "I will be back soon",
@@ -1586,192 +1891,193 @@
           "en": "Did you eat?"
         },
         {
+          "kn": "Oota madona",
           "translit": "oo-ta maa-do-na",
           "id": 292,
-          "kn": "Oota madona",
           "en": "Let's eat"
         },
         {
           "id": 293,
-          "kn": "Neeru bisiyagide",
           "translit": "nee-ru bi-si-ya-gi-de",
+          "kn": "Neeru bisiyagide",
           "en": "The water is hot"
         },
         {
           "translit": "vid-yut ban-di-de",
-          "id": 294,
+          "kn": "Vidyut bandide",
           "en": "The power is back",
-          "kn": "Vidyut bandide"
+          "id": 294
         },
         {
           "kn": "Kasavannu eseyiri",
           "en": "Throw the trash",
-          "id": 295,
-          "translit": "ka-sa-van-nu e-se-yi-ri"
+          "translit": "ka-sa-van-nu e-se-yi-ri",
+          "id": 295
         },
         {
-          "id": 296,
-          "kn": "Nanage kelasavide",
+          "en": "I have work",
           "translit": "na-na-ge ke-la-sa-vi-de",
-          "en": "I have work"
+          "id": 296,
+          "kn": "Nanage kelasavide"
         },
         {
+          "id": 297,
           "en": "What is this smell?",
           "kn": "Idu yava vasane?",
-          "translit": "i-du yaa-va vaa-sa-ne",
-          "id": 297
+          "translit": "i-du yaa-va vaa-sa-ne"
         },
         {
-          "id": 298,
           "en": "I am feeling sleepy",
+          "id": 298,
           "translit": "na-na-ge nid-re ba-rut-ti-de",
           "kn": "Nanage nidre baruttide"
         },
         {
+          "id": 299,
           "translit": "TV haa-ki",
           "en": "Turn on the TV",
-          "kn": "TV haki",
-          "id": 299
+          "kn": "TV haki"
         },
         {
-          "translit": "ho-gu-va sa-ma-ya-va-yi-tu",
           "id": 300,
           "en": "It is time to go",
+          "translit": "ho-gu-va sa-ma-ya-va-yi-tu",
           "kn": "Hoguva samayavayitu"
         }
       ],
+      "id": "home",
+      "title": "At Home & Chores",
       "icon": "🏠"
     },
     {
-      "id": "numbers",
-      "title": "Numbers & Time",
       "icon": "🔢",
+      "id": "numbers",
       "phrases": [
         {
-          "translit": "on-du",
-          "kn": "Ondu",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_0_1756148810613.webm?alt=media&token=24230199-5261-4809-a683-147fc6931eda",
           "id": 51,
-          "en": "One"
+          "translit": "on-du",
+          "en": "One",
+          "kn": "Ondu",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_0_1756148810613.webm?alt=media&token=24230199-5261-4809-a683-147fc6931eda"
         },
         {
-          "en": "Two",
-          "kn": "Eradu",
+          "translit": "e-ra-du",
           "id": 52,
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_1_1756148817348.webm?alt=media&token=5d0b6904-66fd-43b4-8c6e-db657c61146f",
-          "translit": "e-ra-du"
+          "kn": "Eradu",
+          "en": "Two"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_2_1756148823180.webm?alt=media&token=72a21043-84f1-4e16-bffc-f3d56b8300de",
-          "id": 53,
           "translit": "moo-ru",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_2_1756148823180.webm?alt=media&token=72a21043-84f1-4e16-bffc-f3d56b8300de",
           "en": "Three",
-          "kn": "Mooru"
+          "kn": "Mooru",
+          "id": 53
         },
         {
-          "kn": "Naalku",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_3_1756148836062.webm?alt=media&token=606a1c02-7d71-4c3d-9654-7e70cd989220",
+          "id": 54,
           "translit": "naal-ku",
-          "en": "Four",
-          "id": 54
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_3_1756148836062.webm?alt=media&token=606a1c02-7d71-4c3d-9654-7e70cd989220",
+          "kn": "Naalku",
+          "en": "Four"
         },
         {
-          "kn": "Aidu",
-          "translit": "ai-du",
+          "en": "Five",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_4_1756148842294.webm?alt=media&token=9b1cef1d-248b-40da-9559-48553098c9a7",
-          "id": 55,
-          "en": "Five"
+          "translit": "ai-du",
+          "kn": "Aidu",
+          "id": 55
         },
         {
-          "kn": "Aaru",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_5_1756148847846.webm?alt=media&token=f251af46-13fc-404b-8c80-f9ac87f3c78d",
-          "en": "Six",
           "translit": "aa-ru",
+          "kn": "Aaru",
+          "en": "Six",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_5_1756148847846.webm?alt=media&token=f251af46-13fc-404b-8c80-f9ac87f3c78d",
           "id": 56
         },
         {
           "id": 57,
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_6_1756148879758.webm?alt=media&token=b9f34262-4b6a-483a-806c-b3df9d5a0bf8",
           "translit": "ye-lu",
-          "en": "Seven",
-          "kn": "Elu"
+          "kn": "Elu",
+          "en": "Seven"
         },
         {
-          "translit": "en-tu",
-          "id": 58,
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_7_1756148899541.webm?alt=media&token=f6a30ce7-796a-45a9-91dc-8c4726f6c894",
           "en": "Eight",
+          "translit": "en-tu",
+          "id": 58,
           "kn": "Entu"
         },
         {
-          "en": "Nine",
+          "id": 59,
+          "kn": "Ombattu",
           "translit": "om-bat-tu",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_8_1756148906975.webm?alt=media&token=096a49f0-18e2-48b8-becb-e93091add3b2",
-          "kn": "Ombattu",
-          "id": 59
+          "en": "Nine"
         },
         {
-          "translit": "hat-tu",
-          "en": "Ten",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_9_1756148913923.webm?alt=media&token=ed6b4432-dd25-4ccf-bb56-6c1ec9f65b59",
           "kn": "Hattu",
-          "id": 60
+          "id": 60,
+          "en": "Ten",
+          "translit": "hat-tu"
         },
         {
-          "kn": "Ippattu",
           "translit": "ip-pat-tu",
-          "en": "Twenty",
+          "kn": "Ippattu",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_10_1756148921225.webm?alt=media&token=ca44e6b0-a73d-4ef2-ba46-b7a037430650",
+          "en": "Twenty",
           "id": 61
         },
         {
           "id": 62,
-          "en": "Thirty",
-          "translit": "moo-vat-tu",
           "kn": "Muvattu",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_11_1756148928773.webm?alt=media&token=80b2ac1c-cc9a-420d-879a-f90e86601eec"
+          "en": "Thirty",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_11_1756148928773.webm?alt=media&token=80b2ac1c-cc9a-420d-879a-f90e86601eec",
+          "translit": "moo-vat-tu"
         },
         {
+          "kn": "Nalavattu",
+          "id": 63,
           "en": "Forty",
           "translit": "na-la-vat-tu",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_12_1756148937173.webm?alt=media&token=d953ac68-ede2-4414-a173-7aeca9fa7329",
-          "kn": "Nalavattu",
-          "id": 63
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_12_1756148937173.webm?alt=media&token=d953ac68-ede2-4414-a173-7aeca9fa7329"
         },
         {
           "kn": "Aivattu",
           "id": 64,
-          "en": "Fifty",
           "translit": "ai-vat-tu",
+          "en": "Fifty",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_13_1756148944339.webm?alt=media&token=3f3631a8-7243-425a-bb62-41b809b26144"
         },
         {
+          "kn": "Nooru",
           "en": "One Hundred",
           "id": 65,
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_14_1756148949990.webm?alt=media&token=31eb2fa3-303d-4289-acdb-d443f6f90113",
-          "kn": "Nooru",
           "translit": "noo-ru"
         },
         {
-          "en": "One Thousand",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_15_1756148956989.webm?alt=media&token=3640dd41-321f-45f3-99df-8b59a6c236a1",
-          "kn": "Saavira",
           "translit": "saa-vi-ra",
-          "id": 66
+          "id": 66,
+          "kn": "Saavira",
+          "en": "One Thousand",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_15_1756148956989.webm?alt=media&token=3640dd41-321f-45f3-99df-8b59a6c236a1"
         },
         {
-          "translit": "sa-ma-ya esh-tu",
-          "en": "What time is it?",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_16_1756148978853.webm?alt=media&token=122dd6ce-2f34-4612-9840-9ebc476fcd4e",
           "id": 67,
+          "translit": "sa-ma-ya esh-tu",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_16_1756148978853.webm?alt=media&token=122dd6ce-2f34-4612-9840-9ebc476fcd4e",
+          "en": "What time is it?",
           "kn": "Samaya eshtu?"
         },
         {
-          "en": "It is 1 o'clock",
-          "kn": "Ondu gante",
+          "id": 68,
           "translit": "on-du gan-te",
+          "kn": "Ondu gante",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_17_1756148987587.webm?alt=media&token=541f8aaa-826d-4637-8adf-628b0a22f2e9",
-          "id": 68
+          "en": "It is 1 o'clock"
         },
         {
           "kn": "Eraduvare gante",
@@ -1781,151 +2087,151 @@
           "translit": "e-ra-doo-va-re gan-te"
         },
         {
-          "id": 70,
-          "translit": "moo-rak-ke kaa-lu ka-di-me",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_19_1756149071483.webm?alt=media&token=3c675104-56a8-4943-876c-766af9c6447e",
           "kn": "Moorakke kaalu kadime",
+          "id": 70,
+          "translit": "moo-rak-ke kaa-lu ka-di-me",
           "en": "Quarter to three"
         },
         {
           "en": "Quarter past four",
-          "kn": "Naalku kaalu",
-          "id": 71,
           "translit": "naal-koo kaa-lu",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_20_1756149080450.webm?alt=media&token=a53d2078-c2bd-4c23-bc60-554477bfe8d8"
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_20_1756149080450.webm?alt=media&token=a53d2078-c2bd-4c23-bc60-554477bfe8d8",
+          "id": 71,
+          "kn": "Naalku kaalu"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_21_1756149088498.webm?alt=media&token=796c9d08-eef6-41e4-80ca-ecdd4aaec5ec",
-          "en": "Today",
           "id": 72,
+          "en": "Today",
           "kn": "Ivattu",
-          "translit": "i-vat-tu"
+          "translit": "i-vat-tu",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_21_1756149088498.webm?alt=media&token=796c9d08-eef6-41e4-80ca-ecdd4aaec5ec"
         },
         {
-          "id": 73,
           "translit": "nin-ne",
           "en": "Yesterday",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_22_1756149094614.webm?alt=media&token=ff602d03-f2cc-441b-aed1-7243672b9037",
-          "kn": "Ninne"
+          "kn": "Ninne",
+          "id": 73,
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_22_1756149094614.webm?alt=media&token=ff602d03-f2cc-441b-aed1-7243672b9037"
         },
         {
-          "kn": "Naale",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_23_1756149099847.webm?alt=media&token=ef858b0e-4433-4ba9-98de-e1f7f365f2d4",
+          "en": "Tomorrow",
           "id": 74,
-          "translit": "naa-le",
-          "en": "Tomorrow"
+          "kn": "Naale",
+          "translit": "naa-le"
         },
         {
-          "en": "Morning",
-          "id": 75,
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_24_1756149112880.webm?alt=media&token=69c75174-d250-4103-ae4f-f61ec110fabf",
           "translit": "be-lig-ge",
+          "en": "Morning",
+          "id": 75,
           "kn": "Beligge"
         },
         {
+          "id": 76,
           "kn": "Madhyahna",
-          "en": "Afternoon",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_25_1756149120113.webm?alt=media&token=55c5888c-544a-4ed2-bcf4-eee98a676a15",
           "translit": "madh-yaah-na",
-          "id": 76
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_25_1756149120113.webm?alt=media&token=55c5888c-544a-4ed2-bcf4-eee98a676a15",
+          "en": "Afternoon"
         },
         {
-          "kn": "Sanje",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_26_1756149125781.webm?alt=media&token=5133ae07-8443-46fc-9c66-df0a83435348",
-          "en": "Evening",
           "id": 77,
-          "translit": "san-je"
+          "translit": "san-je",
+          "kn": "Sanje",
+          "en": "Evening"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_27_1756149131595.webm?alt=media&token=cffe5cb2-58de-4f0f-adb8-f548becb4e2a",
-          "en": "Night",
           "id": 78,
+          "translit": "raa-tri",
           "kn": "Raatri",
-          "translit": "raa-tri"
+          "en": "Night",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_27_1756149131595.webm?alt=media&token=cffe5cb2-58de-4f0f-adb8-f548becb4e2a"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_28_1756149137262.webm?alt=media&token=9a6f7105-d3af-4127-8e77-1956e790acf5",
-          "kn": "Eega",
           "id": 79,
-          "translit": "ee-ga",
-          "en": "Now"
+          "en": "Now",
+          "kn": "Eega",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_28_1756149137262.webm?alt=media&token=9a6f7105-d3af-4127-8e77-1956e790acf5",
+          "translit": "ee-ga"
         },
         {
-          "en": "Later",
           "kn": "Nantara",
-          "id": 80,
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_29_1756149144362.webm?alt=media&token=ab2cf1a3-af66-482c-8c41-345095503419",
-          "translit": "nan-ta-ra"
+          "id": 80,
+          "translit": "nan-ta-ra",
+          "en": "Later"
         },
         {
-          "en": "Before",
-          "kn": "Modalu",
           "translit": "mo-da-lu",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_30_1756149163810.webm?alt=media&token=86ce98a0-9bb6-4a0d-8d84-17c0f53f3383",
-          "id": 81
+          "id": 81,
+          "kn": "Modalu",
+          "en": "Before"
         },
         {
-          "kn": "Nimisha",
-          "id": 82,
+          "en": "Minute",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_31_1756149170862.webm?alt=media&token=8998e194-9275-4a70-b1f0-cae6dbd76f7a",
-          "translit": "ni-mi-sha",
-          "en": "Minute"
+          "id": 82,
+          "kn": "Nimisha",
+          "translit": "ni-mi-sha"
         },
         {
-          "kn": "Gante",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_32_1756149176026.webm?alt=media&token=db3aa05d-e4ec-446f-a037-c175587b09cf",
-          "id": 83,
+          "translit": "gan-te",
           "en": "Hour",
-          "translit": "gan-te"
+          "id": 83,
+          "kn": "Gante",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_32_1756149176026.webm?alt=media&token=db3aa05d-e4ec-446f-a037-c175587b09cf"
         },
         {
+          "kn": "Dina",
           "id": 84,
-          "translit": "di-na",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_33_1756149181479.webm?alt=media&token=411b4954-60b4-4c48-8881-48a169632df0",
           "en": "Day",
-          "kn": "Dina"
+          "translit": "di-na",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_33_1756149181479.webm?alt=media&token=411b4954-60b4-4c48-8881-48a169632df0"
         },
         {
+          "kn": "Vaara",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_34_1756149188659.webm?alt=media&token=5c141fec-bb5c-41b5-93d0-f411342e107c",
           "en": "Week",
           "id": 85,
-          "translit": "vaa-ra",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_34_1756149188659.webm?alt=media&token=5c141fec-bb5c-41b5-93d0-f411342e107c",
-          "kn": "Vaara"
+          "translit": "vaa-ra"
         },
         {
-          "en": "Month",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_35_1756149195558.webm?alt=media&token=e5845904-a5b5-42f8-a65f-f4e76d8093be",
-          "translit": "tin-ga-lu",
           "kn": "Tingalu",
-          "id": 86
+          "translit": "tin-ga-lu",
+          "id": 86,
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_35_1756149195558.webm?alt=media&token=e5845904-a5b5-42f8-a65f-f4e76d8093be",
+          "en": "Month"
         },
         {
-          "en": "Year",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_36_1756149201080.webm?alt=media&token=a795556f-1aff-4fbe-947e-6bd011a7e148",
           "id": 87,
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_36_1756149201080.webm?alt=media&token=a795556f-1aff-4fbe-947e-6bd011a7e148",
           "kn": "Varsha",
-          "translit": "var-sha"
+          "translit": "var-sha",
+          "en": "Year"
         },
         {
           "en": "When?",
           "translit": "yaa-vaa-ga",
-          "id": 88,
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_37_1756149207309.webm?alt=media&token=845c10b2-12ab-4c19-b26e-f563d1ef5b87",
           "kn": "Yavaga?",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_37_1756149207309.webm?alt=media&token=845c10b2-12ab-4c19-b26e-f563d1ef5b87"
+          "id": 88
         },
         {
-          "id": 89,
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_38_1756149212524.webm?alt=media&token=0b620b56-668e-45d3-921c-8858dd1be0db",
-          "en": "How many?",
           "kn": "Eshtu?",
+          "en": "How many?",
+          "id": 89,
           "translit": "esh-tu"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_39_1756149219508.webm?alt=media&token=fa6fa72e-c5b5-49a8-9de2-165fd4afdd7e",
           "translit": "di-naan-ka",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_39_1756149219508.webm?alt=media&token=fa6fa72e-c5b5-49a8-9de2-165fd4afdd7e",
+          "id": 90,
           "kn": "Dinanka",
-          "en": "Date",
-          "id": 90
+          "en": "Date"
         },
         {
           "translit": "i-vat-ti-na di-naan-ka ye-nu",
@@ -1935,302 +2241,303 @@
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_40_1756149244377.webm?alt=media&token=e5f6cccc-ae3c-416a-a1a9-72dca592ae16"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_41_1756149250338.webm?alt=media&token=fed41f62-4fba-4e71-b39f-e9e5e1e9953a",
-          "en": "Early",
           "translit": "be-ga",
+          "kn": "Bega",
           "id": 92,
-          "kn": "Bega"
+          "en": "Early",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_41_1756149250338.webm?alt=media&token=fed41f62-4fba-4e71-b39f-e9e5e1e9953a"
         },
         {
-          "id": 93,
-          "kn": "Tadavagi",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_42_1756149257856.webm?alt=media&token=cd1ddae0-6b7c-41cf-b23e-7efb76b1a9f3",
           "translit": "ta-da-va-gi",
-          "en": "Late"
+          "id": 93,
+          "en": "Late",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_42_1756149257856.webm?alt=media&token=cd1ddae0-6b7c-41cf-b23e-7efb76b1a9f3",
+          "kn": "Tadavagi"
         },
         {
-          "kn": "Aidu nimisha kaayiri",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_43_1756149272473.webm?alt=media&token=724b1648-168c-4af1-813e-7019cfbd018f",
           "en": "Wait for 5 minutes",
           "id": 94,
+          "kn": "Aidu nimisha kaayiri",
           "translit": "ai-du ni-mi-sha kaa-yi-ri"
         },
         {
-          "en": "Day before yesterday",
           "kn": "Monne",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_44_1756149277872.webm?alt=media&token=af7af3a2-faef-4d63-ba70-da18af30cc4e",
+          "id": 95,
           "translit": "mon-ne",
-          "id": 95
+          "en": "Day before yesterday",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_44_1756149277872.webm?alt=media&token=af7af3a2-faef-4d63-ba70-da18af30cc4e"
         },
         {
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_45_1756149283921.webm?alt=media&token=bbfafd67-96f6-4343-8705-8a5ac8c875db",
-          "translit": "naa-did-du",
           "kn": "Naadiddu",
+          "id": 96,
           "en": "Day after tomorrow",
-          "id": 96
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_45_1756149283921.webm?alt=media&token=bbfafd67-96f6-4343-8705-8a5ac8c875db",
+          "translit": "naa-did-du"
         },
         {
-          "translit": "ee vaa-ra",
           "en": "This week",
-          "id": 97,
           "kn": "Ee vaara",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_46_1756149310368.webm?alt=media&token=b5f54667-34ed-42c6-8511-4db8fd3b5d24"
+          "translit": "ee vaa-ra",
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_46_1756149310368.webm?alt=media&token=b5f54667-34ed-42c6-8511-4db8fd3b5d24",
+          "id": 97
         },
         {
           "translit": "mun-di-na tin-ga-lu",
           "kn": "Mundina tingalu",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_47_1756149332734.webm?alt=media&token=8121cc4b-9044-4663-a97d-71b83074e74a",
+          "en": "Next month",
           "id": 98,
-          "en": "Next month"
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_47_1756149332734.webm?alt=media&token=8121cc4b-9044-4663-a97d-71b83074e74a"
         },
         {
-          "kn": "Kaleda varsha",
-          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_48_1756149341833.webm?alt=media&token=5ac9726a-d034-4601-a7b6-cdcb651ef132",
-          "en": "Last year",
           "translit": "ka-le-da var-sha",
-          "id": 99
+          "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_48_1756149341833.webm?alt=media&token=5ac9726a-d034-4601-a7b6-cdcb651ef132",
+          "id": 99,
+          "kn": "Kaleda varsha",
+          "en": "Last year"
         },
         {
+          "kn": "Yavagalu",
+          "en": "Always",
           "translit": "yaa-vaa-ga-loo",
           "audioData": "https://firebasestorage.googleapis.com/v0/b/kannada-app-audio-e6901.firebasestorage.app/o/audio%2Fnumbers_phrase_49_1756149349684.webm?alt=media&token=fc5f3778-52d4-419b-bc47-11fd39ca3a4f",
-          "en": "Always",
-          "kn": "Yavagalu",
           "id": 100
         }
-      ]
+      ],
+      "title": "Numbers & Time"
     },
     {
-      "icon": "🛍️",
-      "id": "shopping",
       "title": "Shopping & Money",
+      "id": "shopping",
+      "icon": "🛍️",
       "phrases": [
         {
           "translit": "i-da-ra be-le esh-tu",
-          "en": "How much is this?",
+          "kn": "Idara bele eshtu?",
           "id": 201,
-          "kn": "Idara bele eshtu?"
+          "en": "How much is this?"
         },
         {
-          "id": 202,
           "translit": "i-du tum-ba du-baa-ri",
+          "en": "It's too expensive",
           "kn": "Idu tumba dubari",
-          "en": "It's too expensive"
+          "id": 202
         },
         {
-          "en": "Reduce the price",
+          "kn": "Bele kadime madi",
           "id": 203,
           "translit": "be-le ka-di-me maa-di",
-          "kn": "Bele kadime madi"
+          "en": "Reduce the price"
         },
         {
-          "en": "Do you have...?",
-          "translit": "nim-ma hat-ti-ra i-de-ye",
           "id": 204,
-          "kn": "Nimma hattira ... ideye?"
+          "translit": "nim-ma hat-ti-ra i-de-ye",
+          "kn": "Nimma hattira ... ideye?",
+          "en": "Do you have...?"
         },
         {
-          "kn": "Nanage idu beku",
+          "id": 205,
           "translit": "na-na-ge i-du be-ku",
           "en": "I want this",
-          "id": 205
+          "kn": "Nanage idu beku"
         },
         {
-          "id": 206,
           "kn": "Nanage idu beda",
           "translit": "na-na-ge i-du be-da",
+          "id": 206,
           "en": "I don't want this"
         },
         {
-          "id": 207,
           "translit": "an-ga-di",
           "kn": "Angadi",
+          "id": 207,
           "en": "Shop"
         },
         {
-          "kn": "Maarukatte",
-          "id": 208,
+          "translit": "maa-ru-kat-te",
           "en": "Market",
-          "translit": "maa-ru-kat-te"
+          "id": 208,
+          "kn": "Maarukatte"
         },
         {
-          "en": "Money",
           "translit": "ha-na",
-          "id": 209,
-          "kn": "Hana"
+          "en": "Money",
+          "kn": "Hana",
+          "id": 209
         },
         {
-          "translit": "chil-la-re",
-          "en": "Change (coins)",
+          "kn": "Chillare",
           "id": 210,
-          "kn": "Chillare"
+          "en": "Change (coins)",
+          "translit": "chil-la-re"
         },
         {
-          "translit": "chil-la-re i-de-ye",
           "en": "Do you have change?",
           "id": 211,
-          "kn": "Chillare ideye?"
+          "kn": "Chillare ideye?",
+          "translit": "chil-la-re i-de-ye"
         },
         {
-          "kn": "Naanu idannu kolluttene",
+          "translit": "naa-nu i-dan-nu kol-lut-te-ne",
           "en": "I will buy it",
           "id": 212,
-          "translit": "naa-nu i-dan-nu kol-lut-te-ne"
+          "kn": "Naanu idannu kolluttene"
         },
         {
-          "translit": "no-dut-tid-de-ne",
-          "en": "Just looking",
           "kn": "Noduttiddene",
-          "id": 213
+          "id": 213,
+          "en": "Just looking",
+          "translit": "no-dut-tid-de-ne"
         },
         {
-          "en": "Can I pay by card?",
           "kn": "Card moolaka pavatisabahude?",
           "id": 214,
-          "translit": "card moo-la-ka paa-va-ti-sa-bahu-de"
+          "translit": "card moo-la-ka paa-va-ti-sa-bahu-de",
+          "en": "Can I pay by card?"
         },
         {
-          "en": "Cash only",
           "translit": "na-ga-du maa-tra",
-          "id": 215,
-          "kn": "Nagadu matra"
+          "kn": "Nagadu matra",
+          "en": "Cash only",
+          "id": 215
         },
         {
-          "translit": "yaa-va ban-na",
-          "en": "What color?",
           "kn": "Yava banna?",
-          "id": 216
+          "en": "What color?",
+          "id": 216,
+          "translit": "yaa-va ban-na"
         },
         {
           "id": 217,
-          "kn": "Doddadu",
+          "translit": "dod-da-du",
           "en": "Big",
-          "translit": "dod-da-du"
+          "kn": "Doddadu"
         },
         {
-          "en": "Small",
-          "kn": "Chikkadu",
           "id": 218,
-          "translit": "chik-ka-du"
+          "translit": "chik-ka-du",
+          "en": "Small",
+          "kn": "Chikkadu"
         },
         {
-          "id": 219,
-          "en": "New",
           "translit": "ho-sa-du",
-          "kn": "Hosadu"
+          "kn": "Hosadu",
+          "en": "New",
+          "id": 219
         },
         {
-          "id": 220,
           "kn": "Haleyadu",
           "en": "Old",
-          "translit": "ha-le-ya-du"
+          "translit": "ha-le-ya-du",
+          "id": 220
         },
         {
+          "kn": "Olleyadu",
           "id": 221,
-          "en": "Good",
           "translit": "ol-le-ya-du",
-          "kn": "Olleyadu"
+          "en": "Good"
         },
         {
+          "kn": "Kettadu",
           "en": "Bad",
           "translit": "ket-ta-du",
-          "id": 222,
-          "kn": "Kettadu"
+          "id": 222
         },
         {
           "translit": "ra-shee-di",
-          "en": "Receipt",
+          "kn": "Rasheedi",
           "id": 223,
-          "kn": "Rasheedi"
+          "en": "Receipt"
         },
         {
           "id": 224,
-          "translit": "naa-nu i-dan-nu pra-yat-ni-sa-bahu-de",
           "kn": "Naanu idannu prayatnisabahude?",
+          "translit": "naa-nu i-dan-nu pra-yat-ni-sa-bahu-de",
           "en": "Can I try this on?"
         },
         {
+          "kn": "Trial room",
           "en": "Trial room",
-          "id": 225,
           "translit": "trial room",
-          "kn": "Trial room"
+          "id": 225
         },
         {
+          "id": 226,
           "translit": "nim-mal-li chik-ka gaa-tra-vi-de-ye",
-          "en": "Do you have a smaller size?",
           "kn": "Nimmalli chikka gatravideye?",
-          "id": 226
+          "en": "Do you have a smaller size?"
         },
         {
-          "kn": "Nimmalli dodda gatravideye?",
           "id": 227,
-          "translit": "nim-mal-li dod-da gaa-tra-vi-de-ye",
-          "en": "Do you have a larger size?"
+          "en": "Do you have a larger size?",
+          "kn": "Nimmalli dodda gatravideye?",
+          "translit": "nim-mal-li dod-da gaa-tra-vi-de-ye"
         },
         {
           "kn": "Naanu idannu tegedukolluttene",
-          "en": "I'll take this one",
+          "translit": "naa-nu i-dan-nu te-ge-du-kol-lut-te-ne",
           "id": 228,
-          "translit": "naa-nu i-dan-nu te-ge-du-kol-lut-te-ne"
+          "en": "I'll take this one"
         },
         {
-          "translit": "be-re ye-na-da-ru",
-          "kn": "Bere enadaru?",
           "en": "Anything else?",
-          "id": 229
+          "translit": "be-re ye-na-da-ru",
+          "id": 229,
+          "kn": "Bere enadaru?"
         },
         {
-          "en": "That's all",
-          "translit": "ash-te",
+          "kn": "Ashte",
           "id": 230,
-          "kn": "Ashte"
+          "en": "That's all",
+          "translit": "ash-te"
         },
         {
-          "kn": "Dayavittu idannu pack madi",
           "id": 231,
+          "kn": "Dayavittu idannu pack madi",
           "en": "Please pack this",
           "translit": "da-ya-vit-tu i-dan-nu pack maa-di"
         },
         {
+          "translit": "i-du yaa-vu-da-rin-da maa-dal-pat-ti-de",
           "en": "What is this made of?",
-          "id": 232,
           "kn": "Idu yavudarinda madalpattide?",
-          "translit": "i-du yaa-vu-da-rin-da maa-dal-pat-ti-de"
+          "id": 232
         },
         {
-          "en": "Discount",
-          "kn": "Riyayiti",
           "id": 233,
+          "kn": "Riyayiti",
+          "en": "Discount",
           "translit": "ri-yaa-yi-ti"
         },
         {
           "id": 234,
+          "en": "Is there a discount?",
           "kn": "Riyayiti ideye?",
-          "translit": "ri-yaa-yi-ti i-de-ye",
-          "en": "Is there a discount?"
+          "translit": "ri-yaa-yi-ti i-de-ye"
         },
         {
-          "en": "Fixed price",
           "kn": "Nigadita bele",
+          "id": 235,
           "translit": "ni-ga-di-ta be-le",
-          "id": 235
+          "en": "Fixed price"
         },
         {
           "kn": "Choukasi",
-          "id": 236,
+          "en": "Bargain",
           "translit": "chau-kaa-si",
-          "en": "Bargain"
+          "id": 236
         },
         {
-          "translit": "i-dan-nu gift wrap maa-da-bahu-de",
+          "kn": "Idannu gift wrap madabahude?",
           "id": 237,
-          "en": "Can it be gift wrapped?",
-          "kn": "Idannu gift wrap madabahude?"
+          "translit": "i-dan-nu gift wrap maa-da-bahu-de",
+          "en": "Can it be gift wrapped?"
         },
         {
-          "en": "I am looking for...",
+          "id": 238,
           "translit": "naa-nu hu-du-kut-tid-de-ne",
-          "kn": "Naanu ... hudukuttiddene",
-          "id": 238
+          "en": "I am looking for...",
+          "kn": "Naanu ... hudukuttiddene"
         },
         {
           "translit": "na-na-ge ta-ra-kaa-ri-ga-lu el-li si-gut-ta-ve",
@@ -2239,254 +2546,256 @@
           "en": "Where can I find vegetables?"
         },
         {
-          "translit": "on-du kg",
+          "id": 240,
           "en": "One kilo",
-          "kn": "Ondu kg",
-          "id": 240
+          "translit": "on-du kg",
+          "kn": "Ondu kg"
         },
         {
-          "kn": "Ardha kg",
           "en": "Half a kilo",
           "id": 241,
+          "kn": "Ardha kg",
           "translit": "ar-dha kg"
         },
         {
           "en": "Give me this",
+          "kn": "Idu kodi",
           "id": 242,
-          "translit": "i-du ko-di",
-          "kn": "Idu kodi"
+          "translit": "i-du ko-di"
         },
         {
           "en": "Is the shop open?",
-          "kn": "Angadi teredideye?",
           "translit": "an-ga-di te-re-di-de-ye",
+          "kn": "Angadi teredideye?",
           "id": 243
         },
         {
-          "translit": "a-du yaa-vaa-ga much-chut-ta-de",
-          "kn": "Adu yavaga muchchuttade?",
+          "en": "When does it close?",
           "id": 244,
-          "en": "When does it close?"
+          "kn": "Adu yavaga muchchuttade?",
+          "translit": "a-du yaa-vaa-ga much-chut-ta-de"
         },
         {
           "id": 245,
-          "translit": "naa-nu i-dan-nu hin-ti-ru-gi-sa-lu ba-ya-sut-te-ne",
+          "kn": "Naanu idannu hintirugisalu bayasuttene",
           "en": "I want to return this",
-          "kn": "Naanu idannu hintirugisalu bayasuttene"
+          "translit": "naa-nu i-dan-nu hin-ti-ru-gi-sa-lu ba-ya-sut-te-ne"
         },
         {
           "translit": "an-ti-ma be-le ye-nu",
+          "en": "What is the final price?",
           "id": 246,
-          "kn": "Antima bele enu?",
-          "en": "What is the final price?"
+          "kn": "Antima bele enu?"
         },
         {
-          "kn": "Chillare ittukolli",
-          "translit": "chil-la-re it-tu-kol-li",
+          "en": "Keep the change",
           "id": 247,
-          "en": "Keep the change"
+          "translit": "chil-la-re it-tu-kol-li",
+          "kn": "Chillare ittukolli"
         },
         {
-          "translit": "nee-vu UPI swee-ka-ri-sut-tee-ra",
-          "id": 248,
           "kn": "Neevu UPI sweekarisuttira?",
-          "en": "Do you accept UPI?"
+          "translit": "nee-vu UPI swee-ka-ri-sut-tee-ra",
+          "en": "Do you accept UPI?",
+          "id": 248
         },
         {
-          "en": "Where is the ATM?",
           "id": 249,
           "translit": "ATM el-li-de",
-          "kn": "ATM ellide?"
+          "kn": "ATM ellide?",
+          "en": "Where is the ATM?"
         },
         {
-          "id": 250,
           "en": "How much in total?",
+          "kn": "Vottu eshtu?",
           "translit": "vot-tu esh-tu",
-          "kn": "Vottu eshtu?"
+          "id": 250
         }
       ]
     },
     {
+      "icon": "💬",
+      "id": "smalltalk",
       "phrases": [
         {
-          "kn": "Nimma dina hegittu?",
-          "id": 301,
           "translit": "nim-ma di-na he-git-tu",
-          "en": "How was your day?"
+          "en": "How was your day?",
+          "kn": "Nimma dina hegittu?",
+          "id": 301
         },
         {
           "en": "It was good",
-          "translit": "chen-na-git-tu",
+          "id": 302,
           "kn": "Chennagittu",
-          "id": 302
+          "translit": "chen-na-git-tu"
         },
         {
-          "en": "What are your hobbies?",
           "kn": "Nimma havyasagalenu?",
           "id": 303,
-          "translit": "nim-ma ha-vyaa-sa-ga-le-nu"
+          "translit": "nim-ma ha-vyaa-sa-ga-le-nu",
+          "en": "What are your hobbies?"
         },
         {
           "en": "I like reading books",
-          "translit": "na-na-ge pus-ta-ka-ga-lan-nu o-da-lu ish-ta",
           "kn": "Nanage pustakagalannu odalu ishta",
-          "id": 304
+          "id": 304,
+          "translit": "na-na-ge pus-ta-ka-ga-lan-nu o-da-lu ish-ta"
         },
         {
+          "en": "I like music",
           "kn": "Nanage sangeeta ishta",
           "translit": "na-na-ge san-gee-ta ish-ta",
-          "en": "I like music",
           "id": 305
         },
         {
-          "id": 306,
+          "kn": "Idu yava cinema?",
           "en": "What movie is this?",
-          "translit": "i-du yaa-va cinema",
-          "kn": "Idu yava cinema?"
+          "id": 306,
+          "translit": "i-du yaa-va cinema"
         },
         {
-          "kn": "Havamaana chennagide",
-          "en": "The weather is nice",
           "id": 307,
-          "translit": "ha-vaa-maa-na chen-na-gi-de"
+          "translit": "ha-vaa-maa-na chen-na-gi-de",
+          "kn": "Havamaana chennagide",
+          "en": "The weather is nice"
         },
         {
-          "en": "It is hot",
           "kn": "Bisiyagide",
+          "en": "It is hot",
           "translit": "bi-si-ya-gi-de",
           "id": 308
         },
         {
-          "translit": "cha-li-ya-gi-de",
           "en": "It is cold",
-          "kn": "Chaliyagide",
-          "id": 309
+          "id": 309,
+          "translit": "cha-li-ya-gi-de",
+          "kn": "Chaliyagide"
         },
         {
+          "kn": "Male baruttide",
           "translit": "ma-le ba-rut-ti-de",
           "id": 310,
-          "kn": "Male baruttide",
           "en": "It is raining"
         },
         {
           "kn": "Naanu opputtene",
-          "en": "I agree",
           "id": 311,
+          "en": "I agree",
           "translit": "naa-nu op-put-te-ne"
         },
         {
-          "id": 312,
           "en": "I don't agree",
+          "kn": "Naanu oppuvudilla",
           "translit": "naa-nu op-pu-vu-dil-la",
-          "kn": "Naanu oppuvudilla"
+          "id": 312
         },
         {
-          "en": "Really?",
           "translit": "ni-ja-va-gloo",
           "id": 313,
-          "kn": "Nijavagloo?"
+          "kn": "Nijavagloo?",
+          "en": "Really?"
         },
         {
-          "translit": "in-nash-tu he-li",
-          "id": 314,
           "kn": "Innashtu heli",
-          "en": "Tell me more"
+          "translit": "in-nash-tu he-li",
+          "en": "Tell me more",
+          "id": 314
         },
         {
           "translit": "nee-vu ye-nu yo-chis-ut-tee-ri",
           "en": "What do you think?",
-          "id": 315,
-          "kn": "Neevu enu yochisuttiri?"
+          "kn": "Neevu enu yochisuttiri?",
+          "id": 315
         },
         {
+          "translit": "i-du ta-maa-she-ya-gi-de",
           "kn": "Idu tamasheyagide",
           "id": 316,
-          "en": "It's funny",
-          "translit": "i-du ta-maa-she-ya-gi-de"
+          "en": "It's funny"
         },
         {
-          "id": 317,
           "kn": "Jagurukaragiri",
-          "en": "Be careful",
-          "translit": "jaa-ga-roo-ka-ra-gi-ri"
+          "id": 317,
+          "translit": "jaa-ga-roo-ka-ra-gi-ri",
+          "en": "Be careful"
         },
         {
-          "id": 318,
+          "kn": "Neevu enu maduttiddira?",
           "en": "What are you doing?",
-          "translit": "nee-vu ye-nu maa-dut-tid-dee-ra",
-          "kn": "Neevu enu maduttiddira?"
+          "id": 318,
+          "translit": "nee-vu ye-nu maa-dut-tid-dee-ra"
         },
         {
           "translit": "naa-nu TV no-dut-tid-de-ne",
-          "en": "I am watching TV",
           "kn": "Naanu TV noduttiddene",
+          "en": "I am watching TV",
           "id": 319
         },
         {
-          "en": "I am reading",
           "translit": "naa-nu o-dut-tid-de-ne",
-          "kn": "Naanu oduttiddene",
-          "id": 320
+          "en": "I am reading",
+          "id": 320,
+          "kn": "Naanu oduttiddene"
         },
         {
-          "translit": "ke-la-sa he-gi-de",
+          "kn": "Kelasa hegide?",
           "id": 321,
           "en": "How is work?",
-          "kn": "Kelasa hegide?"
+          "translit": "ke-la-sa he-gi-de"
         },
         {
           "translit": "ke-la-sa chen-na-gi-de",
           "en": "Work is good",
-          "id": 322,
-          "kn": "Kelasa chennagide"
+          "kn": "Kelasa chennagide",
+          "id": 322
         },
         {
           "en": "What are your plans for the weekend?",
-          "kn": "Vaarantyadalli nimma yojanegalenu?",
           "id": 323,
+          "kn": "Vaarantyadalli nimma yojanegalenu?",
           "translit": "vaa-raan-tya-dal-li nim-ma yo-ja-ne-ga-le-nu"
         },
         {
           "kn": "Yavude yojanegalilla",
-          "en": "No plans",
           "translit": "yaa-vu-de yo-ja-ne-ga-lil-la",
+          "en": "No plans",
           "id": 324
         },
         {
-          "id": 325,
+          "en": "I will go out with friends",
           "translit": "naa-nu sne-hi-ta-ron-di-ge ho-ra-ge ho-gut-te-ne",
           "kn": "Naanu snehitarondige horage hoguttene",
-          "en": "I will go out with friends"
+          "id": 325
         },
         {
-          "en": "That's interesting",
           "id": 326,
-          "kn": "Adu aasaktidayakavagide",
-          "translit": "a-du aa-sak-ti-daa-ya-ka-va-gi-de"
+          "en": "That's interesting",
+          "translit": "a-du aa-sak-ti-daa-ya-ka-va-gi-de",
+          "kn": "Adu aasaktidayakavagide"
         },
         {
-          "en": "I don't know",
-          "kn": "Nanage gottilla",
           "id": 327,
-          "translit": "na-na-ge got-til-la"
+          "translit": "na-na-ge got-til-la",
+          "en": "I don't know",
+          "kn": "Nanage gottilla"
         },
         {
+          "translit": "ho-go-na",
           "id": 328,
           "kn": "Hogona",
-          "en": "Let's go",
-          "translit": "ho-go-na"
+          "en": "Let's go"
         },
         {
-          "kn": "Neevu baruttiddira?",
-          "en": "Are you coming?",
+          "id": 329,
           "translit": "nee-vu ba-rut-tid-dee-ra",
-          "id": 329
+          "kn": "Neevu baruttiddira?",
+          "en": "Are you coming?"
         },
         {
           "translit": "naa-nu ba-rut-tid-de-ne",
-          "kn": "Naanu baruttiddene",
           "en": "I am coming",
-          "id": 330
+          "id": 330,
+          "kn": "Naanu baruttiddene"
         },
         {
           "en": "What's wrong?",
@@ -2495,40 +2804,40 @@
           "translit": "ye-nu tap-pa-gi-de"
         },
         {
-          "translit": "ye-noo il-la",
-          "en": "Nothing",
           "id": 332,
-          "kn": "Enu illa"
+          "kn": "Enu illa",
+          "en": "Nothing",
+          "translit": "ye-noo il-la"
         },
         {
-          "en": "I have an idea",
           "kn": "Nanna bali ondu alochane ide",
+          "en": "I have an idea",
           "translit": "nan-na ba-li on-du aa-lo-cha-ne i-de",
           "id": 333
         },
         {
-          "en": "Good idea",
           "translit": "ol-le-ya aa-lo-cha-ne",
           "id": 334,
+          "en": "Good idea",
           "kn": "Olleya alochane"
         },
         {
           "kn": "Khandita",
           "en": "Of course",
-          "id": 335,
-          "translit": "khan-di-ta"
+          "translit": "khan-di-ta",
+          "id": 335
         },
         {
-          "id": 336,
           "en": "Exactly",
           "kn": "Sariyagi",
-          "translit": "sa-ri-ya-gi"
+          "translit": "sa-ri-ya-gi",
+          "id": 336
         },
         {
-          "kn": "Bahushah",
+          "id": 337,
           "translit": "ba-hu-shah",
           "en": "Maybe",
-          "id": 337
+          "kn": "Bahushah"
         },
         {
           "en": "I think so",
@@ -2537,58 +2846,58 @@
           "translit": "naa-nu haa-ge bhaa-vi-sut-te-ne"
         },
         {
+          "en": "I don't think so",
           "id": 339,
           "translit": "naa-nu haa-ge bhaa-vi-su-vu-dil-la",
-          "kn": "Naanu hage bhavisuvudilla",
-          "en": "I don't think so"
+          "kn": "Naanu hage bhavisuvudilla"
         },
         {
-          "en": "It seems so",
           "translit": "haa-ge to-rut-ta-de",
           "kn": "Hage toruttade",
+          "en": "It seems so",
           "id": 340
         },
         {
           "kn": "Nimage khachitave?",
-          "en": "Are you sure?",
+          "translit": "ni-ma-ge kha-chi-ta-ve",
           "id": 341,
-          "translit": "ni-ma-ge kha-chi-ta-ve"
+          "en": "Are you sure?"
         },
         {
-          "kn": "Nanage khachitavagide",
-          "en": "I am sure",
+          "translit": "na-na-ge kha-chi-ta-va-gi-de",
           "id": 342,
-          "translit": "na-na-ge kha-chi-ta-va-gi-de"
+          "en": "I am sure",
+          "kn": "Nanage khachitavagide"
         },
         {
-          "en": "I forgot",
           "kn": "Naanu maretubitte",
-          "translit": "naa-nu ma-re-tu-bit-te",
-          "id": 343
+          "en": "I forgot",
+          "id": 343,
+          "translit": "naa-nu ma-re-tu-bit-te"
         },
         {
-          "translit": "ton-da-re-yil-la",
           "id": 344,
           "kn": "Tondareyilla",
-          "en": "No problem"
+          "en": "No problem",
+          "translit": "ton-da-re-yil-la"
         },
         {
-          "translit": "chin-ti-sa-be-di",
-          "en": "Don't worry",
           "kn": "Chintisabedi",
+          "en": "Don't worry",
+          "translit": "chin-ti-sa-be-di",
           "id": 345
         },
         {
-          "id": 346,
           "translit": "be-ga maa-di",
           "kn": "Bega madi",
-          "en": "Hurry up"
+          "en": "Hurry up",
+          "id": 346
         },
         {
-          "en": "Just a moment",
+          "translit": "on-du ksha-na",
           "id": 347,
           "kn": "Ondu kshana",
-          "translit": "on-du ksha-na"
+          "en": "Just a moment"
         },
         {
           "kn": "Naanu tamashe maduttiddene",
@@ -2597,20 +2906,18 @@
           "en": "I am joking"
         },
         {
-          "translit": "i-du sun-da-ra-va-gi-de",
-          "en": "It's beautiful",
+          "kn": "Idu sundaravagide",
           "id": 349,
-          "kn": "Idu sundaravagide"
+          "translit": "i-du sun-da-ra-va-gi-de",
+          "en": "It's beautiful"
         },
         {
-          "kn": "Naanu adrushtashali",
-          "en": "I am lucky",
           "translit": "naa-nu a-drush-ta-shaa-li",
-          "id": 350
+          "id": 350,
+          "en": "I am lucky",
+          "kn": "Naanu adrushtashali"
         }
       ],
-      "icon": "💬",
-      "id": "smalltalk",
       "title": "Social Small Talk"
     }
   ],
@@ -2618,10 +2925,36 @@
     "key": "profile",
     "name": "Cara",
     "streak": 0,
-    "wordsLearned": [],
+    "wordsLearned": [
+      401,
+      402,
+      403,
+      404,
+      405,
+      1,
+      2,
+      3,
+      4,
+      5,
+      301,
+      302,
+      303,
+      304,
+      305,
+      406,
+      407,
+      408,
+      409,
+      410,
+      51,
+      52,
+      53,
+      54,
+      55
+    ],
     "accuracy": {
-      "correct": 0,
-      "total": 0
+      "correct": 25,
+      "total": 25
     },
     "useGoogleTTS": false
   }
