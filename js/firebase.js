@@ -7,6 +7,7 @@ import {
   getDoc,
   getDocs,
   setDoc,
+  deleteDoc,
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import {
   getStorage,
@@ -37,6 +38,7 @@ export {
   getDoc,
   getDocs,
   setDoc,
+  deleteDoc,
   ref,
   uploadBytes,
   getDownloadURL,
