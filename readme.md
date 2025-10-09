@@ -46,3 +46,5 @@ The app expects Firebase and Google Cloud Text-to-Speech credentials at runtime.
 
 Without these credentials the UI will load a warning message and skip all Firestore-backed features.
 
+For GitHub Pages deployments, add the credentials as a repository secret so the Pages workflow can reconstruct `config/runtime-config.js` at publish time. See [`docs/github-pages-deployment.md`](docs/github-pages-deployment.md) for detailed steps.
+
