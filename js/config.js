@@ -24,8 +24,11 @@ const seedModules = [
   { id: "family", title: "Family & Relationships", icon: "dY`\"�??dY`c�??dY`\u0015�??dY`�", phrases: [ { id: 351, en: "Family", kn: "Kutumba", translit: "ku-tum-ba" } ] },
 ];
 
-// Google TTS API Key from inline script
-const GOOGLE_API_KEY = "AIzaSyASuitUOpDtMmaC-5YyWG2AjN5VGkOr-IM";
+// Google TTS API Key sourced from runtime config (if provided)
+const configScope = typeof window !== 'undefined' ? window : globalThis;
+const runtimeConfig = (configScope && configScope.__APP_CONFIG__) || {};
+const GOOGLE_API_KEY =
+  typeof runtimeConfig.googleTtsKey === 'string' ? runtimeConfig.googleTtsKey : '';
 
 export { moduleOrder, seedModules, GOOGLE_API_KEY };
 

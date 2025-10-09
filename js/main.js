@@ -1,5 +1,12 @@
 // Entrypoint wiring app modules
-import { firestoreDB, collection, getDocs, doc, setDoc } from './firebase.js';
+import {
+  firestoreDB,
+  collection,
+  getDocs,
+  doc,
+  setDoc,
+  isFirebaseConfigured,
+} from './firebase.js';
 import { initDB, addOrUpdate, getData } from './db.js';
 import { moduleOrder, seedModules } from './config.js';
 import { showView, renderDashboard } from './ui.js';
@@ -18,6 +25,7 @@ import { renderAuthorEditor } from './author.js';
 import { registerServiceWorker } from './sw-register.js';
 
 async function seedDatabase() {
+  if (!isFirebaseConfigured) return;
   const modulesSnapshot = await getDocs(collection(firestoreDB, 'modules'));
   if (modulesSnapshot.empty) {
     console.log('Seeding Firestore with new module data...');
@@ -32,6 +40,17 @@ async function seedDatabase() {
 
 async function initApp() {
   await initDB();
+  if (!isFirebaseConfigured) {
+    document.getElementById('loading-indicator')?.classList.add('hidden');
+    document.getElementById('app').innerHTML = `
+      <div class="bg-white border border-amber-200 text-amber-700 rounded-xl p-6 shadow-md">
+        <h2 class="text-xl font-semibold mb-2">Cloud sync is disabled</h2>
+        <p class="mb-2">Firebase credentials were not supplied. Authoring mode and remote modules require a runtime configuration.</p>
+        <p class="text-sm text-amber-600">Add your keys to <code>config/runtime-config.js</code> (see <code>config/runtime-config.example.js</code>) and reload the app.</p>
+      </div>
+    `;
+    return;
+  }
   await seedDatabase();
   wireFlashcardInteractions();
 
@@ -123,6 +142,7 @@ async function initApp() {
 }
 
 async function renderDashboardEntrypoint() {
+  if (!isFirebaseConfigured) return;
   await renderDashboard(firestoreDB, startLesson);
 }
 
