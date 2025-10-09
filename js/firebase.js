@@ -17,21 +17,34 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
 // --- FIREBASE CONFIG ---
-const firebaseConfig = {
-  apiKey: "AIzaSyAHGI5U_EDb1lYNt-uPS2dkRaNeyaUX-oI",
-  authDomain: "kannada-app-audio-e6901.firebaseapp.com",
-  projectId: "kannada-app-audio-e6901",
-  storageBucket: "kannada-app-audio-e6901.firebasestorage.app",
-  messagingSenderId: "891878140337",
-  appId: "1:891878140337:web:8968ebb24ca661aa58f590",
-};
+const globalScope = typeof window !== 'undefined' ? window : globalThis;
+const runtimeConfig = (globalScope && globalScope.__APP_CONFIG__) || {};
+const firebaseConfig = runtimeConfig.firebase;
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const firestoreDB = getFirestore(app);
-const storage = getStorage(app);
+const hasValidFirebaseConfig =
+  firebaseConfig &&
+  typeof firebaseConfig === 'object' &&
+  typeof firebaseConfig.apiKey === 'string' &&
+  firebaseConfig.apiKey.trim() !== '' &&
+  typeof firebaseConfig.projectId === 'string' &&
+  firebaseConfig.projectId.trim() !== '';
+
+let app = null;
+let firestoreDB = null;
+let storage = null;
+
+if (hasValidFirebaseConfig) {
+  app = initializeApp(firebaseConfig);
+  firestoreDB = getFirestore(app);
+  storage = getStorage(app);
+} else if (typeof console !== 'undefined') {
+  console.warn(
+    'Firebase credentials were not provided via window.__APP_CONFIG__. Cloud sync and authoring features are disabled.'
+  );
+}
 
 export { firestoreDB, storage };
+export const isFirebaseConfigured = hasValidFirebaseConfig;
 export {
   collection,
   doc,

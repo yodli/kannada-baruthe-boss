@@ -35,3 +35,14 @@ python3 -m http.server 8000
 
    git clone https://github.com/<your-user>/kannada-baruthe-boss.git
    cd kannada-baruthe-boss
+
+## Runtime configuration
+
+The app expects Firebase and Google Cloud Text-to-Speech credentials at runtime. This repository no longer ships with real keys.
+
+1. Copy `config/runtime-config.example.js` to `config/runtime-config.js`.
+2. Fill in the Firebase project settings and optional Google TTS key.
+3. Keep `config/runtime-config.js` out of source control—it's listed in `.gitignore` to help prevent accidental commits.
+
+Without these credentials the UI will load a warning message and skip all Firestore-backed features.
+

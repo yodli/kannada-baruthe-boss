@@ -249,8 +249,10 @@
     <div id="confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"></div>
     <div id="prompt-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"></div>
     <div id="trivia-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"></div>
-
-
+    <script>
+        window.__APP_CONFIG__ = window.__APP_CONFIG__ || {};
+    </script>
+    <script src="config/runtime-config.js" defer></script>
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
