@@ -42,5 +42,7 @@ secrets** store—*not* the Pages configuration screen—so make sure it is crea
 under **Settings → Secrets and variables → Actions** with the exact contents of
 `config/runtime-config.js`.
 
-The workflow fails fast with a clear error message if the secret has not been configured. Once `RUNTIME_CONFIG_JS` is populated, GitHub Pages will serve the generated `runtime-config.js` alongside the rest of the static assets so the app can initialize Firebase when it loads in production.
+The workflow fails fast with a clear error message if the secret has not been configured. Once `RUNTIME_CONFIG_JS` is populated, GitHub Pages will serve the generated `runtime-config.js` alongside the rest of the static assets so the app can initialize Firebase when it loads in production. The file is created inside the build artifact during the workflow run—it does **not** appear as a committed file in your repository—so expect to see it only in the deployed site or the artifact contents, not on the `main` branch.
+
+After each successful run the workflow appends a note to the job summary confirming that `config/runtime-config.js` was written. You can open the completed workflow run in the GitHub UI and click **Annotations → View job summary** (or scroll to the bottom of the log) to double-check that the runtime config step succeeded without revealing the secret’s contents.
 
