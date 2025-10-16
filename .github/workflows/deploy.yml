@@ -29,11 +29,21 @@ jobs:
           # issues with the multi-line JavaScript snippet.
           RUNTIME_CONFIG_JS: ${{ secrets.RUNTIME_CONFIG_JS }}
         run: |
+          mkdir -p config
           if [ -z "$RUNTIME_CONFIG_JS" ]; then
             echo "RUNTIME_CONFIG_JS secret is not set."
             exit 1
           fi
           printf '%s' "$RUNTIME_CONFIG_JS" > config/runtime-config.js
+          if [ ! -s config/runtime-config.js ]; then
+            echo "config/runtime-config.js was not created or is empty."
+            exit 1
+          fi
+          {
+            echo "### Runtime configuration"
+            echo
+            echo "- \`config/runtime-config.js\` written from secret"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
