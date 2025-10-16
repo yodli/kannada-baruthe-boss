@@ -34,5 +34,13 @@ This branch includes `.github/workflows/deploy.yml`, which:
 2. Writes the `config/runtime-config.js` file from the `RUNTIME_CONFIG_JS` secret.
 3. Publishes the site to GitHub Pages using the official `actions/deploy-pages` action.
 
+The workflow step that writes `runtime-config.js` loads the secret into an
+environment variable first. That prevents shell parsing issues when the secret
+contains newlines or characters (such as colons) that would otherwise be
+interpreted as shell commands. The secret comes from the repository's **Actions
+secrets** store—*not* the Pages configuration screen—so make sure it is created
+under **Settings → Secrets and variables → Actions** with the exact contents of
+`config/runtime-config.js`.
+
 The workflow fails fast with a clear error message if the secret has not been configured. Once `RUNTIME_CONFIG_JS` is populated, GitHub Pages will serve the generated `runtime-config.js` alongside the rest of the static assets so the app can initialize Firebase when it loads in production.
 
